@@ -2,7 +2,6 @@ import './style.css';
 import { CAMP_PLATE } from './scenePlates.js';
 import arenaArt from './assets/scenes/arena-clearing.svg';
 import journeyMapArt from './assets/scenes/journey-map.svg';
-import serisPortrait from './assets/portraits/seris-dialogue.svg';
 import vaelArt from './assets/heroes/vael.webp';
 import serisArt from './assets/heroes/seris.webp';
 import mirelArt from './assets/heroes/mirel.webp';
@@ -242,7 +241,7 @@ function battleScene(){
     +'<div class="battle-controls"><b>'+(battle?'전투 중…':state.phase==='result'?'전투 종료':'배치 준비')+'</b><button>Ⅱ</button><button id="speedBtn">×'+state.speed+'</button></div>'
     +'<svg class="battle-arrows" viewBox="0 0 1000 420" preserveAspectRatio="none"><defs><marker id="redEnd" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0 0 L0 6 L8 3z" fill="#ee6a5f"/></marker><marker id="blueEnd" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0 0 L0 6 L8 3z" fill="#6db5ff"/></marker></defs><path class="arr red" d="M795 185 Q690 190 380 245" marker-end="url(#redEnd)"/><path class="arr blue" d="M840 255 Q700 245 560 235" marker-end="url(#blueEnd)"/></svg>'
     +enemies+allies+'<div class="shield-fx"></div><div class="heal-fx">✦ ✦ ✦</div><div class="moon-fx"></div><div class="hit-fx"></div>'
-    +'<div class="battle-dialogue"><div class="dialogue-portrait"><img class="dialogue-portrait-art" src="'+serisPortrait+'" alt="세리스"></div><div><b>세리스</b><span>'
+    +'<div class="battle-dialogue"><div class="dialogue-portrait camp-seris-portrait" style="background-image:url(\''+CAMP_PLATE+'\')"></div><div><b>세리스</b><span>'
     +(battle?'적의 후열에 저격수가 있어. 내가 집중하고 있는 동안 부탁할게…!':'후열에 저격수가 있어. 누가 내 앞을 막을지 정해줘.')+'</span></div></div>'
     +'<div class="combat-log"><div class="log-title">전투 기록</div>'+logs+'</div>'
     +'<div class="tip-card"><b>TIP</b><span>전열에 튼튼한 동료를 배치해 후열의 약한 동료를 지키세요.</span><div class="tip-pet">◕ᴥ◕</div></div>'
