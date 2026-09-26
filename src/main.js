@@ -3,8 +3,12 @@ import { CAMP_PLATE, BATTLE_PLATE } from './scenePlates.js';
 import vaelArt from './assets/heroes/vael.webp';
 import serisArt from './assets/heroes/seris.webp';
 import mirelArt from './assets/heroes/mirel.webp';
+import breakerArt from './assets/enemies/breaker.svg';
+import houndArt from './assets/enemies/hound.svg';
+import hunterArt from './assets/enemies/hunter.svg';
 
 const HERO_ART={vael:vaelArt,seris:serisArt,mirel:mirelArt};
+const ENEMY_ART={breaker:breakerArt,hound:houndArt,hunter:hunterArt};
 
 const app = document.querySelector('#app');
 
@@ -55,8 +59,8 @@ function heroSprite(id,small){
     +'</div>';
 }
 function enemySprite(id,small){
-  return '<div class="enemy-sprite '+id+(small?' mini':'')+'"><i class="ground-shadow"></i><i class="ear a"></i><i class="ear b"></i>'
-    +'<i class="body"></i><i class="head"><b></b><b></b></i><i class="weapon"></i></div>';
+  return '<div class="enemy-art-wrap '+id+(small?' mini':'')+'"><span class="enemy-art-shadow"></span>'
+    +'<img class="enemy-art-sprite" src="'+ENEMY_ART[id]+'" alt="" draggable="false"></div>';
 }
 function progressIndex(){return {read:0,place:1,battle:2,result:3,next:1,battle2:2,result2:3,complete:4}[state.phase]||0;}
 
