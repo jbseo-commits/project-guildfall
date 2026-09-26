@@ -1,54 +1,49 @@
 import './style.css';
-import { CHARACTERS, PLANS, createPrototypeBattle } from './game/prototype.js';
+import { CHARACTERS } from './game/prototype.js';
+import {
+  TUTORIAL_STEPS,
+  POSITIONS,
+  BONDS,
+  EDICTS,
+  ENCOUNTERS,
+  initialTutorialBuild,
+  scoreBuild,
+  buildCauseChain,
+} from './game/tutorial.js';
 
 const app = document.querySelector('#app');
 
 const state = {
-  screen: 'cold-open',
-  selectedPlan: 'seris',
-  battle: null,
+  screen: 'prologue',
+  stageIndex: 0,
+  build: initialTutorialBuild(),
+  selectedCharacter: null,
+  coachStep: 0,
   timers: [],
-  dialogueIndex: 0,
+  battleHp: {},
+  lastResult: null,
 };
 
 const characterOrder = ['vael', 'seris', 'mirel'];
+const stageOrder = ['formation', 'bond', 'edict', 'exam'];
 
-const campDialogue = [
-  { speaker: 'narrator', name: '47번째 밤', text: '새벽까지 31분. 카라반의 늑골 사이로 차가운 빛이 스민다.' },
-  { speaker: 'mirel', name: '미렐', text: '또 꽃이 졌네. 오늘은 세 송이. …괜찮아. 다시 피우면 되니까.' },
-  { speaker: 'seris', name: '세리스', text: '거짓말. 네가 아끼던 애들이잖아.' },
-  { speaker: 'mirel', name: '미렐', text: '세리스는 별을 아끼잖아. 나는 꽃을 아끼는 거고.' },
-  { speaker: 'vael', name: '베일', text: '조용. 북쪽.' },
-  { speaker: 'narrator', name: '카라반', text: '살아있는 성소의 피부가 먼저 떨었다. 유리 사냥꾼들이 우리의 피냄새를 따라왔다.' },
-  { speaker: 'vael', name: '베일', text: '셋. 이쪽으로 온다. 나는 한 명 곁에 붙을 수 있어.' },
-  { speaker: 'seris', name: '세리스', text: '나를 지키면 한 번에 끝낼 수 있어. 대신 미렐이 혼자 남아.' },
-  { speaker: 'mirel', name: '미렐', text: '나를 지키면 모두를 오래 버틸 수 있어. 대신 세리스의 의식은 끊길 거야.' },
-];
-
-const planReactions = {
-  seris: [
-    { speaker: 'seris', name: '세리스', text: '알겠어. 끝내줄게.' },
-    { speaker: 'mirel', name: '미렐', text: '그럼 나는 조금 멀리 있을게. 걱정하지 마.' },
-    { speaker: 'vael', name: '베일', text: '…걱정하지 말라는 말이 제일 싫어.' },
+const coach = {
+  formation: [
+    { focus: 'enemy', title: '① 먼저 적을 읽는다', body: '유리 사냥개는 전투가 시작되면 FRONT를 물어뜯습니다. 숨겨진 주사위가 아니라, 읽을 수 있는 위협입니다.' },
+    { focus: 'formation', title: '② 누가 그 공격을 받을지 정한다', body: '캐릭터를 누른 뒤 외피·심장·장막 슬롯을 눌러 배치하세요. 위치가 행동과 위험을 바꿉니다.' },
+    { focus: 'commit', title: '③ COMMIT하면 손을 뗀다', body: '전투가 시작된 뒤에는 미세조작하지 않습니다. 내가 만든 구조가 스스로 싸우는 장면을 봅니다.' },
   ],
-  mirel: [
-    { speaker: 'mirel', name: '미렐', text: '내 뿌리를 지켜줘. 그러면 카라반 전체가 버틸 수 있어.' },
-    { speaker: 'seris', name: '세리스', text: '내가 먼저 끊겨도 괜찮아. 두 번째 기회는 만들 수 있어.' },
-    { speaker: 'vael', name: '베일', text: '두 번째가 온다는 보장은 없지.' },
+  bond: [
+    { focus: 'enemy', title: '① 이번엔 후열도 공격받는다', body: '창기병은 FRONT를 묶고, 사냥꾼은 REAR의 의식자를 노립니다. 배치만으로 모든 문제를 풀 수 없습니다.' },
+    { focus: 'bond', title: '② 공명은 자동 반응을 예약한다', body: '두 캐릭터를 연결하면 “이 일이 벌어졌을 때 저 캐릭터가 반응한다”는 사슬이 생깁니다.' },
+    { focus: 'chain', title: '③ 발동 사슬을 미리 읽는다', body: '공명 카드의 TRIGGER → REACTION → PAYOFF를 보고 전투가 어떻게 흘러갈지 예상하세요.' },
   ],
-};
-
-const fallScenes = {
-  mirel: [
-    ['seris', '세리스', '미렐. 눈 떠.'],
-    ['vael', '베일', '추격대가 다시 붙기까지 스물두 분.'],
-    ['mirel', '미렐', '가. …내 뿌리는 원래 잘 남아.'],
+  edict: [
+    { focus: 'edict', title: '① 모든 행동을 지시하지 않는다', body: '대신 전투 전체가 따를 명령 하나만 각인합니다. 방어·의식·회복 중 무엇을 우선할지 선택합니다.' },
+    { focus: 'edict', title: '② 강점에는 반드시 대가가 있다', body: '강한 명령일수록 trade-off가 있습니다. 상황을 읽지 않고 항상 같은 명령을 누를 수 없게 설계합니다.' },
+    { focus: 'commit', title: '③ 이제 세 층이 함께 작동한다', body: '배치 + 공명 + 명령이 동시에 자동전투를 바꿉니다.' },
   ],
-  seris: [
-    ['mirel', '미렐', '세리스, 내 목소리 들려?'],
-    ['vael', '베일', '추격대가 다시 붙기까지 스물두 분.'],
-    ['seris', '세리스', '별이… 하나 모자라네. 가. 나는 길을 기억해.'],
-  ],
+  exam: [],
 };
 
 function clearTimers() {
@@ -84,26 +79,14 @@ function portrait(character, extra = '') {
     </div>`;
 }
 
-function characterCard(character, extra = '') {
-  return `
-    <article class="character-card ${extra}" data-character="${character.id}" data-hp="100">
-      ${portrait(character)}
-      <div class="character-copy">
-        <strong>${character.name}</strong>
-        <span>${character.epithet}</span>
-      </div>
-      <div class="hp"><i style="width:100%"></i></div>
-    </article>`;
-}
-
-function sceneShell(content, opts = {}) {
-  const { scene = 'story', eyebrow = 'LIVING CARAVAN', compact = false } = opts;
+function shell(content, options = {}) {
+  const { scene = 'tutorial', eyebrow = 'LIVING CARAVAN · TUTORIAL', compact = false } = options;
   app.innerHTML = `
     <main class="shell ${compact ? 'compact' : ''}" data-scene="${scene}">
       <header class="topbar">
         <div>
           <div class="brand">LIVING CARAVAN</div>
-          <div class="brand-sub">살아있는 성소 · vertical slice II</div>
+          <div class="brand-sub">살아있는 성소 · tutorial vertical slice</div>
         </div>
         <div class="eyebrow">${eyebrow}</div>
       </header>
@@ -112,489 +95,673 @@ function sceneShell(content, opts = {}) {
   requestAnimationFrame(() => app.querySelector('.shell')?.classList.add('scene-in'));
 }
 
-function activeSpeakerClass(speaker) {
-  return speaker === 'narrator' ? 'narrator' : `speaker-${speaker}`;
+function progressMarkup(activeIndex = state.stageIndex) {
+  return `
+    <nav class="tutorial-progress" aria-label="tutorial progress">
+      ${TUTORIAL_STEPS.map((step, index) => `
+        <div class="tutorial-step ${index < activeIndex ? 'done' : ''} ${index === activeIndex ? 'active' : ''}">
+          <span>${index < activeIndex ? '✓' : step.icon}</span>
+          <b>${step.label}</b>
+        </div>
+      `).join('')}
+    </nav>`;
 }
 
-function renderColdOpen() {
+function renderPrologue() {
   clearTimers();
-  state.screen = 'cold-open';
-  sceneShell(`
-    <section class="cold-open">
-      <div class="world-vista">
-        <div class="moon"></div>
-        <div class="distant-city"></div>
-        <div class="caravan-ribs"></div>
-        <div class="living-core"></div>
-        <div class="dust dust-a"></div>
-        <div class="dust dust-b"></div>
-      </div>
-      <div class="cold-copy">
-        <p class="chapter">PROLOGUE · 유리 평원</p>
-        <h1>세상이 죽기 시작한 뒤,<br>사람들은 성벽을 세웠다.</h1>
-        <p class="cold-line">우리는 걸었다.</p>
-        <p class="cold-body">이름을 버린 것들이 서로의 체온을 이어 붙여 만든 이동하는 성소. 살아있는 카라반 <b>《아르카》</b>.</p>
-        <button class="story-cta" id="wake">47번째 밤을 시작한다<span>세 사람의 숨결이 카라반의 벽을 움직인다.</span></button>
-      </div>
-    </section>
-  `, { scene: 'cold-open', eyebrow: 'NIGHT 47 · GLASS PLAIN' });
-
-  app.querySelector('#wake').addEventListener('click', () => {
-    state.dialogueIndex = 0;
-    renderCamp();
-  });
-}
-
-function renderCamp() {
-  clearTimers();
-  state.screen = 'camp';
-  const entry = campDialogue[state.dialogueIndex];
-  const finalLine = state.dialogueIndex === campDialogue.length - 1;
-
-  sceneShell(`
-    <section class="camp-scene ${activeSpeakerClass(entry.speaker)}">
-      <div class="camp-vista">
-        <div class="camp-sky"></div>
-        <div class="rib-arch rib-one"></div>
-        <div class="rib-arch rib-two"></div>
-        <div class="heart-lantern"></div>
-        <div class="camp-cast">
-          ${characterOrder.map(id => {
-            const c = CHARACTERS[id];
-            const active = entry.speaker === id ? 'active' : '';
-            return `
-              <button class="camp-character ${active}" tabindex="-1" aria-label="${c.name}">
-                ${portrait(c, 'camp-portrait')}
-                <strong>${c.name}</strong>
-                <small>${c.epithet}</small>
-              </button>`;
-          }).join('')}
+  state.screen = 'prologue';
+  shell(`
+    <section class="tutorial-prologue">
+      <div class="prologue-vista">
+        <div class="prologue-moon"></div>
+        <div class="prologue-ark">
+          <div class="ark-heart"></div>
+          <div class="ark-rib r1"></div>
+          <div class="ark-rib r2"></div>
+          <div class="ark-rib r3"></div>
         </div>
       </div>
 
-      <div class="dialogue-box">
-        <div class="dialogue-meta">
-          <span class="speaker-name">${escapeHtml(entry.name)}</span>
-          <span class="dialogue-count">${String(state.dialogueIndex + 1).padStart(2, '0')} / ${String(campDialogue.length).padStart(2, '0')}</span>
-        </div>
-        <p class="dialogue-text">“${escapeHtml(entry.text)}”</p>
-        <button class="dialogue-next" id="dialogue-next">
-          ${finalLine ? '결정해야 한다' : '계속 듣는다'}
-          <span>${finalLine ? '모두를 지킬 수는 없다.' : '화면을 눌러 대화를 이어갑니다.'}</span>
-        </button>
-      </div>
-    </section>
-  `, { scene: 'camp', eyebrow: '31 MINUTES BEFORE DAWN' });
+      <p class="chapter">PROLOGUE · NIGHT 47</p>
+      <h1>세상이 성벽 안으로 숨어들 때,<br>우리는 살아있는 성소를 데리고 걸었다.</h1>
+      <p class="prologue-copy">《아르카》는 배도, 성도 아니다. 세 존재의 본능과 관계가 서로를 살리는 하나의 생태계다.</p>
 
-  app.querySelector('#dialogue-next').addEventListener('click', () => {
-    if (finalLine) renderPlan();
-    else {
-      state.dialogueIndex += 1;
-      renderCamp();
-    }
-  });
+      <div class="prologue-cast">
+        ${characterOrder.map(id => {
+          const c = CHARACTERS[id];
+          const quote = id === 'vael'
+            ? '“누가 맞을지는 내가 정하지. 네가 위치만 정해.”'
+            : id === 'seris'
+              ? '“시간만 벌어줘. 그러면 끝낼 수 있어.”'
+              : '“쓰러지기 전에 알려줘. 뿌리는 생각보다 빨라.”';
+          return `
+            <article>
+              ${portrait(c)}
+              <div><strong>${c.name}</strong><span>${c.epithet}</span><p>${quote}</p></div>
+            </article>`;
+        }).join('')}
+      </div>
+
+      <button id="begin-tutorial" class="story-cta">
+        카라반이 싸우는 법을 배운다
+        <span>약 5분 · 네 번의 짧은 전투</span>
+      </button>
+    </section>
+  `, { scene: 'tutorial-prologue', eyebrow: 'PLAYABLE TUTORIAL · CHAPTER 0' });
+
+  app.querySelector('#begin-tutorial').addEventListener('click', renderTutorialMap);
 }
 
-function renderPlan() {
+function renderTutorialMap() {
   clearTimers();
-  state.screen = 'plan';
-  const plan = PLANS[state.selectedPlan];
+  state.screen = 'tutorial-map';
+  shell(`
+    <section class="tutorial-map">
+      ${progressMarkup(-1)}
+      <p class="chapter">CHAPTER 0 · 아르카의 세 가지 문법</p>
+      <h1>오토배틀은 자동이지만,<br>결과는 자동으로 정해지지 않는다.</h1>
+      <p class="map-copy">당신이 만드는 것은 공격 명령이 아니라 <b>행동 구조</b>다. 네 번의 전투로 하나씩 배운다.</p>
 
-  sceneShell(`
-    <section class="plan-scene">
-      <div class="scene-heading">
-        <p class="kicker">READ → PLAN</p>
-        <h1>누구 곁에 베일을 세울 것인가?</h1>
-        <p>누구도 버리는 선택은 아니다. 하지만 모든 이를 동시에 지킬 수는 없다.</p>
-      </div>
-
-      <section class="ecosystem">
-        <div class="bond bond-left"></div>
-        <div class="bond bond-right"></div>
-        ${characterOrder.map(id => characterCard(CHARACTERS[id], id === plan.protectedId ? 'protected' : '')).join('')}
-      </section>
-
-      <div class="relationship-note">
-        <span>현재 생태 연결</span>
-        <strong>베일 ↔ 세리스 ↔ 미렐</strong>
-        <em>한 사람의 결손은 두 사람의 행동을 바꿉니다.</em>
-      </div>
-
-      <section class="decision-panel">
-        ${Object.values(PLANS).map(p => `
-          <button class="plan-option ${p.id === state.selectedPlan ? 'selected' : ''}" data-plan="${p.id}">
-            <span class="plan-title">${p.kicker} · ${p.title}</span>
-            <span class="plan-detail">${p.description}</span>
-            <span class="plan-outcome">기대: ${p.reward}</span>
-            <span class="plan-risk">대가: ${p.risk}</span>
-          </button>
-        `).join('')}
-        <button id="plan-lock" class="story-cta decision-cta">
-          이 명령을 전한다
-          <span>선택을 들은 세 사람의 반응을 확인합니다.</span>
-        </button>
-      </section>
-    </section>
-  `, { scene: 'plan', eyebrow: 'THE KEEPER MUST CHOOSE' });
-
-  app.querySelectorAll('[data-plan]').forEach(button => {
-    button.addEventListener('click', () => {
-      state.selectedPlan = button.dataset.plan;
-      renderPlan();
-    });
-  });
-  app.querySelector('#plan-lock').addEventListener('click', renderPlanReaction);
-}
-
-function renderPlanReaction() {
-  clearTimers();
-  state.screen = 'reaction';
-  const plan = PLANS[state.selectedPlan];
-  const lines = planReactions[state.selectedPlan];
-
-  sceneShell(`
-    <section class="reaction-scene">
-      <p class="kicker">THE ORDER IS HEARD</p>
-      <h1>${plan.title}</h1>
-      <p class="order-copy">당신의 명령은 숫자가 아니라 세 사람 사이에 남는다.</p>
-
-      <div class="reaction-stack">
-        ${lines.map((line, index) => `
-          <article class="reaction-line" style="--delay:${index * 90}ms">
-            <div class="reaction-avatar">${portrait(CHARACTERS[line.speaker])}</div>
+      <div class="lesson-cards">
+        ${TUTORIAL_STEPS.map((step, index) => `
+          <article class="lesson-card ${index === 3 ? 'final' : ''}">
+            <span class="lesson-index">${step.icon}</span>
             <div>
-              <strong>${line.name}</strong>
-              <p>“${line.text}”</p>
+              <strong>${step.label}</strong>
+              <p>${step.description}</p>
             </div>
+            <em>${index === 0 ? 'UNLOCKED' : index === 3 ? 'FINAL' : 'LOCKED'}</em>
           </article>
         `).join('')}
       </div>
 
-      <div class="commit-warning">
-        <span>COMMIT</span>
-        <p>이제부터 카라반은 스스로 반응합니다.<br>당신은 결과를 지켜볼 수밖에 없습니다.</p>
+      <div class="game-grammar">
+        <span>게임의 기본 문장</span>
+        <strong>READ → BUILD → COMMIT → WATCH → UNDERSTAND</strong>
       </div>
 
-      <button id="commit" class="commit cinematic">
-        행진을 멈춘다 — COMMIT
-        <span>전투가 시작됩니다.</span>
-      </button>
+      <button id="start-stage" class="story-cta">LESSON I 시작<span>먼저 “배치” 하나만 배웁니다.</span></button>
     </section>
-  `, { scene: 'reaction', eyebrow: 'NO MORE ORDERS AFTER THIS' });
+  `, { scene: 'tutorial-map', eyebrow: 'HOW THIS GAME WORKS' });
 
-  app.querySelector('#commit').addEventListener('click', startBattle);
-}
-
-function setHp(id, hp) {
-  const card = app.querySelector(`[data-character="${id}"]`);
-  if (!card) return;
-  card.dataset.hp = String(hp);
-  const bar = card.querySelector('.hp i');
-  if (bar) bar.style.width = `${Math.max(0, hp)}%`;
-  card.classList.toggle('critical', hp > 0 && hp < 35);
-  card.classList.toggle('downed', hp <= 0);
-}
-
-function flash(type = 'impact') {
-  const arena = app.querySelector('.battle-arena');
-  if (!arena) return;
-  arena.classList.remove('impact', 'heal', 'burst');
-  void arena.offsetWidth;
-  arena.classList.add(type);
-}
-
-function praise(title, detail, tone = '') {
-  const panel = app.querySelector('.praise');
-  if (!panel) return;
-  panel.className = `praise show ${tone}`;
-  panel.innerHTML = `<strong>${title}</strong><span>${detail}</span>`;
-  later(() => panel?.classList.remove('show'), 1650);
-}
-
-function battleDialogue(speaker, text) {
-  const bubble = app.querySelector('.battle-dialogue');
-  if (!bubble) return;
-  const c = CHARACTERS[speaker];
-  bubble.className = `battle-dialogue show speaker-${speaker}`;
-  bubble.innerHTML = `<strong>${c.name}</strong><span>“${escapeHtml(text)}”</span>`;
-  later(() => bubble?.classList.remove('show'), 1250);
-}
-
-function moveGuard(targetId) {
-  const guard = app.querySelector('[data-character="vael"]');
-  const target = app.querySelector(`[data-character="${targetId}"]`);
-  if (!guard || !target) return;
-  guard.classList.add('guarding');
-  target.classList.add('shielded');
-}
-
-function hit(id, damage) {
-  const card = app.querySelector(`[data-character="${id}"]`);
-  if (!card) return;
-  const current = Number(card.dataset.hp || 100);
-  const next = Math.max(0, current - damage);
-  card.classList.remove('hit');
-  void card.offsetWidth;
-  card.classList.add('hit');
-  setHp(id, next);
-  flash('impact');
-}
-
-function healAll(amount) {
-  characterOrder.forEach(id => {
-    const card = app.querySelector(`[data-character="${id}"]`);
-    if (!card || card.classList.contains('downed')) return;
-    const current = Number(card.dataset.hp || 100);
-    setHp(id, Math.min(100, current + amount));
+  app.querySelector('#start-stage').addEventListener('click', () => {
+    state.stageIndex = 0;
+    state.coachStep = 0;
+    renderBuilder();
   });
-  flash('heal');
 }
 
-function defeatEnemies() {
-  app.querySelectorAll('.enemy').forEach((enemy, index) => {
-    enemy.classList.add('defeated');
-    later(() => { enemy.style.opacity = String(0.12 + index * 0.03); }, 220);
+function currentStageId() {
+  return stageOrder[state.stageIndex];
+}
+
+function currentEncounter() {
+  return ENCOUNTERS[currentStageId()];
+}
+
+function mechanicUnlocked(id) {
+  return currentEncounter().available.includes(id);
+}
+
+function enemyMarkup(enemy) {
+  const targetLabel = enemy.target === 'front' ? 'FRONT'
+    : enemy.target === 'rear' ? 'REAR'
+      : enemy.target === 'weakest' ? 'LOW HP' : enemy.target.toUpperCase();
+
+  return `
+    <article class="intent-card">
+      <div class="enemy-sigil enemy-${enemy.id}"><i></i></div>
+      <div class="intent-copy">
+        <div><strong>${enemy.name}</strong><span>${enemy.trait}</span></div>
+        <p>${enemy.intent}</p>
+        <em>TARGET · ${targetLabel}</em>
+      </div>
+    </article>`;
+}
+
+function formationMarkup() {
+  return `
+    <section class="builder-section formation-builder" data-focus-zone="formation">
+      <div class="builder-heading">
+        <div><span>01</span><strong>배치</strong></div>
+        <small>캐릭터 → 슬롯 순서로 누르세요.</small>
+      </div>
+
+      <div class="roster-select">
+        ${characterOrder.map(id => {
+          const c = CHARACTERS[id];
+          return `
+            <button class="roster-chip ${state.selectedCharacter === id ? 'selected' : ''}" data-character-select="${id}">
+              ${portrait(c, 'mini')}
+              <span>${c.name}</span>
+            </button>`;
+        }).join('')}
+      </div>
+
+      <div class="formation-slots">
+        ${POSITIONS.map((position, index) => {
+          const id = state.build.formation[index];
+          const c = CHARACTERS[id];
+          return `
+            <button class="formation-slot slot-${position.id}" data-position="${index}">
+              <div class="slot-meta"><span>${position.en}</span><strong>${position.label}</strong></div>
+              ${portrait(c, 'slot-portrait')}
+              <b>${c.name}</b>
+              <small>${position.rule}</small>
+            </button>`;
+        }).join('')}
+      </div>
+    </section>`;
+}
+
+function bondMarkup() {
+  const locked = !mechanicUnlocked('bond');
+  return `
+    <section class="builder-section bond-builder ${locked ? 'locked' : ''}" data-focus-zone="bond">
+      <div class="builder-heading">
+        <div><span>02</span><strong>공명</strong></div>
+        <small>${locked ? 'Lesson II에서 해금' : '둘의 자동 반응을 연결합니다.'}</small>
+      </div>
+      ${locked ? `
+        <div class="locked-mechanic"><i>II</i><p>배치를 이해하면 해금됩니다.<br><b>“누가 누구에게 반응하는가”</b></p></div>
+      ` : `
+        <div class="bond-options">
+          ${Object.values(BONDS).map(bond => `
+            <button class="bond-card ${state.build.bond === bond.id ? 'selected' : ''}" data-bond="${bond.id}">
+              <span class="bond-title">${bond.title}</span>
+              <strong>${bond.short}</strong>
+              <p>${bond.description}</p>
+              <div class="chain-mini" data-focus-zone="chain">
+                <span>${bond.trigger}</span><i>→</i><span>${bond.reaction}</span><i>→</i><span>${bond.payoff}</span>
+              </div>
+            </button>
+          `).join('')}
+        </div>
+      `}
+    </section>`;
+}
+
+function edictMarkup() {
+  const locked = !mechanicUnlocked('edict');
+  return `
+    <section class="builder-section edict-builder ${locked ? 'locked' : ''}" data-focus-zone="edict">
+      <div class="builder-heading">
+        <div><span>03</span><strong>명령 각인</strong></div>
+        <small>${locked ? 'Lesson III에서 해금' : '전투 전체가 따를 원칙 하나'}</small>
+      </div>
+      ${locked ? `
+        <div class="locked-mechanic"><i>III</i><p>공명을 이해하면 해금됩니다.<br><b>미세조작 대신 우선순위 하나.</b></p></div>
+      ` : `
+        <div class="edict-options">
+          ${Object.values(EDICTS).map(edict => `
+            <button class="edict-card ${state.build.edict === edict.id ? 'selected' : ''}" data-edict="${edict.id}">
+              <span class="edict-sigil">${edict.sigil}</span>
+              <strong>${edict.title}</strong>
+              <p>${edict.description}</p>
+              <em>+ ${edict.effect}</em>
+              <small>− ${edict.tradeoff}</small>
+            </button>
+          `).join('')}
+        </div>
+      `}
+    </section>`;
+}
+
+function coachMarkup(stageId) {
+  const notes = coach[stageId];
+  if (!notes?.length) return '';
+  const note = notes[Math.min(state.coachStep, notes.length - 1)];
+  return `
+    <aside class="tutorial-coach" data-coach-focus="${note.focus}">
+      <div class="coach-head"><span>GUIDE ${state.coachStep + 1}/${notes.length}</span><button id="skip-coach">건너뛰기</button></div>
+      <strong>${note.title}</strong>
+      <p>${note.body}</p>
+      <button id="coach-next">${state.coachStep === notes.length - 1 ? '이제 직접 해보기' : '다음'}</button>
+    </aside>`;
+}
+
+function applyFocus() {
+  const note = coach[currentStageId()]?.[state.coachStep];
+  app.querySelectorAll('[data-focus-zone]').forEach(el => el.classList.remove('tutorial-focus'));
+  if (!note) return;
+  app.querySelectorAll(`[data-focus-zone="${note.focus}"]`).forEach(el => el.classList.add('tutorial-focus'));
+}
+
+function renderBuilder() {
+  clearTimers();
+  state.screen = 'builder';
+  const stageId = currentStageId();
+  const encounter = currentEncounter();
+  const isExam = stageId === 'exam';
+
+  shell(`
+    <section class="tutorial-builder">
+      ${progressMarkup()}
+      <div class="lesson-title">
+        <p class="chapter">${encounter.lesson}</p>
+        <h1>${encounter.title}</h1>
+        <p>${encounter.narrative}</p>
+      </div>
+
+      <section class="enemy-read" data-focus-zone="enemy">
+        <div class="builder-heading">
+          <div><span>READ</span><strong>적 의도</strong></div>
+          <small>전투 전 공개 정보</small>
+        </div>
+        <div class="intent-list">${encounter.enemies.map(enemyMarkup).join('')}</div>
+        <div class="briefing"><i>!</i><p>${encounter.briefing}</p></div>
+      </section>
+
+      <div class="build-stack">
+        ${formationMarkup()}
+        ${bondMarkup()}
+        ${edictMarkup()}
+      </div>
+
+      <section class="build-summary" data-focus-zone="commit">
+        <span>현재 설계</span>
+        <div class="summary-row">
+          <b>${state.build.formation.map(id => CHARACTERS[id].name).join(' → ')}</b>
+          <em>${mechanicUnlocked('bond') ? BONDS[state.build.bond].title : '공명 잠김'}</em>
+          <em>${mechanicUnlocked('edict') ? EDICTS[state.build.edict].title : '명령 잠김'}</em>
+        </div>
+        ${isExam ? '<p>이번에는 추천 표시가 없습니다. 적 의도만 보고 스스로 설계하세요.</p>' : `<p>힌트 · ${encounter.successHint}</p>`}
+      </section>
+
+      <button id="commit-build" class="commit tutorial-commit">
+        COMMIT — 이 생태계로 싸운다
+        <span>전투가 시작되면 직접 조작할 수 없습니다.</span>
+      </button>
+
+      ${coachMarkup(stageId)}
+    </section>
+  `, { scene: 'tutorial-builder', eyebrow: `LESSON ${state.stageIndex + 1} / 4` });
+
+  app.querySelectorAll('[data-character-select]').forEach(button => {
+    button.addEventListener('click', () => {
+      state.selectedCharacter = button.dataset.characterSelect;
+      renderBuilder();
+    });
   });
-  flash('burst');
+
+  app.querySelectorAll('[data-position]').forEach(button => {
+    button.addEventListener('click', () => {
+      if (!state.selectedCharacter) {
+        state.selectedCharacter = state.build.formation[Number(button.dataset.position)];
+        renderBuilder();
+        return;
+      }
+      const targetIndex = Number(button.dataset.position);
+      const currentIndex = state.build.formation.indexOf(state.selectedCharacter);
+      const other = state.build.formation[targetIndex];
+      state.build.formation[targetIndex] = state.selectedCharacter;
+      state.build.formation[currentIndex] = other;
+      state.selectedCharacter = null;
+      renderBuilder();
+    });
+  });
+
+  app.querySelectorAll('[data-bond]').forEach(button => {
+    button.addEventListener('click', () => {
+      state.build.bond = button.dataset.bond;
+      renderBuilder();
+    });
+  });
+
+  app.querySelectorAll('[data-edict]').forEach(button => {
+    button.addEventListener('click', () => {
+      state.build.edict = button.dataset.edict;
+      renderBuilder();
+    });
+  });
+
+  app.querySelector('#commit-build').addEventListener('click', startTutorialBattle);
+
+  const next = app.querySelector('#coach-next');
+  if (next) {
+    next.addEventListener('click', () => {
+      const notes = coach[stageId];
+      if (state.coachStep < notes.length - 1) {
+        state.coachStep += 1;
+        renderBuilder();
+      } else {
+        state.coachStep = notes.length;
+        app.querySelector('.tutorial-coach')?.remove();
+        app.querySelectorAll('.tutorial-focus').forEach(el => el.classList.remove('tutorial-focus'));
+      }
+    });
+  }
+
+  const skip = app.querySelector('#skip-coach');
+  if (skip) {
+    skip.addEventListener('click', () => {
+      state.coachStep = coach[stageId].length;
+      app.querySelector('.tutorial-coach')?.remove();
+      app.querySelectorAll('.tutorial-focus').forEach(el => el.classList.remove('tutorial-focus'));
+    });
+  }
+
+  requestAnimationFrame(applyFocus);
 }
 
-function startBattle() {
+function hpBar(characterId) {
+  return `
+    <div class="battle-unit" data-battle-unit="${characterId}">
+      ${portrait(CHARACTERS[characterId], 'battle-portrait')}
+      <strong>${CHARACTERS[characterId].name}</strong>
+      <div class="battle-hp"><i style="width:100%"></i></div>
+      <small class="unit-action">대기</small>
+    </div>`;
+}
+
+function updateUnit(id, hp, action = '') {
+  state.battleHp[id] = Math.max(0, hp);
+  const unit = app.querySelector(`[data-battle-unit="${id}"]`);
+  if (!unit) return;
+  const bar = unit.querySelector('.battle-hp i');
+  if (bar) bar.style.width = `${state.battleHp[id]}%`;
+  unit.classList.toggle('critical', state.battleHp[id] > 0 && state.battleHp[id] <= 35);
+  unit.classList.toggle('downed', state.battleHp[id] <= 0);
+  const actionEl = unit.querySelector('.unit-action');
+  if (action && actionEl) actionEl.textContent = action;
+}
+
+function impact(id, className = 'hit') {
+  const unit = app.querySelector(`[data-battle-unit="${id}"]`);
+  if (!unit) return;
+  unit.classList.remove('hit', 'guard-flash', 'heal-flash', 'cast-flash');
+  void unit.offsetWidth;
+  unit.classList.add(className);
+}
+
+function combatLog(title, text, tone = '') {
+  const log = app.querySelector('.combat-log');
+  if (!log) return;
+  log.className = `combat-log show ${tone}`;
+  log.innerHTML = `<strong>${title}</strong><span>${text}</span>`;
+}
+
+function startTutorialBattle() {
   clearTimers();
   state.screen = 'battle';
-  state.battle = createPrototypeBattle(state.selectedPlan);
-  const plan = state.battle.plan;
-  const downedId = plan.downedId;
+  const stageId = currentStageId();
+  const encounter = currentEncounter();
+  const result = scoreBuild(stageId, state.build);
+  state.lastResult = result;
+  state.battleHp = Object.fromEntries(characterOrder.map(id => [id, 100]));
 
-  sceneShell(`
-    <section class="battle-wrap">
-      <div class="battle-heading">
-        <p class="kicker">COMMIT → WATCH</p>
-        <h1>카라반이 몸을 웅크린다.</h1>
-        <p id="battle-message">성소의 벽이 닫히고, 세 사람의 숨이 같은 박자로 맞춰진다.</p>
+  const enemyCards = encounter.enemies.map(enemy => `
+    <div class="battle-enemy" data-enemy="${enemy.id}">
+      <div class="enemy-sigil enemy-${enemy.id}"><i></i></div>
+      <strong>${enemy.name}</strong>
+      <span>${enemy.trait}</span>
+    </div>`).join('');
+
+  shell(`
+    <section class="tutorial-battle">
+      ${progressMarkup()}
+      <div class="battle-top">
+        <p class="chapter">COMMIT → WATCH</p>
+        <h1>내 설계가 실제 행동이 된다.</h1>
+        <p id="battle-caption">당신의 입력은 끝났습니다. 이제 생태계가 스스로 반응합니다.</p>
       </div>
 
-      <section class="battle-arena">
-        <div class="enemy-line">
-          <div class="enemy"><i></i><span>유리 사냥꾼</span></div>
-          <div class="enemy"><i></i><span>백철 창기병</span></div>
-          <div class="enemy"><i></i><span>성흔 사냥개</span></div>
+      <div class="autobattle-arena">
+        <div class="battle-enemies">${enemyCards}</div>
+        <div class="reaction-lanes">
+          <span class="lane front">FRONT</span>
+          <span class="lane core">CORE</span>
+          <span class="lane rear">VEIL</span>
         </div>
-        <div class="battle-veins"></div>
-        <div class="party-line">
-          ${characterOrder.map(id => characterCard(CHARACTERS[id])).join('')}
+        <div class="battle-party">
+          ${state.build.formation.map(id => hpBar(id)).join('')}
         </div>
-        <div class="battle-dialogue"></div>
-        <div class="praise"></div>
-      </section>
-      <div class="timeline"><i></i></div>
-      <p class="watch-note">당신의 명령은 끝났습니다. 이제 결과가 당신에게 돌아옵니다.</p>
-    </section>
-  `, { scene: 'battle', eyebrow: `SEED ${state.battle.seed}`, compact: true });
+        <div class="combat-log"></div>
+      </div>
 
-  moveGuard(plan.protectedId);
-  const progress = app.querySelector('.timeline i');
-  const message = app.querySelector('#battle-message');
+      <div class="battle-build-strip">
+        <div><span>FORMATION</span><b>${state.build.formation.map(id => CHARACTERS[id].name).join(' → ')}</b></div>
+        <div><span>RESONANCE</span><b>${mechanicUnlocked('bond') ? BONDS[state.build.bond].title : '—'}</b></div>
+        <div><span>EDICT</span><b>${mechanicUnlocked('edict') ? EDICTS[state.build.edict].title : '—'}</b></div>
+      </div>
+
+      <div class="battle-progress"><i></i></div>
+    </section>
+  `, { scene: 'tutorial-battle', eyebrow: 'NO MICRO AFTER COMMIT', compact: true });
+
+  const progress = app.querySelector('.battle-progress i');
   requestAnimationFrame(() => { if (progress) progress.style.width = '100%'; });
 
-  later(() => { message.textContent = '유리 사냥꾼들이 성소의 외피를 찢고 들어온다.'; }, 450);
+  runBattleTimeline(stageId, result);
+}
 
-  if (state.selectedPlan === 'seris') {
-    later(() => { battleDialogue('vael', '세리스, 고개 숙여!'); hit('seris', 46); }, 1000);
+function attackUnit(id, damage, label) {
+  const next = Math.max(0, state.battleHp[id] - damage);
+  updateUnit(id, next, label);
+  impact(id, 'hit');
+}
+
+function healUnit(id, amount, label) {
+  const next = Math.min(100, state.battleHp[id] + amount);
+  updateUnit(id, next, label);
+  impact(id, 'heal-flash');
+}
+
+function enemyFall(index = 0) {
+  const enemies = [...app.querySelectorAll('.battle-enemy')];
+  const enemy = enemies[index];
+  if (enemy) enemy.classList.add('defeated');
+}
+
+function runBattleTimeline(stageId, result) {
+  const formation = state.build.formation;
+  const front = formation[0];
+  const core = formation[1];
+  const rear = formation[2];
+  const caption = app.querySelector('#battle-caption');
+
+  later(() => {
+    combatLog('ENEMY INTENT', `${CHARACTERS[front].name}가 FRONT의 첫 충돌을 받습니다.`);
+    attackUnit(front, front === 'vael' ? 24 : 43, '첫 충돌');
+  }, 800);
+
+  if (stageId !== 'formation' && state.build.bond === 'vael_seris' && rear === 'seris') {
     later(() => {
-      hit('vael', 18);
-      setHp('seris', 100);
-      praise('당신의 명령이 작동했다', '베일이 세리스의 치명상을 대신 받았습니다.', 'gold');
-    }, 1380);
+      combatLog('RESONANCE TRIGGER', '후열 저격 감지 → 수호의 월식이 발동합니다.', 'gold');
+      impact('vael', 'guard-flash');
+      updateUnit('vael', Math.max(0, state.battleHp.vael - 14), 'INTERCEPT');
+      updateUnit('seris', state.battleHp.seris, '보호됨');
+    }, 1850);
+  } else if (stageId !== 'formation') {
     later(() => {
-      message.textContent = '세리스가 월광 의식을 시작한다.';
-      app.querySelector('[data-character="seris"]')?.classList.add('channeling');
-      battleDialogue('seris', '셋만 세. 그 안에 끝낼게.');
-    }, 2250);
-    later(() => { battleDialogue('mirel', '베일, 숨 쉬어. 내가 붙일게.'); healAll(14); }, 3100);
-    later(() => { hit('mirel', 38); }, 4050);
+      combatLog('RESONANCE', BONDS[state.build.bond].description, 'gold');
+      const [a, b] = BONDS[state.build.bond].members;
+      impact(a, 'guard-flash');
+      impact(b, 'cast-flash');
+    }, 1850);
+  }
+
+  if (stageId === 'edict' || stageId === 'exam') {
     later(() => {
-      hit('mirel', 34);
-      battleDialogue('mirel', '나는 괜찮아. 세리스 쪽 봐.');
-      praise('보호의 반대편', '세리스를 지킨 만큼 미렐이 홀로 버티고 있습니다.', 'danger');
-    }, 4750);
-    later(() => {
-      defeatEnemies();
-      praise('월광 군무', '끝까지 지켜낸 의식이 전장을 쓸어버립니다.', 'gold');
-    }, 5650);
-    later(() => { hit('mirel', 42); }, 7350);
-  } else {
-    later(() => { battleDialogue('seris', '괜찮아. 아직 보여.'); hit('seris', 34); }, 1000);
-    later(() => {
-      battleDialogue('vael', '미렐 뒤로.');
-      praise('당신의 명령이 작동했다', '베일이 생태계의 회복축을 붙잡습니다.', 'gold');
-    }, 1700);
-    later(() => { battleDialogue('mirel', '다들 숨 쉬어. 아직 연결돼 있어.'); healAll(13); }, 2450);
-    later(() => { hit('seris', 31); }, 3250);
-    later(() => {
-      app.querySelector('[data-character="seris"]')?.classList.add('interrupted');
-      battleDialogue('seris', '…빛이 끊겼어.');
-      praise('보호의 반대편', '미렐을 지킨 만큼 세리스의 의식이 깨집니다.', 'danger');
-    }, 3600);
-    later(() => { hit('seris', 42); }, 5350);
-    later(() => {
-      battleDialogue('vael', '그럼 내가 끝낸다.');
-      defeatEnemies();
-      praise('상실 반응', '빈자리에 반응한 베일이 전열을 무너뜨립니다.', 'gold');
-    }, 6650);
+      const edict = EDICTS[state.build.edict];
+      combatLog(`EDICT · ${edict.sigil}`, edict.effect, 'violet');
+      if (state.build.edict === 'roots') {
+        const weakest = characterOrder.reduce((a, b) => state.battleHp[a] <= state.battleHp[b] ? a : b);
+        healUnit(weakest, 24, '선제 치유');
+      }
+      if (state.build.edict === 'shell') {
+        impact(front, 'guard-flash');
+      }
+      if (state.build.edict === 'moon') {
+        impact('seris', 'cast-flash');
+        updateUnit('seris', state.battleHp.seris, '월광 의식');
+      }
+    }, 2850);
   }
 
   later(() => {
-    setHp(downedId, 0);
-    message.textContent = `${CHARACTERS[downedId].name}의 호흡이 카라반의 맥박에서 사라진다.`;
-    const lastLine = downedId === 'mirel' ? '…꽃이 안 움직여.' : '별이… 하나 모자라네.';
-    battleDialogue(downedId, lastLine);
-    praise(`${CHARACTERS[downedId].name}가 쓰러졌다`, '승리는 남았지만, 생태계에는 빈자리가 생겼습니다.', 'danger');
-  }, 7800);
+    const rearDamage = stageId === 'formation' ? 0 : (state.build.bond === 'vael_seris' ? 12 : 31);
+    if (rearDamage) attackUnit(rear, rearDamage, '후열 공격');
+    combatLog('AUTONOMOUS RESPONSE', '배치와 공명에 따라 각자가 스스로 다음 행동을 고릅니다.');
+  }, 3650);
 
-  later(renderAftermath, 9400);
+  later(() => {
+    if (core === 'mirel') {
+      healUnit(front, 18, '꽃맥박');
+      combatLog('CORE BONUS', '미렐이 CORE에서 회복/공명 +20%를 받습니다.', 'green');
+    } else {
+      impact(core, 'cast-flash');
+      combatLog('CORE', `${CHARACTERS[core].name}가 생태계 중심에서 공명을 증폭합니다.`);
+    }
+  }, 4550);
+
+  later(() => {
+    if (state.build.edict === 'moon' || rear === 'seris') {
+      impact('seris', 'cast-flash');
+      enemyFall(0);
+      enemyFall(1);
+      combatLog('PAYOFF', '세리스의 의식이 완성되어 적 전열을 쓸어냅니다.', 'violet');
+    } else {
+      impact('vael', 'guard-flash');
+      enemyFall(0);
+      combatLog('PAYOFF', '베일이 무너진 전열을 밀어내며 공간을 만듭니다.', 'gold');
+    }
+  }, 5450);
+
+  later(() => {
+    [...app.querySelectorAll('.battle-enemy')].forEach((_, index) => enemyFall(index));
+    caption.textContent = result.grade === 'rough'
+      ? '승리했지만 생태계 한 축이 무너졌습니다.'
+      : '전투가 끝났습니다. 이제 왜 이렇게 싸웠는지 확인합니다.';
+
+    if (result.grade === 'rough') {
+      const victim = front === 'vael' ? rear : front;
+      updateUnit(victim, 0, 'DOWN');
+      combatLog('COLLAPSE', `${CHARACTERS[victim].name}의 연결이 끊겼습니다. 원인은 전투 후 분석에서 확인합니다.`, 'danger');
+    } else if (result.grade === 'stable') {
+      const victim = characterOrder.reduce((a, b) => state.battleHp[a] <= state.battleHp[b] ? a : b);
+      updateUnit(victim, Math.min(state.battleHp[victim], 26), '위험');
+    }
+  }, 6500);
+
+  later(renderDebrief, 7600);
 }
 
-function renderAftermath() {
+function renderDebrief() {
   clearTimers();
-  state.screen = 'aftermath';
-  const downed = CHARACTERS[state.battle.plan.downedId];
-  const lines = fallScenes[downed.id];
+  state.screen = 'debrief';
+  const stageId = currentStageId();
+  const cause = buildCauseChain(stageId, state.build);
+  const gradeLabel = {
+    mastery: 'SYNCHRONIZED',
+    clean: 'CLEAN',
+    stable: 'STABLE',
+    rough: 'FRACTURED',
+  }[cause.grade];
 
-  sceneShell(`
-    <section class="aftermath">
-      <div class="aftermath-vista">
-        <div class="broken-moon"></div>
-        <div class="fallen-frame">
-          ${portrait(downed, 'fallen-portrait')}
-          <div class="pulse-line"></div>
-        </div>
+  shell(`
+    <section class="tutorial-debrief">
+      ${progressMarkup()}
+      <p class="chapter">UNDERSTAND</p>
+      <div class="debrief-grade grade-${cause.grade}">
+        <span>${gradeLabel}</span>
+        <strong>${cause.summary}</strong>
       </div>
 
-      <p class="kicker danger-text">THE BATTLE IS OVER</p>
-      <h1>승리했다.<br>그런데 ${downed.name}가 없다.</h1>
+      <h1>결과보다 먼저,<br>원인을 읽는다.</h1>
+      <p class="debrief-copy">오토배틀은 블랙박스가 아니다. 당신이 만든 구조가 어떤 순서로 결과를 만들었는지 보여준다.</p>
 
-      <div class="aftermath-dialogue">
-        ${lines.map(([speaker, name, text]) => `
-          <article class="aftermath-line">
-            <span class="mini-name">${name}</span>
-            <p>“${text}”</p>
+      <div class="cause-chain">
+        ${cause.chain.map(item => `
+          <article class="cause-node ${item.good ? 'good' : 'bad'}">
+            <span>${String(item.index).padStart(2, '0')}</span>
+            <div><b>${item.label}</b><p>${item.text}</p></div>
           </article>
         `).join('')}
       </div>
 
-      <div class="clock-warning">
-        <strong>추격대 재접촉까지 22분</strong>
-        <span>돌아가면 이번 전투에서 얻은 모든 이득을 잃습니다.</span>
+      <div class="lesson-learned">
+        <span>이번 전투에서 배운 것</span>
+        <strong>${TUTORIAL_STEPS[state.stageIndex].description}</strong>
       </div>
 
-      <button id="to-choice" class="story-cta danger-cta">
-        선택해야 한다
-        <span>효율과 애정이 처음으로 서로 다른 방향을 가리킵니다.</span>
+      <button id="continue-tutorial" class="story-cta">
+        ${state.stageIndex === 3 ? '튜토리얼을 끝낸다' : `LESSON ${state.stageIndex + 2}로 이동`}
+        <span>${state.stageIndex === 3 ? '이제 세 시스템을 함께 사용할 수 있습니다.' : '다음 시스템을 하나 추가합니다.'}</span>
       </button>
     </section>
-  `, { scene: 'aftermath', eyebrow: 'SOMEONE IS MISSING' });
+  `, { scene: 'tutorial-debrief', eyebrow: `DEBRIEF · ${gradeLabel}` });
 
-  app.querySelector('#to-choice').addEventListener('click', renderResult);
-}
-
-function renderResult() {
-  clearTimers();
-  state.screen = 'result';
-  const downed = CHARACTERS[state.battle.plan.downedId];
-
-  sceneShell(`
-    <section class="result-wrap">
-      <p class="kicker danger-text">THE COST OF ATTACHMENT</p>
-      <h1>${downed.name}를 위해<br>얼마나 망가질 수 있는가?</h1>
-      <p class="result-lead">대체자를 찾는 편이 싸고 빠르다. 게임은 그 사실을 숨기지 않는다.</p>
-
-      <div class="choice-ledger">
-        <div class="ledger-person">${portrait(downed, 'ledger-portrait')}<strong>${downed.name}</strong><span>${downed.epithet}</span></div>
-        <div class="ledger-lines">
-          <div><span>회수 작전</span><b>가능</b></div>
-          <div><span>이번 전투 보상</span><b class="bad">전부 소실</b></div>
-          <div><span>카라반 생명력</span><b class="bad">-25%</b></div>
-          <div><span>다음 구역 위험</span><b class="bad">+1</b></div>
-          <div><span>효율 평가</span><b class="terrible">최악</b></div>
-        </div>
-      </div>
-
-      <div class="result-actions">
-        <button class="recover" data-choice="rescue">
-          <small>ATTACHMENT</small>
-          <strong>되돌아간다</strong>
-          <span>“우리 셋이 떠났으니, 셋이 돌아간다.”</span>
-        </button>
-        <button class="leave" data-choice="leave">
-          <small>EFFICIENCY</small>
-          <strong>동쪽으로 간다</strong>
-          <span>보상을 지키고 카라반을 살린다.</span>
-        </button>
-      </div>
-    </section>
-  `, { scene: 'result', eyebrow: 'LOVE MAKES YOU INEFFICIENT' });
-
-  app.querySelectorAll('[data-choice]').forEach(button => {
-    button.addEventListener('click', () => renderEpilogue(button.dataset.choice));
+  app.querySelector('#continue-tutorial').addEventListener('click', () => {
+    if (state.stageIndex === 3) {
+      renderTutorialComplete();
+      return;
+    }
+    state.stageIndex += 1;
+    state.coachStep = 0;
+    renderUnlock();
   });
 }
 
-function renderEpilogue(choice) {
+function renderUnlock() {
   clearTimers();
-  state.screen = 'epilogue';
-  const downed = CHARACTERS[state.battle.plan.downedId];
-  const rescued = choice === 'rescue';
+  state.screen = 'unlock';
+  const step = TUTORIAL_STEPS[state.stageIndex];
+  const copy = step.id === 'bond'
+    ? ['배치만으로 해결되지 않는 위협이 나타났다.', '공명 해금', '이제 두 캐릭터 사이에 자동 반응 사슬을 만들 수 있습니다.']
+    : step.id === 'edict'
+      ? ['연결이 많아질수록 모든 행동을 직접 지시할 수 없다.', '명령 각인 해금', '전투 전체가 따를 우선순위 하나를 남깁니다.']
+      : ['세 가지 문법을 모두 배웠다.', '독립 시험', '이번에는 가이드 없이 적을 읽고 직접 설계합니다.'];
 
-  const rescueCopy = downed.id === 'mirel'
-    ? ['미렐', '왜 왔어?', '세리스', '계산은 끝났어. 최악의 선택이래.', '베일', '그래서 왔지.']
-    : ['세리스', '왜 돌아왔어?', '미렐', '네가 없으면 별을 누가 세어.', '베일', '설명은 걸으면서 해.'];
-
-  sceneShell(`
-    <section class="epilogue ${rescued ? 'rescued' : 'left'}">
-      <p class="chapter">MEMORY CREATED</p>
-      ${rescued ? `
-        <div class="return-vista">
-          ${portrait(downed, 'hero-return')}
-          <div class="return-halo"></div>
-        </div>
-        <h1>${downed.name}를 데리고 돌아왔다.</h1>
-        <div class="epilogue-dialogue">
-          <p><b>${rescueCopy[0]}</b> “${rescueCopy[1]}”</p>
-          <p><b>${rescueCopy[2]}</b> “${rescueCopy[3]}”</p>
-          <p><b>${rescueCopy[4]}</b> “${rescueCopy[5]}”</p>
-        </div>
-        <blockquote>당신은 대답하지 않았다.<br>카라반의 심장이 이미 대답하고 있었다.</blockquote>
-        <div class="memory-card">
-          <span>기억 · 되돌아온 밤</span>
-          <strong>${downed.name}에게 이 밤의 흔적이 남았습니다.</strong>
-          <em>효율은 나빠졌지만, 이 관계는 다음 전투의 행동을 바꿀 수 있습니다.</em>
-        </div>
-      ` : `
-        <div class="empty-place"><i></i></div>
-        <h1>카라반은 더 가벼워졌다.</h1>
-        <div class="epilogue-dialogue">
-          <p><b>베일</b> “이름을 말해.”</p>
-          <p><b>${downed.id === 'mirel' ? '세리스' : '미렐'}</b> “…”</p>
-        </div>
-        <blockquote>그날 이후 카라반은 매 밤<br>빈 자리 하나를 피해 돌아누웠다.</blockquote>
-        <div class="memory-card loss-memory">
-          <span>기억 · 비워 둔 자리</span>
-          <strong>${downed.name}의 자리는 사라지지 않았습니다.</strong>
-          <em>효율적인 선택도 세계에 흔적을 남깁니다.</em>
-        </div>
-      `}
-
-      <button id="replay" class="story-cta epilogue-cta">
-        다른 운명을 본다
-        <span>보호 대상을 바꾸면 누가 쓰러지는지 달라집니다.</span>
-      </button>
+  shell(`
+    <section class="unlock-scene">
+      ${progressMarkup()}
+      <span class="unlock-roman">${step.icon}</span>
+      <p>${copy[0]}</p>
+      <h1>${copy[1]}</h1>
+      <strong>${copy[2]}</strong>
+      <div class="unlock-rule">${step.description}</div>
+      <button id="enter-next" class="story-cta">계속<span>${step.id === 'exam' ? '추천 표시가 사라집니다.' : '새 시스템을 실제 전투에서 사용합니다.'}</span></button>
     </section>
-  `, { scene: 'epilogue', eyebrow: rescued ? 'ATTACHMENT > EFFICIENCY' : 'EFFICIENCY > ATTACHMENT' });
+  `, { scene: 'unlock', eyebrow: 'SYSTEM UNLOCKED' });
 
-  app.querySelector('#replay').addEventListener('click', () => {
-    state.selectedPlan = state.selectedPlan === 'seris' ? 'mirel' : 'seris';
-    state.dialogueIndex = campDialogue.length - 3;
-    renderCamp();
+  app.querySelector('#enter-next').addEventListener('click', renderBuilder);
+}
+
+function renderTutorialComplete() {
+  clearTimers();
+  state.screen = 'complete';
+  shell(`
+    <section class="tutorial-complete">
+      ${progressMarkup(4)}
+      <div class="completion-ring"><span>✓</span></div>
+      <p class="chapter">CHAPTER 0 COMPLETE</p>
+      <h1>이제 아르카는<br>당신의 설계대로 싸운다.</h1>
+      <p>전투 중 버튼을 빠르게 누르는 게임이 아니다. <b>읽고 → 구조를 만들고 → 손을 떼고 → 결과를 이해하는 게임</b>이다.</p>
+
+      <div class="mastery-preview">
+        <span>숙련자가 되면</span>
+        <div>공명 2중 연결</div>
+        <div>조건부 본능 우선순위</div>
+        <div>“HP &lt; 40%일 때” 같은 세부 반응 규칙</div>
+        <div>카라반 기관과 캐릭터 행동의 결합</div>
+        <small>※ 이 고급 시스템은 아직 D002로 확정되지 않은 방향성 예고입니다.</small>
+      </div>
+
+      <div class="complete-cast">
+        ${characterOrder.map(id => `<div>${portrait(CHARACTERS[id])}<strong>${CHARACTERS[id].name}</strong></div>`).join('')}
+      </div>
+
+      <button id="replay-tutorial" class="story-cta">처음부터 다시 플레이<span>다른 배치·공명·명령 조합을 시험합니다.</span></button>
+    </section>
+  `, { scene: 'tutorial-complete', eyebrow: 'READ · BUILD · COMMIT · WATCH' });
+
+  app.querySelector('#replay-tutorial').addEventListener('click', () => {
+    state.stageIndex = 0;
+    state.build = initialTutorialBuild();
+    state.selectedCharacter = null;
+    state.coachStep = 0;
+    renderTutorialMap();
   });
 }
 
@@ -603,4 +770,4 @@ window.addEventListener('error', event => {
   document.body.dataset.runtimeError = 'true';
 });
 
-renderColdOpen();
+renderPrologue();
