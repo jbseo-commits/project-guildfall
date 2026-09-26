@@ -1,5 +1,5 @@
 import './style.css';
-import { APPROVED_CONCEPT_ART } from './approvedConceptArt.js';
+import { CAMP_PLATE, BATTLE_PLATE } from './scenePlates.js';
 import vaelArt from './assets/heroes/vael.webp';
 import serisArt from './assets/heroes/seris.webp';
 import mirelArt from './assets/heroes/mirel.webp';
@@ -189,7 +189,7 @@ function campScene(){
     return '<div class="camp-hero camp-'+id+'" style="--ci:'+idx+'"><div class="speech"><b>'+state.heroes[id].name+'</b><span>'+state.heroes[id].camp+'</span></div>'
       +heroSprite(id,false)+'</div>';
   }).join('');
-  return '<section class="camp-zone"><div class="camp-bg" style="background-image:url(\''+APPROVED_CONCEPT_ART+'\')"></div><div class="camp-overlay"></div>'
+  return '<section class="camp-zone"><div class="camp-bg" style="background-image:url(\''+CAMP_PLATE+'\')"></div><div class="camp-overlay"></div>'
     +'<div class="camp-fire"><i></i><i></i><i></i></div><div class="camp-party">'+party+'</div><div class="camp-pet">◕ᴥ◕</div></section>';
 }
 
@@ -221,7 +221,7 @@ function battleScene(){
     resonanceLine='<svg class="resonance-pair-line '+(state.phase==='battle2'?'active':'')+'" viewBox="0 0 1000 420" preserveAspectRatio="none"><path d="M'+p1.x+' '+p1.y+' Q'+((p1.x+p2.x)/2)+' '+(Math.min(p1.y,p2.y)-55)+' '+p2.x+' '+p2.y+'"/><circle cx="'+p1.x+'" cy="'+p1.y+'" r="6"/><circle cx="'+p2.x+'" cy="'+p2.y+'" r="6"/></svg>';
   }
 
-  return '<section class="battle-zone"><div class="battle-bg" style="background-image:url(\''+APPROVED_CONCEPT_ART+'\')"></div><div class="battle-grade"></div>'+resonanceLine
+  return '<section class="battle-zone"><div class="battle-bg" style="background-image:url(\''+BATTLE_PLATE+'\')"></div><div class="battle-grade"></div>'+resonanceLine
     +'<div class="battle-controls"><b>'+(battle?'전투 중…':state.phase==='result'?'전투 종료':'배치 준비')+'</b><button>Ⅱ</button><button id="speedBtn">×'+state.speed+'</button></div>'
     +'<svg class="battle-arrows" viewBox="0 0 1000 420" preserveAspectRatio="none"><defs><marker id="redEnd" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0 0 L0 6 L8 3z" fill="#ee6a5f"/></marker><marker id="blueEnd" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0 0 L0 6 L8 3z" fill="#6db5ff"/></marker></defs><path class="arr red" d="M795 185 Q690 190 380 245" marker-end="url(#redEnd)"/><path class="arr blue" d="M840 255 Q700 245 560 235" marker-end="url(#blueEnd)"/></svg>'
     +enemies+allies+'<div class="shield-fx"></div><div class="heal-fx">✦ ✦ ✦</div><div class="moon-fx"></div><div class="hit-fx"></div>'
