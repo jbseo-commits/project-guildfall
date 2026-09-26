@@ -102,10 +102,16 @@ function tutorialPanel(){
       +'<button class="paper-cta primary" id="commit">배치 완료 →</button></aside>';
   }
   if(state.phase==='battle'){
-    return '<aside class="tutorial-paper battle-paper"><div class="paper-ribbon">튜토리얼 3/4</div><h2>이제 손을 떼세요</h2>'
-      +'<p>COMMIT 이후에는 직접 조작하지 않습니다. 배치와 동료의 본능이 실제 행동으로 이어지는지 관찰하세요.</p>'
-      +'<div class="watch-list"><span><b>베일</b> 위협을 가로막음</span><span><b>미렐</b> 가장 위험한 동료를 치유</span><span><b>세리스</b> 보호받는 동안 월광 의식 완성</span></div>'
-      +'<div class="battle-paper-note">전투가 끝나면 선택 → 행동 → 결과를 바로 복기합니다.</div></aside>';
+    const cards=LANES.map(function(lane,i){
+      const heroId=heroAtLane(i),h=state.heroes[heroId];
+      const rule=i===0?'가까운 적의 공격을 먼저 받음':i===1?'균형 / 지원 행동 강화':'원거리·의식 행동에 유리';
+      return '<div class="formation-card locked"><div class="formation-portrait">'+heroSprite(heroId,true)+'</div><strong>'+lane.ko+'</strong><b>'+h.name+'</b><small>'+rule+'</small></div>';
+    }).join('');
+    return '<aside class="tutorial-paper placement-paper battle-paper"><div class="paper-ribbon">튜토리얼 3/4</div><h2>배치 결과</h2>'
+      +'<p>배치는 끝났습니다. 이제 직접 조작하지 않고, 선택한 위치가 실제 행동으로 이어지는지 관찰하세요.</p>'
+      +'<div class="intent-legend"><span>🔴 전열 강공격</span><span>🔵 후열 저격</span></div>'
+      +'<div class="formation-preview">'+cards+'</div>'
+      +'<div class="battle-paper-note">COMMIT 완료 · 전투는 자동으로 진행됩니다.</div></aside>';
   }
   if(state.phase==='result'){
     const items=causeChain().map(function(x){
