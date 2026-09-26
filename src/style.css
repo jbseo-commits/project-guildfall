@@ -2844,7 +2844,6 @@ button{font:inherit;-webkit-tap-highlight-color:transparent}
    ========================================================= */
 
 .concept-seris-portrait{
-  background-image:var(--concept-art);
   background-repeat:no-repeat;
   background-size:auto 250%;
   background-position:left bottom;
@@ -2856,9 +2855,6 @@ button{font:inherit;-webkit-tap-highlight-color:transparent}
 
 .concept-route{
   overflow:hidden;
-  background-image:
-    linear-gradient(rgba(239,222,188,.06),rgba(239,222,188,.06)),
-    var(--concept-art);
   background-repeat:no-repeat;
   background-size:auto 210%;
   background-position:right 8%;
