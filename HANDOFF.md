@@ -2,102 +2,127 @@
 
 ## Current phase
 
-**Phase 1C — full autobattler tutorial chapter is live on `main`.**
+**Phase 1D — arena-first layered battle is implemented on branch `arena-layered-battle-v2`.**
 
-Public preview:
-`https://project-guildfall.vercel.app`
+The project has moved past the static high-fidelity concept mockup.
 
-Current tutorial grammar:
-**READ → BUILD → COMMIT → WATCH → UNDERSTAND**
+The current target is now:
 
-The current playable tutorial is no longer a single scripted battle. It teaches three strategic layers progressively and ends with an unguided final exam.
+**REAL ARENA LAYERS → REAL ACTOR MOVEMENT → READABLE AUTO COMBAT → LIVE HUD → DEBRIEF**
 
-See `docs/VERTICAL-SLICE-V3.md`.
+See:
+- `docs/ARENA-VISUAL-REBOOT-V1.md`
+- `docs/ARENA-LAYERED-BATTLE-V2.md`
 
 ## Locked identity
 
 Read `docs/DECISIONS.md` before changing anything.
 
-The current fantasy is the **Living Caravan**: a wandering living dungeon/sanctuary made of beautiful, dangerous, highly charismatic beings who function as an interdependent ecosystem.
+The current fantasy is the **Living Caravan**:
+a wandering living dungeon/sanctuary made of beautiful, dangerous, highly charismatic beings who function as an interdependent ecosystem.
 
 Locked emotional principles:
-
 - characters are **organs, not inventory**;
-- losing a character should feel like losing part of the player's own living system;
+- losing one should feel like losing part of the living system;
 - characters can be lost;
-- recovery can be possible but should demand a painful cost;
-- **attachment may make the player strategically inefficient**.
+- recovery can exist but should be painfully expensive;
+- attachment may make the player strategically inefficient.
 
-## Critical lessons from V1/V2
+## Critical visual direction
 
-### V1 failure
-A combat-only demo did not create enough attachment or explain the game.
+The user explicitly rejected a tutorial that looked like stacked cards / a UI prototype.
 
-### V2 improvement
-Narrative context made the cast more legible, but the actual strategic choice was still too shallow to read as an autobattler.
+The accepted visual standard is an **arena-dominant commercial game screen**:
+- battlefield dominates;
+- characters exist in space;
+- bottom HUD supports the battlefield;
+- tutorial guidance overlays the live game;
+- no separate tutorial page replacing the game;
+- a screenshot without tutorial text should still look like a game.
 
-### V3 response
-The tutorial now teaches:
+The approved concept art is the current quality/composition proxy.
 
-1. **Formation** — FRONT / CORE / VEIL.
-2. **Resonance** — connect two inhabitants using visible TRIGGER → REACTION → PAYOFF chains.
-3. **Edict** — choose one battle-wide tactical principle with an explicit trade-off.
-4. **Independent exam** — read enemy intents and combine all three systems with no recommendation marker.
+## Current layered implementation
 
-Every battle has a hard COMMIT boundary and a post-battle cause-chain debrief.
+Branch `arena-layered-battle-v2` now separates:
 
-## Current prototype assumptions
+- painted environment proxy;
+- player actors;
+- enemy actors;
+- FRONT / CORE / VEIL floor slots;
+- enemy intent arrows;
+- resonance tether;
+- world HP bars;
+- battle VFX;
+- party HUD;
+- enemy HUD;
+- tutorial coach;
+- post-battle debrief.
 
-Do NOT silently promote these to D002/D003 final decisions:
+### Planning
+The player can:
+- select a hero in the world or HUD;
+- move them between FRONT / CORE / VEIL;
+- swap occupied positions;
+- see the HUD update immediately.
 
-- exactly three formation slots;
-- exactly one resonance link;
-- exactly one edict;
-- current numeric bonuses and thresholds;
-- current enemy intent rules.
+### After COMMIT
+No micro-control.
 
-They are a coherent tutorial hypothesis used to test whether the game's strategic grammar works.
+The current autonomous sequence includes:
+- enemy charge;
+- target warning;
+- first collision;
+- Vael intercept if formation allows it;
+- Mirel autonomous heal of the weakest party member;
+- Seris channel;
+- moon burst;
+- enemy defeat;
+- cause-chain debrief.
 
-## UX requirement
+Different formations change who receives damage and whether the clean protection chain occurs.
 
-The desired beginner progression is:
+## Art status
 
-**ONE NEW IDEA → GUIDED USE → WATCH IT WORK → EXPLAIN WHY → ADD ONE MORE IDEA**
+The architecture is now ready for real art replacement.
 
-The final tutorial encounter must remove recommendation cues.
+Still temporary:
+- painted battlefield proxy derived from accepted concept composition;
+- live CSS/vector actor stand-ins;
+- enemy stand-ins.
 
-Automatic combat must not be opaque. The game should expose why a build behaved the way it did.
-
-## Art requirement
-
-Current CSS/procedural portraits remain prototype art only.
+Do **not** call these production character assets.
 
 Final D005 still requires:
-- extremely attractive and charismatic characters;
-- beautiful-but-uncanny fantasy;
-- strong silhouettes;
-- visible ecosystem relationships;
-- presentation quality far above current placeholders.
+- extremely attractive charismatic character designs;
+- elegant beautiful-but-uncanny fantasy;
+- production-quality authored sprites;
+- readable animation poses;
+- strong silhouettes.
 
-## Engineering state
+## Engineering rule
 
-- Vite build system.
-- Vercel auto-deploys `main`.
-- `src/game/tutorial.js` defines tutorial mechanics, encounters, scoring, and cause-chain data.
-- `src/main.js` implements the full tutorial flow.
-- `src/style.css` provides the current mobile-first presentation.
-- DOM/CSS remains the stable mobile presentation baseline after the first Pixi startup path produced a blank deployed screen.
-- PixiJS can be reintroduced into the WATCH/battle layer later, but only behind a reliable first paint/fallback.
+Do not regress to a baked single-image mockup.
+
+Any new art must plug into the current independent actor/environment/HUD layers.
+
+Battle logic and art should remain replaceable independently.
 
 ## Next action
 
-1. User plays V3 on mobile.
-2. Judge whether it now clearly reads as an autobattler.
-3. Specifically test:
-   - whether enemy intent is understood;
-   - whether formation manipulation is intuitive;
-   - whether resonance reads as a behavior chain rather than a passive buff;
-   - whether edicts have meaningful trade-offs;
-   - whether the final exam feels like the player is genuinely building a solution;
-   - whether the debrief explains causality.
-4. Do not add content breadth until this strategic grammar is convincing.
+1. User inspects the layered battle in-browser.
+2. If the live composition/readability feels correct, replace hero stand-ins first:
+   - Vael;
+   - Seris;
+   - Mirel.
+3. Give each hero at minimum:
+   - idle/breath;
+   - move;
+   - wind-up;
+   - attack/cast;
+   - hit reaction;
+   - special reaction;
+   - downed.
+4. Then replace enemy stand-ins.
+5. Then replace the blurred environment proxy with a clean authored battlefield.
+6. Only after art/motion passes, expand resonance/edict tutorial depth.
