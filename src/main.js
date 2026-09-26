@@ -1,5 +1,6 @@
 import './style.css';
 import { CAMP_PLATE, BATTLE_PLATE } from './scenePlates.js';
+import { APPROVED_CONCEPT_ART } from './approvedConceptArt.js';
 import vaelArt from './assets/heroes/vael.webp';
 import serisArt from './assets/heroes/seris.webp';
 import mirelArt from './assets/heroes/mirel.webp';
@@ -189,9 +190,9 @@ function routeMap(){
     const icon=n===0?'⚔':n===1?'✦':n===2?'⚔':n===3?'☠':'⚔';
     return '<div class="route-node n'+n+' '+(n<state.routeIndex?'cleared ':'')+(n===state.routeIndex?'current':'')+'"><i>'+icon+'</i></div>';
   }).join('');
-  return '<aside class="route-map"><div class="route-title">첫 번째 여정</div><div class="route-paper">'
+  return '<aside class="route-map route-step-'+state.routeIndex+'"><div class="route-title">첫 번째 여정</div><div class="route-paper concept-route">'
     +'<svg viewBox="0 0 180 360" aria-hidden="true"><path d="M70 40 C120 70 55 110 102 145 C146 177 74 214 108 248 C140 278 90 310 112 336" class="route-line"/></svg>'
-    +nodes+'</div></aside>';
+    +nodes+'<div class="route-live-marker"></div></div></aside>';
 }
 
 function campScene(){
@@ -239,7 +240,7 @@ function battleScene(){
     +'<div class="battle-controls"><b>'+(battle?'전투 중…':state.phase==='result'?'전투 종료':'배치 준비')+'</b><button>Ⅱ</button><button id="speedBtn">×'+state.speed+'</button></div>'
     +'<svg class="battle-arrows" viewBox="0 0 1000 420" preserveAspectRatio="none"><defs><marker id="redEnd" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0 0 L0 6 L8 3z" fill="#ee6a5f"/></marker><marker id="blueEnd" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0 0 L0 6 L8 3z" fill="#6db5ff"/></marker></defs><path class="arr red" d="M795 185 Q690 190 380 245" marker-end="url(#redEnd)"/><path class="arr blue" d="M840 255 Q700 245 560 235" marker-end="url(#blueEnd)"/></svg>'
     +enemies+allies+'<div class="shield-fx"></div><div class="heal-fx">✦ ✦ ✦</div><div class="moon-fx"></div><div class="hit-fx"></div>'
-    +'<div class="battle-dialogue"><div class="dialogue-portrait">'+heroSprite('seris',true)+'</div><div><b>세리스</b><span>'
+    +'<div class="battle-dialogue"><div class="dialogue-portrait concept-seris-portrait">'+heroSprite('seris',true)+'</div><div><b>세리스</b><span>'
     +(battle?'적의 후열에 저격수가 있어. 내가 집중하고 있는 동안 부탁할게…!':'후열에 저격수가 있어. 누가 내 앞을 막을지 정해줘.')+'</span></div></div>'
     +'<div class="combat-log"><div class="log-title">전투 기록</div>'+logs+'</div>'
     +'<div class="tip-card"><b>TIP</b><span>전열에 튼튼한 동료를 배치해 후열의 약한 동료를 지키세요.</span><div class="tip-pet">◕ᴥ◕</div></div>'
@@ -247,7 +248,7 @@ function battleScene(){
 }
 
 function render(){
-  app.innerHTML='<main class="tutorial-game phase-'+state.phase+'"><header class="global-top"><div class="day-mark"><span>☾</span><div><b>1일차</b><small>떠나는 밤</small></div></div>'
+  app.innerHTML='<main class="tutorial-game phase-'+state.phase+'" style="--concept-art:url(\''+APPROVED_CONCEPT_ART+'\')"><header class="global-top"><div class="day-mark"><span>☾</span><div><b>1일차</b><small>떠나는 밤</small></div></div>'
     +'<div class="resources"><span>◉ 320</span><span>◆ 3</span><span>▤ 2</span><button>⚙</button></div></header>'
     +'<nav class="side-nav"><button class="active">♜<span>카라반</span></button><button>♙<span>동료</span></button><button>⚔<span>장비</span></button><button>▣<span>기록</span></button></nav>'
     +'<section class="top-half">'+campScene()+tutorialPanel()+routeMap()+'</section>'+battleScene()
