@@ -3,8 +3,12 @@ import { CAMP_PLATE, BATTLE_PLATE } from './scenePlates.js';
 import vaelArt from './assets/heroes/vael.webp';
 import serisArt from './assets/heroes/seris.webp';
 import mirelArt from './assets/heroes/mirel.webp';
+import breakerArt from './assets/enemies/breaker.svg';
+import houndArt from './assets/enemies/hound.svg';
+import hunterArt from './assets/enemies/hunter.svg';
 
 const HERO_ART={vael:vaelArt,seris:serisArt,mirel:mirelArt};
+const ENEMY_ART={breaker:breakerArt,hound:houndArt,hunter:hunterArt};
 
 const app = document.querySelector('#app');
 
@@ -55,8 +59,8 @@ function heroSprite(id,small){
     +'</div>';
 }
 function enemySprite(id,small){
-  return '<div class="enemy-sprite '+id+(small?' mini':'')+'"><i class="ground-shadow"></i><i class="ear a"></i><i class="ear b"></i>'
-    +'<i class="body"></i><i class="head"><b></b><b></b></i><i class="weapon"></i></div>';
+  return '<div class="enemy-art-wrap '+id+(small?' mini':'')+'"><span class="enemy-art-shadow"></span>'
+    +'<img class="enemy-art-sprite" src="'+ENEMY_ART[id]+'" alt="" draggable="false"></div>';
 }
 function progressIndex(){return {read:0,place:1,battle:2,result:3,next:1,battle2:2,result2:3,complete:4}[state.phase]||0;}
 
@@ -203,7 +207,7 @@ function battleScene(){
   const battle=state.phase==='battle'||state.phase==='battle2';
   const front=heroAtLane(0),mid=heroAtLane(1),rear=heroAtLane(2);
   const pos=[{x:37,y:61},{x:45,y:67},{x:53,y:61}];
-  const enemies=[{id:'breaker',x:68,y:59},{id:'hound',x:75,y:66},{id:'hunter',x:82,y:55}].map(function(e){
+  const enemies=[{id:'breaker',x:63,y:59},{id:'hound',x:69,y:66},{id:'hunter',x:74,y:55}].map(function(e){
     const en=state.enemies[e.id];
     return '<div class="battle-unit enemy '+e.id+' '+(en.hp<=0?'dead':'')+'" data-enemy="'+e.id+'" style="--x:'+e.x+'%;--y:'+e.y+'%">'
       +'<div class="world-hp enemy-hp"><i style="width:'+en.hp+'%"></i></div>'+enemySprite(e.id,false)+'<strong>'+en.name+'</strong></div>';
