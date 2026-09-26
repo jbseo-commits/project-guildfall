@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 520">
+<defs>
+  <linearGradient id="paper" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#e9d7b7"/><stop offset="1" stop-color="#c8ae7f"/></linearGradient>
+  <filter id="grain"><feTurbulence baseFrequency=".75" numOctaves="3" seed="7"/><feColorMatrix type="saturate" values="0"/><feComponentTransfer><feFuncA type="table" tableValues="0 .12"/></feComponentTransfer></filter>
+</defs>
+<rect x="8" y="8" width="344" height="504" rx="16" fill="url(#paper)" stroke="#6a5237" stroke-width="5"/>
+<rect x="18" y="18" width="324" height="484" rx="12" fill="none" stroke="#9b8057" stroke-width="2" stroke-dasharray="5 6"/>
+<g fill="#8f7c5f" opacity=".42">
+  <path d="M35 150 L75 92 112 135 145 78 188 138 228 98 282 162 35 162Z"/>
+  <path d="M65 430 L103 376 132 414 164 357 211 419 250 382 303 444 65 444Z"/>
+</g>
+<g fill="#75664e" opacity=".34">
+  <path d="M42 185 q42 -28 78 3 t76 4 t79 -8 t44 9 v31 H42Z"/>
+  <path d="M46 311 q43 -27 82 2 t72 4 t83 -10 t36 8 v26 H46Z"/>
+</g>
+<path d="M110 110 C258 154 103 221 220 267 C312 304 148 358 238 420" fill="none" stroke="#7d6b50" stroke-width="8" stroke-linecap="round" stroke-dasharray="3 16" opacity=".65"/>
+<g stroke="#6d5a3e" stroke-width="3" opacity=".58">
+  <path d="M56 246 q40 -24 86 -2"/><path d="M203 186 q44 -24 93 -4"/><path d="M57 350 q45 -22 92 -2"/>
+</g>
+<g fill="#a2865e" opacity=".5">
+  <circle cx="70" cy="260" r="5"/><circle cx="280" cy="210" r="4"/><circle cx="90" cy="390" r="4"/><circle cx="286" cy="352" r="5"/>
+</g>
+<path d="M22 22 l38 0 -38 38Z" fill="#6d5537" opacity=".35"/>
+<path d="M338 498 l-38 0 38 -38Z" fill="#6d5537" opacity=".28"/>
+<rect width="360" height="520" rx="16" filter="url(#grain)" opacity=".45"/>
+</svg>

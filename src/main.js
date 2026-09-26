@@ -1,5 +1,8 @@
 import './style.css';
-import { CAMP_PLATE, BATTLE_PLATE } from './scenePlates.js';
+import { CAMP_PLATE } from './scenePlates.js';
+import arenaArt from './assets/scenes/arena-clearing.svg';
+import campCleanArt from './assets/scenes/camp-clean.svg';
+import journeyMapArt from './assets/scenes/journey-map.svg';
 import vaelArt from './assets/heroes/vael.webp';
 import serisArt from './assets/heroes/seris.webp';
 import mirelArt from './assets/heroes/mirel.webp';
@@ -111,11 +114,13 @@ function tutorialPanel(){
       const rule=i===0?'가까운 적의 공격을 먼저 받음':i===1?'균형 / 지원 행동 강화':'원거리·의식 행동에 유리';
       return '<div class="formation-card locked"><div class="formation-portrait">'+heroSprite(heroId,true)+'</div><strong>'+lane.ko+'</strong><b>'+h.name+'</b><small>'+rule+'</small></div>';
     }).join('');
+    const slots=LANES.map(function(lane){return '<button class="locked-slot" disabled><span>'+lane.label+'</span><b>'+lane.ko+'</b></button>';}).join('');
     return '<aside class="tutorial-paper placement-paper battle-paper"><div class="paper-ribbon">튜토리얼 3/4</div><h2>배치 결과</h2>'
       +'<p>배치는 끝났습니다. 이제 직접 조작하지 않고, 선택한 위치가 실제 행동으로 이어지는지 관찰하세요.</p>'
       +'<div class="intent-legend"><span>🔴 전열 강공격</span><span>🔵 후열 저격</span></div>'
       +'<div class="formation-preview">'+cards+'</div>'
-      +'<div class="battle-paper-note">COMMIT 완료 · 전투는 자동으로 진행됩니다.</div></aside>';
+      +'<div class="slot-buttons locked-slots">'+slots+'</div>'
+      +'<button class="paper-cta battle-locked-cta" disabled>전투 진행 중 · 자동 행동 관찰</button></aside>';
   }
   if(state.phase==='result'){
     const items=causeChain().map(function(x){
@@ -189,7 +194,7 @@ function routeMap(){
     const icon=n===0?'⚔':n===1?'✦':n===2?'⚔':n===3?'☠':'⚔';
     return '<div class="route-node n'+n+' '+(n<state.routeIndex?'cleared ':'')+(n===state.routeIndex?'current':'')+'"><i>'+icon+'</i></div>';
   }).join('');
-  return '<aside class="route-map"><div class="route-title">첫 번째 여정</div><div class="route-paper">'
+  return '<aside class="route-map"><div class="route-title">첫 번째 여정</div><div class="route-paper" style="background-image:url(\''+journeyMapArt+'\')">'
     +'<svg viewBox="0 0 180 360" aria-hidden="true"><path d="M70 40 C120 70 55 110 102 145 C146 177 74 214 108 248 C140 278 90 310 112 336" class="route-line"/></svg>'
     +nodes+'</div></aside>';
 }
@@ -199,7 +204,7 @@ function campScene(){
     return '<div class="camp-hero camp-'+id+'" style="--ci:'+idx+'"><div class="speech"><b>'+state.heroes[id].name+'</b><span>'+state.heroes[id].camp+'</span></div>'
       +heroSprite(id,false)+'</div>';
   }).join('');
-  return '<section class="camp-zone"><div class="camp-bg" style="background-image:url(\''+CAMP_PLATE+'\')"></div><div class="camp-overlay"></div>'
+  return '<section class="camp-zone"><div class="camp-bg" style="background-image:url(\''+campCleanArt+'\')"></div><div class="camp-overlay"></div>'
     +'<div class="camp-fire"><i></i><i></i><i></i></div><div class="camp-party">'+party+'</div><div class="camp-pet">◕ᴥ◕</div></section>';
 }
 
@@ -235,11 +240,11 @@ function battleScene(){
     resonanceLine='<svg class="resonance-pair-line '+(state.phase==='battle2'?'active':'')+'" viewBox="0 0 1000 420" preserveAspectRatio="none"><path d="M'+p1.x+' '+p1.y+' Q'+((p1.x+p2.x)/2)+' '+(Math.min(p1.y,p2.y)-55)+' '+p2.x+' '+p2.y+'"/><circle cx="'+p1.x+'" cy="'+p1.y+'" r="6"/><circle cx="'+p2.x+'" cy="'+p2.y+'" r="6"/></svg>';
   }
 
-  return '<section class="battle-zone"><div class="battle-bg" style="background-image:url(\''+BATTLE_PLATE+'\')"></div><div class="battle-grade"></div>'+resonanceLine
+  return '<section class="battle-zone"><div class="battle-bg" style="background-image:url(\''+arenaArt+'\')"></div><div class="battle-grade"></div>'+resonanceLine
     +'<div class="battle-controls"><b>'+(battle?'전투 중…':state.phase==='result'?'전투 종료':'배치 준비')+'</b><button>Ⅱ</button><button id="speedBtn">×'+state.speed+'</button></div>'
     +'<svg class="battle-arrows" viewBox="0 0 1000 420" preserveAspectRatio="none"><defs><marker id="redEnd" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0 0 L0 6 L8 3z" fill="#ee6a5f"/></marker><marker id="blueEnd" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0 0 L0 6 L8 3z" fill="#6db5ff"/></marker></defs><path class="arr red" d="M795 185 Q690 190 380 245" marker-end="url(#redEnd)"/><path class="arr blue" d="M840 255 Q700 245 560 235" marker-end="url(#blueEnd)"/></svg>'
     +enemies+allies+'<div class="shield-fx"></div><div class="heal-fx">✦ ✦ ✦</div><div class="moon-fx"></div><div class="hit-fx"></div>'
-    +'<div class="battle-dialogue"><div class="dialogue-portrait">'+heroSprite('seris',true)+'</div><div><b>세리스</b><span>'
+    +'<div class="battle-dialogue"><div class="dialogue-portrait camp-seris-portrait" style="background-image:url(\''+CAMP_PLATE+'\')"></div><div><b>세리스</b><span>'
     +(battle?'적의 후열에 저격수가 있어. 내가 집중하고 있는 동안 부탁할게…!':'후열에 저격수가 있어. 누가 내 앞을 막을지 정해줘.')+'</span></div></div>'
     +'<div class="combat-log"><div class="log-title">전투 기록</div>'+logs+'</div>'
     +'<div class="tip-card"><b>TIP</b><span>전열에 튼튼한 동료를 배치해 후열의 약한 동료를 지키세요.</span><div class="tip-pet">◕ᴥ◕</div></div>'
