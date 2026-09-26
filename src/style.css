@@ -3086,3 +3086,456 @@ button{font:inherit;-webkit-tap-highlight-color:transparent}
     filter:saturate(1.26) contrast(1.13) brightness(1.12);
   }
 }
+
+
+/* =========================================================
+   COMBAT MOTION V2
+   Connected enemy intent -> impact -> intercept -> heal -> ritual payoff.
+   ========================================================= */
+
+.combat-motion-svg{
+  position:absolute;
+  z-index:5;
+  inset:0;
+  width:100%;
+  height:100%;
+  overflow:visible;
+  pointer-events:none;
+}
+.breaker-motion-path,
+.hunter-shot-path{
+  fill:none;
+  opacity:0;
+  stroke-linecap:round;
+}
+.breaker-motion-path{
+  stroke:#ff796b;
+  stroke-width:4;
+  stroke-dasharray:14 12;
+  filter:drop-shadow(0 0 7px rgba(239,91,79,.7));
+}
+.hunter-shot-path{
+  stroke:#ffb0a8;
+  stroke-width:3;
+  stroke-dasharray:7 10;
+  filter:drop-shadow(0 0 8px rgba(255,92,82,.75));
+}
+.breaker-path-live .breaker-motion-path{
+  opacity:.92;
+  animation:combatPathDash .44s linear infinite,combatPathAppear .62s ease both;
+}
+.hunter-aim-live .hunter-shot-path{
+  opacity:.52;
+  stroke-width:2;
+  animation:hunterAimTrace 1.05s ease-in-out both,combatPathDash .58s linear infinite;
+}
+.hunter-shot-live .hunter-shot-path{
+  opacity:1;
+  stroke:#fff0dd;
+  stroke-width:6;
+  stroke-dasharray:200 800;
+  animation:hunterShotTravel .42s cubic-bezier(.15,.8,.2,1) both;
+}
+
+/* Enemy authored motion */
+.battle-unit.enemy.motion-windup .enemy-art-wrap{
+  animation:enemyWindup .72s cubic-bezier(.22,.76,.24,1) both;
+}
+.battle-unit.enemy.motion-windup:before{
+  content:"!";
+  position:absolute;
+  left:50%;
+  top:-38px;
+  width:30px;
+  height:30px;
+  display:grid;
+  place-items:center;
+  transform:translateX(-50%);
+  border-radius:50%;
+  border:2px solid rgba(255,142,124,.85);
+  background:rgba(91,31,33,.9);
+  color:#ffe1d2;
+  font-weight:1000;
+  font-size:.85rem;
+  box-shadow:0 0 18px rgba(236,87,76,.45);
+  animation:enemyWarningPop .72s ease both;
+}
+.battle-unit.enemy.motion-lunge{
+  z-index:26!important;
+}
+.battle-unit.enemy.motion-lunge .enemy-art-wrap{
+  animation:breakerLunge .60s cubic-bezier(.12,.82,.18,1) both;
+}
+.battle-unit.enemy.motion-lunge .enemy-art-shadow{
+  animation:breakerShadowLunge .60s ease both;
+}
+.battle-unit.enemy.motion-recoil .enemy-art-wrap{
+  animation:breakerRecoil .52s cubic-bezier(.18,.84,.22,1) both;
+}
+.battle-unit.enemy.motion-aim-lock{
+  z-index:22!important;
+}
+.battle-unit.enemy.motion-aim-lock .enemy-art-sprite{
+  animation:hunterAimBody .98s ease both;
+}
+.battle-unit.enemy.motion-aim-lock:before,
+.battle-unit.enemy.motion-aim-lock:after{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:44%;
+  border-radius:50%;
+  pointer-events:none;
+}
+.battle-unit.enemy.motion-aim-lock:before{
+  width:72px;height:72px;
+  margin:-36px 0 0 -36px;
+  border:2px solid rgba(238,82,78,.7);
+  box-shadow:0 0 20px rgba(238,82,78,.22);
+  animation:hunterReticle .98s ease both;
+}
+.battle-unit.enemy.motion-aim-lock:after{
+  width:92px;height:2px;
+  margin-left:-46px;
+  background:linear-gradient(90deg,transparent,#f47d76,transparent);
+  box-shadow:0 0 8px rgba(239,89,82,.6);
+  animation:hunterReticleLine .98s ease both;
+}
+.battle-unit.enemy.motion-fire .enemy-art-wrap{
+  animation:hunterFireKick .68s cubic-bezier(.2,.8,.25,1) both;
+}
+.battle-unit.enemy.motion-fire .enemy-art-sprite{
+  filter:brightness(1.18) drop-shadow(0 0 14px rgba(237,99,91,.5)) drop-shadow(0 8px 7px rgba(0,0,0,.38));
+}
+.battle-unit.enemy.motion-stagger .enemy-art-wrap{
+  animation:enemyStagger .9s cubic-bezier(.18,.82,.2,1) both;
+}
+
+/* Ally target / warning readability */
+.battle-unit.ally.danger-lock .world-hp{
+  box-shadow:0 0 0 2px rgba(255,102,93,.18),0 0 12px rgba(255,86,76,.48);
+}
+.battle-unit.ally.danger-lock:after{
+  content:"";
+  position:absolute;
+  z-index:-1;
+  left:50%;
+  top:52%;
+  width:92px;
+  height:92px;
+  transform:translate(-50%,-50%);
+  border:2px solid rgba(238,83,77,.65);
+  border-radius:50%;
+  opacity:0;
+  animation:dangerTargetRing .78s ease both;
+}
+
+/* Global beat language */
+.combat-impact-flash{
+  position:absolute;
+  z-index:40;
+  inset:0;
+  opacity:0;
+  pointer-events:none;
+  background:
+    radial-gradient(circle at 39% 52%,rgba(255,246,212,.78),rgba(255,155,101,.23) 13%,transparent 30%),
+    rgba(255,255,255,.03);
+  mix-blend-mode:screen;
+}
+.combat-impact-flash.play{
+  animation:combatImpactFlash .36s steps(2,end) both;
+}
+.battle-zone.hitstop .battle-unit,
+.battle-zone.hitstop .hero-art-wrap,
+.battle-zone.hitstop .hero-art-sprite,
+.battle-zone.hitstop .enemy-art-wrap,
+.battle-zone.hitstop .enemy-art-sprite{
+  animation-play-state:paused!important;
+}
+.battle-zone.hitstop{
+  animation:hitStopShake .12s steps(2,end) both;
+}
+.battle-zone.impact-beat .battle-grade,
+.battle-zone.guard-impact-beat .battle-grade{
+  animation:impactGrade .42s ease both;
+}
+.battle-zone.guard-impact-beat .shield-fx{
+  filter:brightness(1.35) saturate(1.15);
+}
+.battle-zone.support-read-beat .battle-grade{
+  animation:supportReadGrade .62s ease both;
+}
+.battle-zone.heal-wave-beat .battle-grade{
+  animation:healGrade .98s ease both;
+}
+.battle-zone.ritual-charge-beat .battle-grade{
+  animation:ritualChargeGrade 1.9s ease-in-out both;
+}
+.battle-zone.ritual-peak-beat .battle-grade{
+  animation:ritualPeakGrade .52s ease both;
+}
+.battle-zone.moon-burst-beat .battle-grade{
+  animation:moonBurstGrade 1.18s ease both;
+}
+.battle-zone.victory-beat .battle-grade{
+  animation:victoryGrade 1.1s ease both;
+}
+
+/* Fight language callout — short, punchy and spatially centered. */
+.combat-callout{
+  position:absolute;
+  z-index:55;
+  left:55%;
+  top:20%;
+  transform:translate(-50%,8px) scale(.94);
+  min-width:112px;
+  padding:6px 12px;
+  border:1px solid rgba(255,255,255,.16);
+  border-radius:999px;
+  background:rgba(18,21,29,.82);
+  color:#f1e7d7;
+  font-size:.52rem;
+  font-weight:1000;
+  letter-spacing:.07em;
+  text-align:center;
+  text-shadow:0 1px 4px rgba(0,0,0,.55);
+  box-shadow:0 8px 18px rgba(0,0,0,.22);
+  opacity:0;
+  pointer-events:none;
+  backdrop-filter:blur(5px);
+}
+.combat-callout.show{
+  animation:combatCalloutIn .55s cubic-bezier(.2,.85,.22,1) both;
+}
+.combat-callout.danger{
+  border-color:rgba(240,98,87,.42);
+  color:#ffd1c8;
+  background:rgba(66,25,29,.84);
+}
+.combat-callout.guard{
+  border-color:rgba(117,194,255,.48);
+  color:#d4efff;
+  background:rgba(25,45,69,.86);
+  box-shadow:0 0 22px rgba(93,175,255,.18),0 8px 18px rgba(0,0,0,.22);
+}
+.combat-callout.heal{
+  border-color:rgba(125,219,145,.5);
+  color:#d8f7d9;
+  background:rgba(27,62,39,.86);
+}
+.combat-callout.moon{
+  border-color:rgba(157,183,255,.55);
+  color:#e6edff;
+  background:rgba(42,43,85,.88);
+  box-shadow:0 0 24px rgba(128,157,255,.22),0 8px 18px rgba(0,0,0,.22);
+}
+.combat-callout.victory{
+  border-color:rgba(241,206,113,.55);
+  color:#fff0b8;
+  background:rgba(67,52,27,.88);
+}
+
+/* Make base one-shot FX feel attached to beats instead of generic overlays. */
+.shield-fx.play{animation:shieldV2 .86s cubic-bezier(.18,.82,.2,1) both!important}
+.heal-fx.play{animation:healRiseV2 1.05s ease both!important}
+.moon-fx.play{animation:moonBurstV2 1.16s cubic-bezier(.16,.82,.2,1) both!important}
+.hit-fx.play{animation:impactV2 .45s cubic-bezier(.15,.8,.2,1) both!important}
+
+@keyframes combatPathDash{to{stroke-dashoffset:-52}}
+@keyframes combatPathAppear{
+  0%{opacity:0}
+  25%,75%{opacity:.95}
+  100%{opacity:0}
+}
+@keyframes hunterAimTrace{
+  0%{opacity:0;stroke-dashoffset:60}
+  28%{opacity:.28}
+  62%{opacity:.7}
+  100%{opacity:.45;stroke-dashoffset:0}
+}
+@keyframes hunterShotTravel{
+  0%{opacity:0;stroke-dashoffset:250}
+  12%{opacity:1}
+  68%{opacity:1;stroke-dashoffset:0}
+  100%{opacity:0;stroke-dashoffset:-180}
+}
+@keyframes enemyWindup{
+  0%{transform:translateX(0) scale(1)}
+  24%{transform:translateX(6px) translateY(2px) scale(.97)}
+  58%{transform:translateX(9px) translateY(3px) scale(.955)}
+  82%{transform:translateX(3px) translateY(-2px) scale(1.035)}
+  100%{transform:translateX(0) scale(1)}
+}
+@keyframes enemyWarningPop{
+  0%{opacity:0;transform:translate(-50%,9px) scale(.5)}
+  32%{opacity:1;transform:translate(-50%,0) scale(1.12)}
+  68%{opacity:1;transform:translate(-50%,0) scale(1)}
+  100%{opacity:0;transform:translate(-50%,-7px) scale(.9)}
+}
+@keyframes breakerLunge{
+  0%{transform:translateX(0) rotate(0) scale(1);filter:blur(0)}
+  24%{transform:translateX(12px) rotate(2deg) scale(.97);filter:blur(0)}
+  54%{transform:translateX(-92px) rotate(-5deg) scale(1.12);filter:blur(.35px)}
+  72%{transform:translateX(-118px) rotate(-3deg) scale(1.16);filter:blur(.1px)}
+  100%{transform:translateX(-96px) rotate(-2deg) scale(1.1);filter:blur(0)}
+}
+@keyframes breakerShadowLunge{
+  0%{transform:translateX(-50%) scaleX(1);opacity:.33}
+  65%{transform:translateX(calc(-50% - 70px)) scaleX(1.35);opacity:.22}
+  100%{transform:translateX(calc(-50% - 62px)) scaleX(1.22);opacity:.28}
+}
+@keyframes breakerRecoil{
+  0%{transform:translateX(-96px) rotate(-2deg) scale(1.1)}
+  24%{transform:translateX(-112px) rotate(-7deg) scale(.98)}
+  62%{transform:translateX(-42px) rotate(2deg) scale(1.04)}
+  100%{transform:translateX(0) rotate(0) scale(1)}
+}
+@keyframes hunterAimBody{
+  0%{transform:translateY(0) rotate(0);filter:drop-shadow(0 8px 7px rgba(0,0,0,.38))}
+  35%{transform:translateY(2px) rotate(-2deg);filter:drop-shadow(0 0 8px rgba(236,84,78,.38)) drop-shadow(0 8px 7px rgba(0,0,0,.38))}
+  100%{transform:translateY(0) rotate(0);filter:drop-shadow(0 0 15px rgba(236,84,78,.68)) drop-shadow(0 8px 7px rgba(0,0,0,.38))}
+}
+@keyframes hunterReticle{
+  0%{opacity:0;transform:scale(1.4) rotate(-22deg)}
+  35%{opacity:.65;transform:scale(1.05) rotate(0)}
+  75%{opacity:.95;transform:scale(.82) rotate(18deg)}
+  100%{opacity:0;transform:scale(.7) rotate(28deg)}
+}
+@keyframes hunterReticleLine{
+  0%{opacity:0;transform:scaleX(1.5) rotate(0)}
+  40%,75%{opacity:.9;transform:scaleX(1) rotate(0)}
+  100%{opacity:0;transform:scaleX(.7) rotate(0)}
+}
+@keyframes hunterFireKick{
+  0%{transform:translateX(0) rotate(0) scale(1)}
+  18%{transform:translateX(-6px) rotate(-2deg) scale(1.02)}
+  38%{transform:translateX(12px) rotate(5deg) scale(.97)}
+  68%{transform:translateX(-3px) rotate(-1deg) scale(1.01)}
+  100%{transform:translateX(0) rotate(0) scale(1)}
+}
+@keyframes enemyStagger{
+  0%{transform:translateX(0) rotate(0);filter:brightness(1)}
+  10%{transform:translateX(8px) rotate(3deg);filter:brightness(1.7)}
+  23%{transform:translateX(-14px) rotate(-5deg);filter:brightness(.9)}
+  38%{transform:translateX(9px) rotate(3deg)}
+  58%{transform:translateX(-5px) rotate(-2deg)}
+  100%{transform:translateX(0) rotate(0);filter:brightness(1)}
+}
+@keyframes dangerTargetRing{
+  0%{opacity:0;transform:translate(-50%,-50%) scale(1.4)}
+  35%{opacity:.9;transform:translate(-50%,-50%) scale(1)}
+  70%{opacity:.8;transform:translate(-50%,-50%) scale(.82)}
+  100%{opacity:0;transform:translate(-50%,-50%) scale(.72)}
+}
+@keyframes combatImpactFlash{
+  0%{opacity:0}
+  18%{opacity:1}
+  42%{opacity:.52}
+  100%{opacity:0}
+}
+@keyframes hitStopShake{
+  0%{transform:translateX(0)}
+  33%{transform:translateX(-3px)}
+  66%{transform:translateX(3px)}
+  100%{transform:translateX(0)}
+}
+@keyframes impactGrade{
+  0%{filter:brightness(1)}
+  18%{filter:brightness(1.35) saturate(.82)}
+  42%{filter:brightness(.92) saturate(1.1)}
+  100%{filter:brightness(1)}
+}
+@keyframes supportReadGrade{
+  0%,100%{filter:brightness(1)}
+  48%{filter:brightness(1.05) saturate(1.08)}
+}
+@keyframes healGrade{
+  0%,100%{filter:brightness(1)}
+  42%{filter:brightness(1.08) sepia(.04) hue-rotate(55deg)}
+  68%{filter:brightness(1.04)}
+}
+@keyframes ritualChargeGrade{
+  0%{filter:brightness(1) saturate(1)}
+  55%{filter:brightness(.92) saturate(1.1) hue-rotate(4deg)}
+  100%{filter:brightness(1.08) saturate(1.15)}
+}
+@keyframes ritualPeakGrade{
+  0%{filter:brightness(1)}
+  45%{filter:brightness(1.26) saturate(1.22)}
+  100%{filter:brightness(1)}
+}
+@keyframes moonBurstGrade{
+  0%{filter:brightness(1)}
+  14%{filter:brightness(1.65) saturate(.75)}
+  38%{filter:brightness(1.14) saturate(1.28) hue-rotate(8deg)}
+  100%{filter:brightness(1)}
+}
+@keyframes victoryGrade{
+  0%{filter:brightness(1)}
+  45%{filter:brightness(1.08) saturate(1.08)}
+  100%{filter:brightness(1)}
+}
+@keyframes combatCalloutIn{
+  0%{opacity:0;transform:translate(-50%,8px) scale(.9)}
+  22%{opacity:1;transform:translate(-50%,-2px) scale(1.04)}
+  72%{opacity:1;transform:translate(-50%,0) scale(1)}
+  100%{opacity:0;transform:translate(-50%,-7px) scale(.98)}
+}
+@keyframes shieldV2{
+  0%{opacity:0;transform:scale(.45) rotate(-18deg)}
+  24%{opacity:1;transform:scale(1.02) rotate(0)}
+  46%{opacity:1;transform:scale(1.18) rotate(9deg)}
+  100%{opacity:0;transform:scale(1.48) rotate(24deg)}
+}
+@keyframes healRiseV2{
+  0%{opacity:0;transform:translateY(18px) scale(.65)}
+  30%{opacity:1;transform:translateY(0) scale(1)}
+  70%{opacity:.9;transform:translateY(-22px) scale(1.12)}
+  100%{opacity:0;transform:translateY(-42px) scale(.9)}
+}
+@keyframes moonBurstV2{
+  0%{opacity:0;transform:scale(.22) rotate(-18deg)}
+  24%{opacity:.9;transform:scale(.8) rotate(0)}
+  48%{opacity:1;transform:scale(1.2) rotate(25deg)}
+  72%{opacity:.7;transform:scale(1.6) rotate(62deg)}
+  100%{opacity:0;transform:scale(2.25) rotate(105deg)}
+}
+@keyframes impactV2{
+  0%{opacity:0;transform:scale(.38)}
+  22%{opacity:1;transform:scale(1.1)}
+  48%{opacity:.9;transform:scale(1.35)}
+  100%{opacity:0;transform:scale(1.8)}
+}
+
+@media (orientation:landscape) and (max-height:650px){
+  .combat-callout{
+    left:55%;
+    top:16%;
+    padding:5px 9px;
+    font-size:.4rem;
+  }
+  .battle-unit.enemy.motion-lunge .enemy-art-wrap{
+    animation-name:breakerLungeMobile;
+  }
+}
+@keyframes breakerLungeMobile{
+  0%{transform:translateX(0) rotate(0) scale(1)}
+  26%{transform:translateX(8px) rotate(2deg) scale(.97)}
+  60%{transform:translateX(-62px) rotate(-4deg) scale(1.1)}
+  100%{transform:translateX(-55px) rotate(-2deg) scale(1.06)}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .combat-motion-svg,
+  .combat-callout,
+  .combat-impact-flash,
+  .battle-unit.enemy.motion-windup .enemy-art-wrap,
+  .battle-unit.enemy.motion-lunge .enemy-art-wrap,
+  .battle-unit.enemy.motion-recoil .enemy-art-wrap,
+  .battle-unit.enemy.motion-aim-lock .enemy-art-sprite,
+  .battle-unit.enemy.motion-fire .enemy-art-wrap,
+  .battle-unit.enemy.motion-stagger .enemy-art-wrap{
+    animation-duration:.01ms!important;
+    animation-iteration-count:1!important;
+  }
+}
