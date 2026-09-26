@@ -63,9 +63,9 @@ function heroAtLane(index){
 
 function spriteMarkup(id,small){
   const art=HERO_ART[id];
-  const fx=id==='seris'&&!small
-    ? '<span class="seris-orbit"><i></i><i></i><i></i></span><span class="seris-sigil"></span>'
-    : '';
+  let fx='';
+  if(id==='seris'&&!small) fx='<span class="seris-orbit"><i></i><i></i><i></i></span><span class="seris-sigil"></span>';
+  if(id==='mirel'&&!small) fx='<span class="mirel-bloom"><i></i><i></i><i></i><i></i></span><span class="mirel-ring"></span>';
   return '<div class="hero-art-wrap '+id+(small?' small':'')+'">'
     +'<span class="hero-art-shadow"></span>'
     +fx
@@ -256,11 +256,30 @@ function startBattle(){
   },2450);
 
   later(function(){
+    pulseMotion('mirel','sense',540);
+    const action=app.querySelector('[data-hero="mirel"] .unit-state');
+    if(action) action.textContent='위험 감지';
+  },2920);
+
+  later(function(){
     const weakest=Object.keys(state.heroes).sort(function(a,b){return state.heroes[a].hp-state.heroes[b].hp;})[0];
+    pulseMotion('mirel','heal',1120);
+    const targetUnit=app.querySelector('[data-hero="'+weakest+'"]');
+    if(targetUnit){
+      targetUnit.classList.add('healing-target');
+      later(function(){ targetUnit.classList.remove('healing-target'); },900);
+    }
     setHeroHp(weakest,state.heroes[weakest].hp+24,'꽃맥박');
-    app.querySelector('[data-hero="mirel"]')?.classList.add('heal-cast');
+    const action=app.querySelector('[data-hero="mirel"] .unit-state');
+    if(action) action.textContent='꽃맥박 → '+state.heroes[weakest].name;
     app.querySelector('.heal-vfx')?.classList.add('play');
   },3350);
+
+  later(function(){
+    pulseMotion('mirel','recover',620);
+    const action=app.querySelector('[data-hero="mirel"] .unit-state');
+    if(action) action.textContent='회복 완료';
+  },3970);
 
   later(function(){
     pulseMotion('seris','channel',1650);
