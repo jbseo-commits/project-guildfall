@@ -1,0 +1,42 @@
+name: Visual QA
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  screenshot:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install app
+        run: npm install
+      - name: Build
+        run: npm run build
+      - name: Install visual QA tools
+        run: |
+          npm install --no-save playwright wait-on
+          npx playwright install --with-deps chromium
+      - name: Start preview
+        run: |
+          npm run preview -- --host 127.0.0.1 --port 4173 > /tmp/guildfall-preview.log 2>&1 &
+          npx wait-on http://127.0.0.1:4173
+      - name: Capture actual game screenshots
+        run: |
+          mkdir -p visual-qa
+          npx playwright screenshot --browser=chromium --viewport-size="1388,550" --wait-for-timeout=1500 http://127.0.0.1:4173 visual-qa/mobile-landscape.png
+          npx playwright screenshot --browser=chromium --viewport-size="1536,864" --wait-for-timeout=1500 http://127.0.0.1:4173 visual-qa/desktop-16x9.png
+      - name: Upload visual QA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: guildfall-visual-qa
+          path: visual-qa
+          retention-days: 7
