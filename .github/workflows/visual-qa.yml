@@ -1,0 +1,66 @@
+name: Visual QA
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  screenshot:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install app
+        run: npm install
+      - name: Build
+        run: npm run build
+      - name: Install visual QA tools
+        run: |
+          npm install --no-save playwright wait-on
+          npx playwright install --with-deps chromium
+      - name: Start preview
+        run: |
+          npm run preview -- --host 127.0.0.1 --port 4173 > /tmp/guildfall-preview.log 2>&1 &
+          npx wait-on http://127.0.0.1:4173
+      - name: Capture actual game screenshots
+        run: |
+          mkdir -p visual-qa
+          cat > capture.cjs <<'NODE'
+          const { chromium } = require('playwright');
+
+          async function capture(width, height, prefix) {
+            const browser = await chromium.launch({ headless: true });
+            const page = await browser.newPage({ viewport: { width, height } });
+            await page.goto('http://127.0.0.1:4173', { waitUntil: 'networkidle' });
+            await page.waitForTimeout(600);
+            await page.screenshot({ path: 'visual-qa/' + prefix + '-read.png' });
+
+            await page.locator('#readNext').click();
+            await page.waitForTimeout(350);
+            await page.screenshot({ path: 'visual-qa/' + prefix + '-placement.png' });
+
+            await page.locator('#commit').click();
+            await page.waitForTimeout(3100);
+            await page.screenshot({ path: 'visual-qa/' + prefix + '-battle.png' });
+            await browser.close();
+          }
+
+          (async () => {
+            await capture(1388, 550, 'mobile-landscape');
+            await capture(1536, 864, 'desktop-16x9');
+          })();
+          NODE
+          node capture.cjs
+      - name: Upload visual QA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: guildfall-visual-qa
+          path: visual-qa
+          retention-days: 7
