@@ -2,64 +2,131 @@
 
 ## What we are building
 
-A new original fantasy autobattler / strategy roguelite created collaboratively with the user.
+PROJECT GUILDFALL is an original fantasy autobattler / strategy roguelite built around:
 
-The experience we want to explore is:
+> **READ → PLAN → COMMIT → WATCH → UNDERSTAND → ADAPT**
 
-> **PLAN → COMMIT → WATCH → UNDERSTAND → ADAPT**
+The player should make meaningful strategic choices before or between automatic combat beats, then watch those choices become readable, satisfying behavior.
 
-The player should make meaningful pre-combat or pre-exchange decisions, then briefly lose direct control and watch those decisions become a readable, satisfying battle. The result must teach the player *why* the build worked or failed, creating the next decision.
+The current fantasy is **LOCKED**:
 
-## What is already decided
+> **The Living Caravan** — a wandering living sanctuary made of beautiful, dangerous, charismatic beings who function as an interdependent ecosystem.
 
-Only these are locked:
+Characters are **organs, not inventory**.
 
-1. It is fantasy, but the specific world/theme is **not decided**.
-2. Combat has a meaningful automatic-resolution component.
-3. The player must have high-agency strategic decisions before or between automatic combat beats.
-4. Watching the battle is part of the reward, not a disposable loading animation.
-5. PixiJS is the default prototype renderer because it is well suited to a game-like scene graph, sprites, VFX, timing, and mobile web deployment.
-6. We will build a vertical slice before building content breadth.
-7. We will not copy another game's IP, visual identity, exact economy, exact unit roster, or UI.
+Read `docs/DECISIONS.md` for the authoritative design record.
 
-Everything else is open.
+---
 
-## First task in a new session
+# Mandatory entry sequence
 
-Do **not** start by inventing 30 classes or implementing a full combat engine.
+Every new session / agent must read in this order:
 
-Read this file and `docs/DECISIONS.md`, then work through **Decision 001: What fantasy are we actually selling?** with the user.
+1. `START-HERE.md`
+2. `LOOP-ENGINEERING.md`
+3. `docs/LOOP-STATE.md`
+4. `docs/DECISIONS.md`
+5. `docs/GAME-VISION.md`
+6. `HANDOFF.md`
+7. relevant implementation docs
 
-Present 3 sharply differentiated directions. Each direction should answer:
+Then inspect:
+- current `main`;
+- latest merged PRs;
+- open PRs;
+- latest Visual QA screenshots;
+- the live deployment when available.
 
-- Who does the player *feel like* they are?
-- What are they building: a party, guild, caravan, cult, army, school, expedition, etc.?
-- Why do fights happen?
-- What makes a run visually and mechanically recognizable as *this game*?
-- What is the unique fantasy hook that could fit in one sentence?
+Do not restart concept exploration from D001.
+Do not rely on an old handoff over current `main`.
 
-The user chooses or combines. Record the result in `docs/DECISIONS.md` before moving to Decision 002.
+---
 
-## Decision order
+# Current phase
 
-1. Fantasy / player identity
-2. Combat ownership: what the player controls vs watches
-3. Board topology / party size / spatial logic
-4. Unit identity and synergy language
-5. Run structure and between-battle decisions
-6. Loss / damage / recovery economy
-7. Recruitment / drafting / deck-like decision layer
-8. Visual direction
-9. First vertical slice encounter
+The project is currently transitioning from:
 
-## Vertical-slice target
+> **G1 — Visual Identity**
 
-The first playable slice should eventually prove only this:
+into:
 
-- The player can form a small build.
-- Two meaningfully different builds behave differently without manual micro.
-- The automatic battle is visually readable and fun to watch for roughly 5–15 seconds.
-- The result clearly exposes the cause of success/failure.
-- The player gets one interesting adaptation decision and wants to try again.
+> **G2 — Autobattle Payoff**
 
-If the slice does not prove those five things, do not add meta-progression.
+The current game already includes:
+
+- real browser-playable tutorial flow;
+- threat reading;
+- formation / placement;
+- COMMIT boundary;
+- automatic battle;
+- Vael / Seris / Mirel;
+- resonance prototype;
+- authored enemy silhouettes;
+- camp / journey / arena presentation;
+- combat telegraphs;
+- Vael INTERCEPT;
+- Mirel autonomous heal;
+- Seris ritual / moon burst;
+- causal combat log / debrief;
+- screenshot-driven Visual QA on mobile landscape and desktop 16:9.
+
+The current largest bottleneck is **authored combat poses / frames**.
+
+See `docs/LOOP-STATE.md` for the exact next task.
+
+---
+
+# Engineering rule
+
+Do not regress to a baked single-image mockup.
+
+The game must remain independently layered:
+
+- environment;
+- player actors;
+- enemy actors;
+- VFX;
+- world HUD;
+- tutorial guidance;
+- route / meta UI;
+- debrief.
+
+Battle logic and art should remain replaceable independently.
+
+---
+
+# Core product constraints
+
+1. Automatic combat must be readable and satisfying.
+2. Player choices must visibly change behavior, not only hidden numbers.
+3. Watching battle is part of the reward.
+4. First-session decisions should be simple.
+5. Tactical depth may grow substantially for experienced players.
+6. Characters must be extremely attractive, charismatic, memorable, and difficult to treat as disposable.
+7. Loss may happen; the later recovery economy must make restoration meaningfully expensive.
+8. Mobile landscape is a first-class target.
+9. Real rendered screenshots are required evidence for visual completion.
+10. Do not copy another game's IP, exact UI, economy, map structure, roster, or visual identity.
+
+---
+
+# How to continue
+
+If the user's instruction is simply:
+
+> “다음” / “계속” / “루프 계속”
+
+follow `LOOP-ENGINEERING.md`.
+
+Do not answer with a plan only when implementation tools are available.
+
+The loop should:
+- select the highest-impact bottleneck;
+- implement it;
+- build it;
+- capture the real game;
+- compare;
+- reject or iterate if needed;
+- merge only after the gate passes;
+- update `docs/LOOP-STATE.md`;
+- continue while the session allows.
