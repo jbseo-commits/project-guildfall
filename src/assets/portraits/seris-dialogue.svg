@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 520">
+<defs>
+  <linearGradient id="hair" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f3f0ff"/><stop offset=".48" stop-color="#c9c8ea"/><stop offset="1" stop-color="#888dbb"/></linearGradient>
+  <linearGradient id="hairShade" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#c8caee"/><stop offset="1" stop-color="#7479aa"/></linearGradient>
+  <linearGradient id="dress" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#273451"/><stop offset=".48" stop-color="#53679d"/><stop offset="1" stop-color="#1b2239"/></linearGradient>
+  <linearGradient id="cape" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#1e2944"/><stop offset="1" stop-color="#0d1223"/></linearGradient>
+  <linearGradient id="skin" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff2ea"/><stop offset=".55" stop-color="#f5d8d2"/><stop offset="1" stop-color="#ddb8b7"/></linearGradient>
+  <radialGradient id="eye"><stop stop-color="#d8f5ff"/><stop offset=".42" stop-color="#79aee8"/><stop offset="1" stop-color="#334b8b"/></radialGradient>
+  <filter id="glow"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+
+<g opacity=".28">
+  <circle cx="190" cy="244" r="165" fill="#8ea8e8"/>
+  <circle cx="160" cy="210" r="130" fill="#d5d6ff"/>
+</g>
+
+<!-- cape and shoulders -->
+<path d="M42 520 C52 416 92 354 145 331 C167 322 192 320 215 326 C276 339 336 393 375 520Z" fill="url(#cape)"/>
+<path d="M70 520 C84 426 119 380 157 357 C181 343 213 342 239 354 C290 378 320 431 337 520Z" fill="url(#dress)"/>
+<path d="M112 405 C146 376 177 370 210 379 C240 387 265 404 285 432 L267 520 H121Z" fill="#f4f0eb" opacity=".96"/>
+<path d="M139 399 C160 388 180 384 203 387 C226 390 247 401 261 417 L245 444 C219 430 183 428 154 440Z" fill="#8aa0d4"/>
+<path d="M176 380 L199 420 L219 381 L239 431 L210 458 L175 437Z" fill="#223256" stroke="#d7c27c" stroke-width="4"/>
+<path d="M196 414 L211 428 L201 447 L186 429Z" fill="#d7c27c"/>
+
+<!-- neck -->
+<path d="M167 318 C174 351 168 370 157 384 C177 402 222 402 246 382 C228 364 224 342 229 313Z" fill="url(#skin)" stroke="#d6aaa9" stroke-width="3"/>
+
+<!-- back hair mass -->
+<path d="M103 135 C122 67 177 37 232 45 C296 54 329 107 326 178 C324 230 303 277 286 319 C269 359 259 391 267 432 C226 412 195 390 168 362 C143 394 112 419 70 434 C87 391 83 353 70 318 C49 262 55 194 103 135Z" fill="url(#hairShade)" stroke="#666c9b" stroke-width="5"/>
+
+<!-- face -->
+<path d="M119 142 C136 98 177 77 216 79 C261 81 295 109 300 155 L292 228 C286 282 252 325 207 333 C160 340 119 307 105 259 C95 225 101 178 119 142Z" fill="url(#skin)" stroke="#d6aaa9" stroke-width="4"/>
+
+<!-- side hair -->
+<path d="M122 116 C95 151 89 204 102 251 C111 283 125 300 143 318 C117 320 91 300 79 273 C65 242 68 192 83 156 C95 128 108 114 122 116Z" fill="url(#hair)" stroke="#777ca9" stroke-width="4"/>
+<path d="M284 117 C313 146 320 197 309 242 C301 277 286 301 262 321 C286 322 311 303 324 277 C340 246 339 197 326 161 C316 133 299 117 284 117Z" fill="url(#hair)" stroke="#777ca9" stroke-width="4"/>
+
+<!-- bangs -->
+<path d="M112 148 C120 103 160 75 213 76 C258 76 290 98 302 131 C278 123 260 115 239 99 C237 124 229 140 214 158 C204 132 194 111 177 92 C169 122 151 143 124 164Z" fill="url(#hair)" stroke="#7a80ac" stroke-width="4"/>
+<path d="M201 85 C190 118 183 147 186 180" fill="none" stroke="#a7abd1" stroke-width="6" stroke-linecap="round"/>
+
+<!-- brows -->
+<path d="M137 184 C153 174 168 173 182 180" fill="none" stroke="#7c6473" stroke-width="5" stroke-linecap="round"/>
+<path d="M225 178 C241 170 255 171 267 181" fill="none" stroke="#7c6473" stroke-width="5" stroke-linecap="round"/>
+
+<!-- eyes -->
+<path d="M133 202 C149 188 171 188 185 202 C171 220 148 221 133 202Z" fill="#fff" stroke="#7c6b7c" stroke-width="3"/>
+<ellipse cx="160" cy="203" rx="11" ry="14" fill="url(#eye)"/>
+<circle cx="163" cy="199" r="4" fill="#fff"/>
+<path d="M221 200 C237 186 258 188 271 202 C256 219 234 219 221 200Z" fill="#fff" stroke="#7c6b7c" stroke-width="3"/>
+<ellipse cx="245" cy="201" rx="11" ry="14" fill="url(#eye)"/>
+<circle cx="248" cy="197" r="4" fill="#fff"/>
+
+<!-- lashes -->
+<path d="M134 198 L126 194 M139 193 L132 186 M268 197 L276 193 M263 192 L269 185" stroke="#51404d" stroke-width="3.5" stroke-linecap="round"/>
+
+<!-- nose/mouth -->
+<path d="M203 209 C197 228 195 239 201 245" fill="none" stroke="#d5a5a6" stroke-width="3" stroke-linecap="round"/>
+<path d="M182 266 C199 277 219 277 236 264 C219 286 199 287 182 266Z" fill="#b96f7b" opacity=".9"/>
+<path d="M184 266 C199 270 219 270 234 264" fill="none" stroke="#fff0ec" stroke-width="2" opacity=".8"/>
+<ellipse cx="139" cy="246" rx="25" ry="12" fill="#ef9da1" opacity=".2"/>
+<ellipse cx="263" cy="244" rx="25" ry="12" fill="#ef9da1" opacity=".2"/>
+
+<!-- hair ornaments -->
+<g transform="translate(92 115)">
+  <circle cx="0" cy="0" r="22" fill="#354467" stroke="#d1c483" stroke-width="4"/>
+  <path d="M-7 -7 C7 -12 14 -2 8 9 C0 17 -13 8 -11 -2 C-2 5 6 2 7 -4 C3 -8 -2 -9 -7 -7Z" fill="#f3dc7e"/>
+  <circle cx="18" cy="-12" r="7" fill="#f4e9dd"/><circle cx="26" cy="-4" r="6" fill="#d6d0ff"/>
+</g>
+
+<!-- hat -->
+<path d="M78 119 C108 59 160 24 230 18 C278 15 318 34 344 67 C307 75 271 83 242 103 C193 137 141 148 78 119Z" fill="#273451" stroke="#11182b" stroke-width="6"/>
+<path d="M115 76 C146 27 218 -6 281 17 C308 27 329 46 341 68 C303 68 270 75 238 97 C196 126 151 133 101 113Z" fill="#33456d"/>
+<path d="M93 117 C148 143 232 125 306 83 C279 124 226 151 165 153 C135 153 109 141 93 117Z" fill="#18213a"/>
+<path d="M121 79 C156 57 198 45 238 43" fill="none" stroke="#7087bd" stroke-width="5" opacity=".6"/>
+<path d="M288 36 C278 55 282 71 301 80 C280 85 263 77 257 59 C260 44 272 36 288 36Z" fill="#f2d879" filter="url(#glow)"/>
+<circle cx="126" cy="94" r="12" fill="#eef0ff"/><circle cx="143" cy="87" r="10" fill="#a9c8ee"/><circle cx="137" cy="106" r="9" fill="#d7b7e9"/>
+
+<!-- loose locks -->
+<path d="M102 250 C93 318 96 368 69 419" fill="none" stroke="url(#hair)" stroke-width="18" stroke-linecap="round"/>
+<path d="M294 248 C310 314 301 368 326 414" fill="none" stroke="url(#hair)" stroke-width="18" stroke-linecap="round"/>
+
+<!-- foreground cape ribbons -->
+<path d="M73 455 C111 425 147 416 177 423 L157 520 H72Z" fill="#2e3d62" opacity=".9"/>
+<path d="M251 424 C290 433 320 453 347 485 L338 520 H257Z" fill="#243252" opacity=".92"/>
+<path d="M88 480 C118 458 137 454 158 459" fill="none" stroke="#c2a86a" stroke-width="4"/>
+<path d="M265 454 C294 462 318 478 335 499" fill="none" stroke="#c2a86a" stroke-width="4"/>
+</svg>
