@@ -3032,3 +3032,57 @@ button{font:inherit;-webkit-tap-highlight-color:transparent}
 @media (orientation:landscape) and (max-height:650px){
   .camp-bg{background-size:48% 100%!important}
 }
+
+
+/* =========================================================
+   BATTLEFIELD TEXTURE V1
+   Keep authored geometry crisp while borrowing approved forest atmosphere.
+   ========================================================= */
+.battle-texture{
+  position:absolute;
+  z-index:1;
+  inset:-3%;
+  background-size:cover;
+  background-position:center 58%;
+  background-repeat:no-repeat;
+  opacity:.34;
+  mix-blend-mode:soft-light;
+  filter:saturate(1.2) contrast(1.12) brightness(1.08);
+  transform:scale(1.02);
+  pointer-events:none;
+}
+.battle-bg{z-index:0}
+.battle-grade{z-index:3}
+.battle-zone:before{z-index:4}
+.battle-zone:after{
+  content:"";
+  position:absolute;
+  z-index:4;
+  inset:0;
+  pointer-events:none;
+  background:
+    radial-gradient(circle at 19% 45%,rgba(89,174,197,.10),transparent 18%),
+    radial-gradient(circle at 79% 44%,rgba(159,90,190,.10),transparent 20%),
+    linear-gradient(90deg,rgba(6,9,13,.18),transparent 18%,transparent 82%,rgba(6,8,12,.2));
+}
+.battle-arrows,
+.battle-unit,
+.shield-fx,
+.heal-fx,
+.moon-fx,
+.hit-fx,
+.battle-dialogue,
+.combat-log,
+.tip-card,
+.progress-track,
+.battle-controls{
+  z-index:7;
+}
+
+@media (orientation:landscape) and (max-height:650px){
+  .battle-texture{
+    opacity:.4;
+    background-position:center 60%;
+    filter:saturate(1.26) contrast(1.13) brightness(1.12);
+  }
+}
