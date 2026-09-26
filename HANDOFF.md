@@ -2,14 +2,17 @@
 
 ## Current phase
 
-**Phase 1 — first Living Caravan vertical slice is implemented on a prototype branch.**
+**Phase 1B — narrative emotional vertical slice is live on `main`.**
 
-Active branch: `prototype/living-caravan-slice-v1`
+Public preview:
+`https://project-guildfall.vercel.app`
 
-Playable hypothesis:
-**READ → choose protection target → COMMIT → WATCH → LOSS → RECOVER OR LEAVE**
+Current playable loop:
+**COLD OPEN → CARAVAN DIALOGUE → PROTECTION CHOICE → CHARACTER REACTION → COMMIT → WATCH → LOSS → AFTERMATH → RECOVER OR LEAVE → MEMORY**
 
-This is deliberately a test harness, not a locked combat model. See `docs/VERTICAL-SLICE-V1.md`.
+The first combat-only slice failed the emotional test because the player had no reason to care about the characters before combat. The current version explicitly fixes that.
+
+See `docs/VERTICAL-SLICE-V2.md`.
 
 ## Locked identity
 
@@ -25,31 +28,36 @@ Key emotional principles are locked:
 - recovery can be possible but should demand a painful cost;
 - **attachment may make the player strategically inefficient**, and choosing that inefficiency is part of the intended fun.
 
-## Current prototype
+## Current narrative slice
 
-The slice currently contains:
+The live slice now contains:
 
-- three prototype inhabitants: Vael, Seris, Mirel;
-- one simple pre-battle choice: who Vael protects;
-- a deterministic ~10 second PixiJS automatic battle;
-- visible praise/debrief messages connecting the player's choice to battle events;
-- one member becoming downed depending on the protection decision;
-- a post-battle choice between expensive recovery and efficient abandonment;
-- replay with the alternate protection choice.
+- a cold open establishing a dying world and the living caravan Arca;
+- a nighttime caravan scene before combat;
+- character dialogue that gives Vael, Seris, and Mirel recognizable personalities before risk appears;
+- a threat reveal that makes the tactical choice fictionally motivated;
+- a simple choice: who Vael protects;
+- character reactions to the player's order before COMMIT;
+- a deterministic ~10 second automatic battle;
+- battle dialogue plus cause/effect feedback;
+- a specific character becoming downed based on the protection choice;
+- a post-battle aftermath scene with character reactions;
+- an explicit tension between efficient abandonment and costly recovery;
+- a memory scene after either choice so outcomes leave narrative residue.
 
-The character visuals are **temporary procedural silhouettes**. They do NOT satisfy the final art bar. D001 requires extremely attractive, charismatic, beautiful-but-uncanny characters. Do not mistake these placeholders for D005.
+The current character visuals are still stylized prototype portraits, **not the final D005 art bar**. D001 still requires extremely attractive, charismatic, beautiful-but-uncanny characters.
 
-## User intent
+## Critical product lesson from V1
 
-The user wants an original fantasy autobattler / strategy roguelite developed collaboratively through explicit design decisions.
+A battle by itself is not enough.
 
-The core product pleasure remains:
+The player must meet the characters **before** being asked to risk them.
 
-- strategic authorship before automatic resolution;
-- strong WATCH payoff;
-- clear cause and effect;
-- emotional attachment to a small cast;
-- an ecosystem that feels alive rather than a roster of disposable units.
+The desired emotional sequence is:
+
+**KNOW THEM → HEAR THEM → MAKE A CHOICE ABOUT THEM → WATCH THE CONSEQUENCE → MISS THEM → PAY TO KEEP THEM**
+
+Do not remove narrative context in pursuit of a shorter combat test.
 
 ## Hard rules for future sessions
 
@@ -57,27 +65,30 @@ The core product pleasure remains:
 - Read `docs/DECISIONS.md` before changing design or code.
 - Do not silently lock major systems.
 - Do not promote prototype assumptions into D002 without the user's explicit decision.
-- Prefer one strong core loop over broad content.
-- Treat battle readability and animation payoff as product features.
-- Do not add rarity-driven replacement pressure that turns beloved characters into disposable upgrades without an explicit design decision.
-- Keep simulation/game state independent from rendering.
+- Prefer a small cast with strong authored personality over content breadth.
+- Relationship scenes and battle readability are both product features.
+- Do not add rarity-driven replacement pressure that turns beloved characters into disposable upgrades.
 - Mobile portrait remains first-class.
-
-## Next action
-
-1. Let the user play/inspect vertical slice v1.
-2. Collect reaction specifically around:
-   - whether the one planning choice is legible;
-   - whether WATCH feels rewarding;
-   - whether the downed character creates an emotional response;
-   - whether recovery vs abandonment creates a genuine conflict.
-3. Use that feedback to run **D002 — what the player controls, and what they surrender**.
-4. Do not scale content before that.
+- Character loss must create visible narrative residue.
+- Final character art must eventually exceed the current procedural prototype quality by a large margin.
 
 ## Engineering state
 
-- Vite + PixiJS.
-- `src/game/prototype.js` contains deterministic prototype battle data/state.
-- `src/main.js` contains PixiJS presentation/input.
-- `vite.config.js` uses portable relative asset paths.
-- prototype CI validates `npm install && npm run build`.
+- Vite remains the build system.
+- `src/game/prototype.js` contains deterministic battle data/state.
+- `src/main.js` currently uses DOM/CSS for reliable mobile rendering after the Pixi startup path produced blank screens on the deployed mobile build.
+- PixiJS remains the intended battle renderer direction, but should only be reintroduced after the web/mobile baseline remains stable.
+- Vercel auto-deploys `main`.
+- Latest deployment should be verified on an actual mobile browser after every visual loop.
+
+## Next action
+
+1. User plays the live narrative slice.
+2. Judge:
+   - whether the cold open creates curiosity;
+   - whether each of the three characters feels different;
+   - whether the protection choice now carries emotional meaning;
+   - whether the loss scene creates hesitation;
+   - whether the expensive rescue choice feels personally tempting.
+3. Improve writing, pacing, visual identity, and character art before adding content breadth.
+4. Only after the emotional loop works should D002 be locked.
