@@ -196,8 +196,8 @@ function campScene(){
 function battleScene(){
   const battle=state.phase==='battle'||state.phase==='battle2';
   const front=heroAtLane(0),mid=heroAtLane(1),rear=heroAtLane(2);
-  const pos=[{x:35,y:61},{x:45,y:67},{x:54,y:61}];
-  const enemies=[{id:'breaker',x:74,y:59},{id:'hound',x:81,y:66},{id:'hunter',x:88,y:55}].map(function(e){
+  const pos=[{x:34,y:61},{x:42,y:67},{x:50,y:61}];
+  const enemies=[{id:'breaker',x:64,y:59},{id:'hound',x:71,y:66},{id:'hunter',x:78,y:55}].map(function(e){
     const en=state.enemies[e.id];
     return '<div class="battle-unit enemy '+e.id+' '+(en.hp<=0?'dead':'')+'" data-enemy="'+e.id+'" style="--x:'+e.x+'%;--y:'+e.y+'%">'
       +'<div class="world-hp enemy-hp"><i style="width:'+en.hp+'%"></i></div>'+enemySprite(e.id,false)+'<strong>'+en.name+'</strong></div>';
@@ -209,7 +209,11 @@ function battleScene(){
       +'<small>'+(battle?'자동 행동 중':LANES[p.lane].ko)+'</small></button>';
   }).join('');
   const logs=(state.logs.length?state.logs:[
-    {text:'베일이 전열 공격을 막아냅니다.'},{text:'세리스가 월광 의식을 준비합니다.'},{text:'미렐이 베일을 치유합니다.'}
+    {text:'베일이 전열 공격을 막아냅니다.'},
+    {text:'세리스가 월광 의식을 준비합니다.'},
+    {text:'미렐이 베일을 치유합니다.'},
+    {text:'후열의 적이 세리스를 노립니다.',danger:true},
+    {text:'베일이 대신 공격을 받습니다.'}
   ]).slice(-5).map(function(l){
     return '<div class="log-line '+(l.danger?'danger':'')+'"><i>'+(l.danger?'!':'●')+'</i><span>'+l.text+'</span></div>';
   }).join('');
