@@ -17,27 +17,60 @@ Use PixiJS + Vite for the first web/mobile prototype. This is a prototype techno
 ---
 
 ## D001 — What fantasy are we actually selling?
-**Status:** OPEN — NEXT DECISION
+**Status:** LOCKED
 
-This should define the player identity and make the game immediately distinguishable.
+### Chosen direction — The Contract Guild
 
-In the next session, present exactly three *strongly differentiated* concepts rather than ten weak ideas.
+The player fantasy is to be the **mastermind of a small fantasy guild**: not the hero manually swinging the sword, but the person who prepares the team, makes a few meaningful tactical decisions, commits the plan, and then watches the guild execute it.
 
-Each option must define:
-- player fantasy;
-- world premise;
-- what is being assembled/built;
-- why automatic combat makes sense fictionally;
-- a unique visual motif;
-- a mechanical hook implied by the fiction;
-- what makes it unlike a generic “fantasy heroes fight monsters” game.
+#### World premise
+The guild accepts dangerous contracts that cannot be solved by raw strength alone. Each encounter is an assignment where the player reads the situation, assembles a compact team, gives them a plan, and sends them in.
 
-Do not lock a title before this decision.
+#### What the player is building
+Primarily a **guild + battle plan**, not a large army.
+
+The important expression of a build should be visible behavior: who protects whom, who follows up, what event triggers another action, how the team reacts when the plan succeeds or breaks.
+
+#### Why automatic combat makes sense
+Once the operation begins, the guild members carry out the plan themselves. The player's authorship happens before the commitment boundary; the payoff is watching the plan become action.
+
+#### Signature fantasy hook
+> **“I don't swing the sword. I make the plan that makes my guild look brilliant.”**
+
+#### Accessibility / mastery principle
+The fantasy must **not require heavyweight tactical scripting from the beginning**.
+
+Early play should use:
+- very few choices at once;
+- highly legible consequences;
+- short battles;
+- generous, exciting feedback when the player's plan works;
+- choices that feel smarter than they are difficult to input.
+
+The game should make a new player feel like a clever guild master quickly.
+
+As mastery grows, the same fantasy may open into more detailed tactical authorship: richer conditions, priorities, sequencing, contingency planning, or other advanced controls. The exact form and unlock structure are **not decided here** and belong to D002 and later decisions.
+
+This creates the intended progression:
+
+**EASY TO COMMAND → SATISFYING TO WATCH → CLEAR TO UNDERSTAND → DEEP TO MASTER**
+
+#### Visual identity implied by D001
+Potential motifs include contracts, seals, guild marks, tactical directives, mission preparation, and visible cause-and-effect cues during battle. These are identity cues, not a locked art style.
+
+#### What makes it unlike generic fantasy heroes fighting monsters
+The core fantasy is not “collect heroes and watch stats collide.” The player's identity is expressed through **authorship of team behavior**, with the battle visibly proving whether the plan worked.
 
 ---
 
 ## D002 — What does the player control, and what do they surrender?
-**Status:** BLOCKED BY D001
+**Status:** OPEN — NEXT DECISION
+
+D001 now establishes an important constraint for D002:
+
+- the first-session control scheme must stay simple and immediately rewarding;
+- advanced tactical authorship should exist as a mastery ceiling rather than an onboarding requirement;
+- the commitment boundary must remain clear: prepare first, then watch the guild execute.
 
 Candidate axes to decide:
 - formation / placement;
