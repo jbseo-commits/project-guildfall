@@ -2234,3 +2234,208 @@ button{font:inherit;-webkit-tap-highlight-color:transparent}
     width:98px;height:109px;
   }
 }
+
+
+/* =========================================================
+   SCREENSHOT QA POLISH V3
+   Direct target-vs-render alignment pass.
+   ========================================================= */
+
+@media (orientation:landscape) and (min-height:651px){
+  .top-half{height:54.5%}
+  .battle-zone{height:45.5%}
+
+  .camp-bg{
+    background-size:58% 100%;
+    background-position:left center;
+    background-repeat:no-repeat;
+    background-color:#11131a;
+    filter:brightness(1) saturate(1.02) contrast(1.04);
+  }
+  .camp-overlay{
+    background:
+      linear-gradient(90deg,rgba(5,6,9,0) 0%,rgba(5,6,9,.015) 47%,rgba(8,9,13,.12) 54%,rgba(8,9,13,.72) 72%,rgba(8,9,13,.92) 100%),
+      linear-gradient(180deg,rgba(7,8,11,.01),rgba(7,8,11,.05));
+  }
+
+  .tutorial-paper{
+    right:16.5%;
+    top:5.2%;
+    width:30.8%;
+    min-width:0;
+    min-height:84%;
+    max-height:88%;
+    padding:20px 20px 16px;
+    overflow:hidden;
+  }
+  .tutorial-paper h2{font-size:1.18rem;margin:4px 0 8px}
+  .tutorial-paper>p{font-size:.64rem;line-height:1.48}
+  .paper-ribbon{left:14px;top:-14px;padding:6px 12px;font-size:.54rem}
+  .placement-paper{padding-bottom:15px}
+  .intent-legend{margin:9px 0 7px}
+  .formation-preview{gap:8px;margin-top:7px}
+  .formation-card{padding:7px 5px 8px}
+  .formation-portrait{height:78px}
+  .formation-portrait .hero-art-wrap.small{transform:scale(1.08)}
+  .formation-card strong{font-size:.54rem}
+  .formation-card b{font-size:.66rem}
+  .formation-card small{font-size:.43rem}
+  .slot-buttons{margin-top:7px}
+  .slot-buttons button{padding:6px}
+  .paper-cta{margin-top:11px;padding:10px 11px}
+
+  .route-map{
+    right:.8%;
+    top:5.5%;
+    width:15%;
+    height:88.5%;
+    min-width:0;
+  }
+  .route-title{font-size:.69rem}
+  .route-node{width:35px;height:35px}
+
+  .battle-bg{
+    filter:blur(1.7px) brightness(.8) saturate(.98) contrast(1.08);
+  }
+
+  .battle-dialogue{
+    left:.8%;
+    bottom:2.2%;
+    width:27.8%;
+    min-width:0;
+    min-height:58%;
+    grid-template-columns:138px 1fr;
+    gap:10px;
+    padding:12px 13px;
+    align-items:center;
+  }
+  .dialogue-portrait{height:150px;overflow:visible}
+  .dialogue-portrait .hero-art-wrap.small{
+    width:116px;
+    height:136px;
+    transform:scale(1.25);
+    transform-origin:center bottom;
+  }
+  .dialogue-portrait .hero-art-wrap.small .hero-art-sprite{
+    height:138px;
+    max-width:124px;
+  }
+  .battle-dialogue b{font-size:.82rem}
+  .battle-dialogue span{font-size:.63rem;line-height:1.45}
+
+  .combat-log{
+    right:.9%;
+    top:11%;
+    width:20.5%;
+    min-width:0;
+    min-height:58%;
+    padding:11px 12px;
+  }
+  .log-title{font-size:.63rem;margin-bottom:7px}
+  .log-line{
+    grid-template-columns:20px 1fr;
+    gap:7px;
+    padding:5px 0;
+    font-size:.5rem;
+    line-height:1.35;
+  }
+  .log-line i{width:17px;height:17px;font-size:.4rem}
+
+  .tip-card{
+    right:.9%;
+    bottom:2.1%;
+    width:20.7%;
+    min-width:0;
+    min-height:21%;
+    padding:10px 66px 9px 12px;
+    font-size:.52rem;
+    line-height:1.4;
+  }
+  .tip-pet{
+    right:9px;
+    bottom:7px;
+    width:50px;
+    height:44px;
+    font-size:.48rem;
+  }
+
+  .progress-track{
+    left:28.6%;
+    right:25.4%;
+    bottom:1.6%;
+  }
+  .progress-track:before{top:16px}
+  .progress-node i{width:34px;height:34px;margin-bottom:4px}
+  .progress-node b{font-size:.6rem}
+  .progress-node span{font-size:.42rem}
+
+  .battle-unit{transform:translate(-50%,-78%) scale(.98)}
+  .battle-unit.world-unit.hero.vael .hero-art-wrap{width:140px;height:146px}
+  .battle-unit.world-unit.hero.seris .hero-art-wrap,
+  .battle-unit.world-unit.hero.mirel .hero-art-wrap{width:112px;height:124px}
+  .world-hp{width:74px;height:6px}
+}
+
+@media (orientation:landscape) and (max-height:650px){
+  .camp-bg{
+    background-size:55% 100%;
+    background-position:left center;
+    background-repeat:no-repeat;
+    background-color:#10121a;
+    filter:brightness(1) saturate(1.02) contrast(1.04);
+  }
+  .camp-overlay{
+    background:
+      linear-gradient(90deg,rgba(5,6,9,0) 0%,rgba(5,6,9,.015) 47%,rgba(7,8,12,.18) 54%,rgba(7,8,12,.78) 70%,rgba(7,8,12,.94) 100%),
+      linear-gradient(180deg,rgba(7,8,11,.01),rgba(7,8,11,.04));
+  }
+
+  .tutorial-paper{
+    top:3.5%;
+    right:15.3%;
+    width:34.2%;
+    min-height:90%;
+    max-height:93%;
+  }
+  .placement-paper .formation-portrait{height:52px}
+  .placement-paper .formation-portrait .hero-art-wrap.small{transform:scale(.84)}
+  .placement-paper .paper-cta{margin-top:6px}
+
+  .route-map{right:.7%;top:4.3%;width:14.1%;height:91%}
+
+  .battle-dialogue{
+    left:1.2%;
+    bottom:2.5%;
+    width:28.5%;
+    min-height:60%;
+    grid-template-columns:86px 1fr;
+    padding:8px 9px;
+  }
+  .dialogue-portrait{height:92px;overflow:visible}
+  .dialogue-portrait .hero-art-wrap.small{
+    width:76px;height:88px;transform:scale(1.1);
+  }
+  .dialogue-portrait .hero-art-wrap.small .hero-art-sprite{height:90px;max-width:82px}
+  .battle-dialogue b{font-size:.58rem}
+  .battle-dialogue span{font-size:.45rem;line-height:1.35}
+
+  .combat-log{
+    right:.9%;
+    top:9%;
+    width:22%;
+    min-height:57%;
+    padding:8px 9px;
+  }
+  .log-title{font-size:.5rem}
+  .log-line{font-size:.39rem;padding:3px 0}
+
+  .tip-card{
+    right:.9%;
+    bottom:2.4%;
+    width:21.7%;
+    min-height:22%;
+  }
+
+  .progress-track{left:30%;right:23.3%;bottom:1.2%}
+  .battle-unit{transform:translate(-50%,-76%) scale(.9)}
+}
