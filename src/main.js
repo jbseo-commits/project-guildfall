@@ -3,268 +3,223 @@ import { APPROVED_CONCEPT_ART } from './approvedConceptArt.js';
 
 const app = document.querySelector('#app');
 
-const heroesBase = {
-  vael: { id:'vael', name:'베일', role:'수호', hp:100, lane:0 },
-  mirel:{ id:'mirel',name:'미렐',role:'회복', hp:100, lane:1 },
-  seris:{ id:'seris',name:'세리스',role:'의식', hp:100, lane:2 }
+const HEROES = {
+  vael:{id:'vael',name:'베일',role:'수호',lane:0,hp:100,camp:'이번에는 내가 앞을 맡을게. 너희는 뒤에서 준비해.'},
+  seris:{id:'seris',name:'세리스',role:'월광',lane:2,hp:100,camp:'좋아. 이번엔 월광을 끝까지 완성해 볼게.'},
+  mirel:{id:'mirel',name:'미렐',role:'치유',lane:1,hp:100,camp:'…이 꽃, 다시 피울 수 있을까?'}
 };
-
-const enemiesBase = {
-  breaker:{ id:'breaker',name:'수정 파쇄자',intent:'FRONT 강공격',hp:100 },
-  hound:{ id:'hound',name:'성흔 사냥개',intent:'LOW HP 추적',hp:100 },
-  hunter:{ id:'hunter',name:'맹안의 추적자',intent:'VEIL 저격',hp:100 }
+const ENEMIES = {
+  breaker:{id:'breaker',name:'수정 파쇄자',hp:100,intent:'전열 강공격'},
+  hunter:{id:'hunter',name:'맹안 추적자',hp:100,intent:'후열 저격'},
+  hound:{id:'hound',name:'성흔 사냥개',hp:100,intent:'약자 추적'}
 };
-
-const lanes = [
-  { id:'front', label:'FRONT', ko:'외피', x:29, y:64 },
-  { id:'core',  label:'CORE',  ko:'심장', x:43, y:69 },
-  { id:'veil',  label:'VEIL',  ko:'장막', x:57, y:64 }
+const LANES=[
+  {id:'front',ko:'전열',label:'FRONT'},
+  {id:'mid',ko:'중열',label:'MID'},
+  {id:'rear',ko:'후열',label:'REAR'}
+];
+const PROGRESS=[
+  {id:'read',label:'읽기',sub:'적의 의도 파악'},
+  {id:'place',label:'배치',sub:'동료 위치 설정'},
+  {id:'battle',label:'전투',sub:'자동 진행'},
+  {id:'result',label:'결과',sub:'전투 복기'},
+  {id:'next',label:'다음',sub:'선택지'}
 ];
 
-const enemyPos = {
-  breaker:{x:76,y:62},
-  hound:{x:69,y:72},
-  hunter:{x:83,y:71}
-};
+const state={phase:'read',selected:null,heroes:null,enemies:null,speed:1,timers:[],logs:[],routeIndex:0,result:null};
 
-const state = {
-  phase:'plan',
-  selected:null,
-  heroes:null,
-  enemies:null,
-  timers:[]
-};
-
-function clone(obj){ return JSON.parse(JSON.stringify(obj)); }
+function clone(v){return JSON.parse(JSON.stringify(v));}
+function clearTimers(){state.timers.forEach(clearTimeout);state.timers=[];}
+function later(fn,ms){const id=setTimeout(fn,ms/state.speed);state.timers.push(id);return id;}
+function heroAtLane(lane){const h=Object.values(state.heroes).find(function(x){return x.lane===lane;});return h?h.id:'vael';}
 
 function reset(){
-  state.timers.forEach(clearTimeout);
-  state.timers=[];
-  state.phase='plan';
-  state.selected=null;
-  state.heroes=clone(heroesBase);
-  state.enemies=clone(enemiesBase);
+  clearTimers();
+  state.phase='read';state.selected=null;state.heroes=clone(HEROES);state.enemies=clone(ENEMIES);
+  state.speed=1;state.logs=[];state.routeIndex=0;state.result=null;
 }
 
-function later(fn,ms){
-  const id=setTimeout(fn,ms);
-  state.timers.push(id);
+function heroSprite(id,small){
+  return '<div class="hero-sprite '+id+(small?' mini':'')+'">'
+    +'<i class="ground-shadow"></i><i class="hair-back"></i><i class="horn h1"></i><i class="horn h2"></i>'
+    +'<i class="body"></i><i class="cloak"></i><i class="head"><b></b><b></b></i><i class="hair-front"></i>'
+    +'<i class="weapon"></i><i class="accent"></i></div>';
+}
+function enemySprite(id,small){
+  return '<div class="enemy-sprite '+id+(small?' mini':'')+'"><i class="ground-shadow"></i><i class="ear a"></i><i class="ear b"></i>'
+    +'<i class="body"></i><i class="head"><b></b><b></b></i><i class="weapon"></i></div>';
+}
+function progressIndex(){return {read:0,place:1,battle:2,result:3,next:4}[state.phase]||0;}
+
+function renderProgress(){
+  const cur=progressIndex();
+  return '<div class="progress-track">'+PROGRESS.map(function(item,i){
+    return '<button class="progress-node '+(i<cur?'done ':'')+(i===cur?'active':'')+'">'
+      +'<i>'+(i<cur?'✓':i+1)+'</i><b>'+item.label+'</b><span>'+item.sub+'</span></button>';
+  }).join('')+'</div>';
 }
 
-function heroAtLane(index){
-  const found=Object.values(state.heroes).find(function(h){return h.lane===index;});
-  return found ? found.id : 'vael';
+function tutorialPanel(){
+  if(state.phase==='read'){
+    return '<aside class="tutorial-paper">'
+      +'<div class="paper-ribbon">튜토리얼 1/4</div><h2>적의 의도 읽기</h2>'
+      +'<p>자동 전투라도 적의 행동은 숨겨져 있지 않습니다. 먼저 누가 누구를 노리는지 확인하세요.</p>'
+      +'<div class="intent-list">'
+      +'<div><span class="arrow red">➜</span><b>수정 파쇄자</b><em>전열 강공격</em></div>'
+      +'<div><span class="arrow blue">➜</span><b>맹안 추적자</b><em>후열 저격</em></div>'
+      +'<div><span class="arrow amber">➜</span><b>성흔 사냥개</b><em>가장 약한 동료 추적</em></div>'
+      +'</div><button class="paper-cta" id="readNext">의도 확인 완료 →</button></aside>';
+  }
+  if(state.phase==='place'){
+    const cards=LANES.map(function(lane,i){
+      const heroId=heroAtLane(i),h=state.heroes[heroId];
+      const rule=i===0?'가까운 적의 공격을 먼저 받음':i===1?'균형 / 지원 행동 강화':'원거리·의식 행동에 유리';
+      return '<button class="formation-card '+(state.selected===heroId?'selected':'')+'" data-heroselect="'+heroId+'">'
+        +'<div class="formation-portrait">'+heroSprite(heroId,true)+'</div><strong>'+lane.ko+'</strong><b>'+h.name+'</b><small>'+rule+'</small></button>';
+    }).join('');
+    const slots=LANES.map(function(lane,i){return '<button data-lane="'+i+'"><span>'+lane.label+'</span><b>'+lane.ko+'</b></button>';}).join('');
+    return '<aside class="tutorial-paper placement-paper"><div class="paper-ribbon">튜토리얼 2/4</div><h2>배치하기</h2>'
+      +'<p>동료를 선택한 뒤 원하는 위치를 눌러 배치하세요. 위치는 자동 행동의 우선순위를 바꿉니다.</p>'
+      +'<div class="intent-legend"><span>🔴 전열 강공격</span><span>🔵 후열 저격</span></div>'
+      +'<div class="formation-preview">'+cards+'</div><div class="slot-buttons">'+slots+'</div>'
+      +'<button class="paper-cta primary" id="commit">배치 완료 →</button></aside>';
+  }
+  if(state.phase==='result'){
+    const items=causeChain().map(function(x){
+      return '<div class="'+(x.good?'good':'bad')+'"><i>'+(x.good?'✓':'!')+'</i><span><b>'+x.title+'</b><em>'+x.text+'</em></span></div>';
+    }).join('');
+    return '<aside class="tutorial-paper result-paper"><div class="paper-ribbon">튜토리얼 4/4</div><h2>전투 복기</h2>'
+      +'<p>승패보다 중요한 것은 <b>왜</b> 그렇게 싸웠는지 이해하는 것입니다.</p><div class="cause-list">'+items+'</div>'
+      +'<button class="paper-cta primary" id="nextRoute">첫 번째 여정으로 →</button></aside>';
+  }
+  if(state.phase==='next'){
+    return '<aside class="tutorial-paper next-paper"><div class="paper-ribbon">튜토리얼 완료</div><h2>이제 카라반을 움직입니다</h2>'
+      +'<p>다음 전투부터는 <b>공명</b>이 추가됩니다. 두 동료를 연결하면 특정 상황에서 서로 자동 반응합니다.</p>'
+      +'<div class="unlock-card"><span>NEW</span><strong>공명 · 수호의 월식</strong><em>세리스가 큰 피해를 받으면 베일이 자동으로 가로막습니다.</em></div>'
+      +'<button class="paper-cta" id="replay">튜토리얼 다시 보기</button></aside>';
+  }
+  return '';
 }
 
-function spriteMarkup(id,small){
-  return '<div class="actor-sprite '+id+(small?' small':'')+'">'
-    +'<i class="shadow"></i><i class="wing wing-a"></i><i class="wing wing-b"></i>'
-    +'<i class="horn horn-a"></i><i class="horn horn-b"></i><i class="hair"></i>'
-    +'<i class="head"><b></b><b></b></i><i class="body"></i><i class="weapon"></i><i class="ornament"></i>'
-    +'</div>';
+function routeMap(){
+  const nodes=[0,1,2,3,4].map(function(n){
+    const icon=n===0?'⚔':n===1?'✦':n===2?'⚔':n===3?'☠':'⚔';
+    return '<div class="route-node n'+n+' '+(n<state.routeIndex?'cleared ':'')+(n===state.routeIndex?'current':'')+'"><i>'+icon+'</i></div>';
+  }).join('');
+  return '<aside class="route-map"><div class="route-title">첫 번째 여정</div><div class="route-paper">'
+    +'<svg viewBox="0 0 180 360" aria-hidden="true"><path d="M70 40 C120 70 55 110 102 145 C146 177 74 214 108 248 C140 278 90 310 112 336" class="route-line"/></svg>'
+    +nodes+'</div></aside>';
 }
 
-function enemyMarkup(id){
-  return '<div class="enemy-sprite '+id+'"><i class="shadow"></i><i class="ear a"></i><i class="ear b"></i>'
-    +'<i class="body"></i><i class="face"><b></b><b></b></i><i class="weapon"></i></div>';
+function campScene(){
+  const party=['vael','seris','mirel'].map(function(id,idx){
+    return '<div class="camp-hero camp-'+id+'" style="--ci:'+idx+'"><div class="speech"><b>'+state.heroes[id].name+'</b><span>'+state.heroes[id].camp+'</span></div>'
+      +heroSprite(id,false)+'</div>';
+  }).join('');
+  return '<section class="camp-zone"><div class="camp-bg" style="--art:url('+APPROVED_CONCEPT_ART+')"></div><div class="camp-overlay"></div>'
+    +'<div class="camp-fire"><i></i><i></i><i></i></div><div class="camp-party">'+party+'</div><div class="camp-pet">◕ᴥ◕</div></section>';
+}
+
+function battleScene(){
+  const battle=state.phase==='battle';
+  const front=heroAtLane(0),mid=heroAtLane(1),rear=heroAtLane(2);
+  const pos=[{x:35,y:61},{x:45,y:67},{x:54,y:61}];
+  const enemies=[{id:'breaker',x:74,y:59},{id:'hound',x:81,y:66},{id:'hunter',x:88,y:55}].map(function(e){
+    const en=state.enemies[e.id];
+    return '<div class="battle-unit enemy '+e.id+' '+(en.hp<=0?'dead':'')+'" data-enemy="'+e.id+'" style="--x:'+e.x+'%;--y:'+e.y+'%">'
+      +'<div class="world-hp enemy-hp"><i style="width:'+en.hp+'%"></i></div>'+enemySprite(e.id,false)+'<strong>'+en.name+'</strong></div>';
+  }).join('');
+  const allies=[{id:front,lane:0},{id:mid,lane:1},{id:rear,lane:2}].map(function(p){
+    const h=state.heroes[p.id];
+    return '<button class="battle-unit ally '+p.id+' '+(state.selected===p.id?'selected':'')+'" data-battlehero="'+p.id+'" style="--x:'+pos[p.lane].x+'%;--y:'+pos[p.lane].y+'%">'
+      +'<div class="world-hp"><i style="width:'+h.hp+'%"></i></div>'+heroSprite(p.id,false)+'<strong>'+h.name+'</strong>'
+      +'<small>'+(battle?'자동 행동 중':LANES[p.lane].ko)+'</small></button>';
+  }).join('');
+  const logs=(state.logs.length?state.logs:[
+    {text:'베일이 전열 공격을 막아냅니다.'},{text:'세리스가 월광 의식을 준비합니다.'},{text:'미렐이 베일을 치유합니다.'}
+  ]).slice(-5).map(function(l){
+    return '<div class="log-line '+(l.danger?'danger':'')+'"><i>'+(l.danger?'!':'●')+'</i><span>'+l.text+'</span></div>';
+  }).join('');
+
+  return '<section class="battle-zone"><div class="battle-bg" style="--art:url('+APPROVED_CONCEPT_ART+')"></div><div class="battle-grade"></div>'
+    +'<div class="battle-controls"><b>'+(battle?'전투 중…':state.phase==='result'?'전투 종료':'배치 준비')+'</b><button>Ⅱ</button><button id="speedBtn">×'+state.speed+'</button></div>'
+    +'<svg class="battle-arrows" viewBox="0 0 1000 420" preserveAspectRatio="none"><defs><marker id="redEnd" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0 0 L0 6 L8 3z" fill="#ee6a5f"/></marker><marker id="blueEnd" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0 0 L0 6 L8 3z" fill="#6db5ff"/></marker></defs><path class="arr red" d="M795 185 Q690 190 380 245" marker-end="url(#redEnd)"/><path class="arr blue" d="M840 255 Q700 245 560 235" marker-end="url(#blueEnd)"/></svg>'
+    +enemies+allies+'<div class="shield-fx"></div><div class="heal-fx">✦ ✦ ✦</div><div class="moon-fx"></div><div class="hit-fx"></div>'
+    +'<div class="battle-dialogue"><div class="dialogue-portrait">'+heroSprite('seris',true)+'</div><div><b>세리스</b><span>'
+    +(battle?'적의 후열에 저격수가 있어. 내가 집중하고 있는 동안 부탁할게…!':'후열에 저격수가 있어. 누가 내 앞을 막을지 정해줘.')+'</span></div></div>'
+    +'<div class="combat-log"><div class="log-title">전투 기록</div>'+logs+'</div>'
+    +'<div class="tip-card"><b>TIP</b><span>전열에 튼튼한 동료를 배치해 후열의 약한 동료를 지키세요.</span><div class="tip-pet">◕ᴥ◕</div></div>'
+    +renderProgress()+'</section>';
 }
 
 function render(){
-  const plan=state.phase==='plan';
-  const battle=state.phase==='battle';
-  const result=state.phase==='result';
-
-  const heroWorld=Object.values(state.heroes).map(function(hero){
-    const lane=lanes[hero.lane];
-    return '<button class="world-unit hero '+(state.selected===hero.id?'selected ':'')+hero.id+'" data-hero="'+hero.id+'" style="--x:'+lane.x+'%;--y:'+lane.y+'%">'
-      +'<span class="world-bar"><i style="width:'+hero.hp+'%"></i></span>'
-      +spriteMarkup(hero.id,false)
-      +'<strong>'+hero.name+'</strong><small class="unit-state">'+(battle?'자동 행동':'배치 대기')+'</small></button>';
-  }).join('');
-
-  const enemyWorld=Object.values(state.enemies).map(function(enemy){
-    const pos=enemyPos[enemy.id];
-    return '<div class="world-unit foe '+enemy.id+'" data-enemy="'+enemy.id+'" style="--x:'+pos.x+'%;--y:'+pos.y+'%">'
-      +'<span class="intent-badge">'+enemy.intent+'</span><span class="world-bar enemybar"><i style="width:'+enemy.hp+'%"></i></span>'
-      +enemyMarkup(enemy.id)+'<strong>'+enemy.name+'</strong></div>';
-  }).join('');
-
-  const partyHud=Object.values(state.heroes).map(function(hero){
-    return '<button class="hud-card '+(state.selected===hero.id?'selected':'')+'" data-hud="'+hero.id+'">'
-      +'<div class="hud-face">'+spriteMarkup(hero.id,true)+'</div><div class="hud-info"><strong>'+hero.name+'</strong>'
-      +'<span>'+hero.role+' · '+lanes[hero.lane].ko+'</span><div class="hud-hp"><i style="width:'+hero.hp+'%"></i></div>'
-      +'<div class="skills"><i>Ⅰ</i><i>Ⅱ</i><i>Ⅲ</i><i>◆</i></div></div></button>';
-  }).join('');
-
-  const enemyHud=Object.values(state.enemies).map(function(enemy){
-    return '<div class="enemy-card"><div class="enemy-face">'+enemyMarkup(enemy.id)+'</div><div><strong>'+enemy.name+'</strong>'
-      +'<span>'+enemy.intent+'</span><div class="enemy-hp"><i style="width:'+enemy.hp+'%"></i></div></div></div>';
-  }).join('');
-
-  let debrief='';
-  if(result){
-    debrief='<aside class="debrief"><span>CAUSE CHAIN</span><h3>당신의 배치가 만든 결과</h3><ol>'
-      +debriefItems().map(function(item){return '<li class="'+(item.good?'good':'bad')+'"><b>'+item.title+'</b><em>'+item.text+'</em></li>';}).join('')
-      +'</ol><button id="retry">다른 배치로 다시</button></aside>';
-  }
-
-  app.innerHTML='<main class="layered-game '+state.phase+'">'
-    +'<div class="painted-bg" style="--art:url('+APPROVED_CONCEPT_ART+')"></div><div class="arena-grade"></div>'
-    +'<header class="game-topbar"><div class="night"><span>☾</span><div><b>1일차</b><small>떠나는 밤 · 유리 평원</small></div></div>'
+  app.innerHTML='<main class="tutorial-game phase-'+state.phase+'"><header class="global-top"><div class="day-mark"><span>☾</span><div><b>1일차</b><small>떠나는 밤</small></div></div>'
     +'<div class="resources"><span>◉ 320</span><span>◆ 3</span><span>▤ 2</span><button>⚙</button></div></header>'
-    +'<nav class="left-rail"><button class="active">♜<span>카라반</span></button><button>♙<span>동료</span></button>'
-    +'<button>⚔<span>장비</span></button><button>▣<span>기록</span></button></nav>'
-    +'<section class="arena-shell"><div class="lane-field">'
-    +lanes.map(function(lane,i){return '<button class="floor-slot '+lane.id+'" data-lane="'+i+'" style="--x:'+lane.x+'%;--y:'+lane.y+'%"><span>'+lane.label+'</span><b>'+lane.ko+'</b></button>';}).join('')
-    +'</div><svg class="intent-layer" viewBox="0 0 1000 500" preserveAspectRatio="none"><defs><marker id="redArrow" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#e8665c"/></marker></defs>'
-    +'<path d="M770 180 Q610 210 305 305" marker-end="url(#redArrow)"/><path d="M835 315 Q710 285 570 305" marker-end="url(#redArrow)"/></svg>'
-    +'<svg class="resonance-layer" viewBox="0 0 1000 500"><path d="M290 325 Q425 410 570 325"/></svg>'
-    +enemyWorld+heroWorld+'<div class="shield-vfx"></div><div class="heal-vfx">✦ ✦ ✦</div><div class="moon-vfx"></div><div class="impact-vfx"></div>'
-    +'<aside class="coach"><span>TUTORIAL · '+(plan?'FORMATION':battle?'WATCH':'DEBRIEF')+'</span><h2>'
-    +(plan?'전장을 직접 만져보세요':battle?'이제 손을 뗍니다':'원인을 읽습니다')+'</h2><p>'
-    +(plan?'동료를 선택한 뒤 FRONT / CORE / VEIL 바닥을 눌러 위치를 바꾸세요.':battle?'COMMIT 이후에는 직접 조작할 수 없습니다. 생태계가 스스로 반응합니다.':'전투 결과가 아니라 선택 → 행동 → 결과를 복기합니다.')
-    +'</p>'+(plan?'<div class="coach-tip">TIP · 베일을 FRONT에, 세리스를 VEIL에 놓으면 수호 반응이 가장 잘 보입니다.</div>':'')+'</aside>'
-    +debrief+'</section>'
-    +'<section class="bottom-hud"><div class="party-hud">'+partyHud+'</div><div class="center-command"><span>'
-    +(plan?'배치 단계':battle?'전투 중…':'전투 결과')+'</span>'
-    +(plan?'<button id="commit">COMMIT <b>배치 완료 →</b></button>':battle?'<div class="clock"><b id="clock">00:08</b><small>AUTO</small></div>':'<button id="next">다음 시스템 <b>공명 →</b></button>')
-    +'</div><div class="enemy-hud">'+enemyHud+'</div></section>'
-    +'<div class="rotate-hint"><div>↻</div><strong>가로 화면으로 돌려주세요</strong><span>이 게임은 16:9 전장 화면을 기준으로 설계합니다.</span></div></main>';
-
+    +'<nav class="side-nav"><button class="active">♜<span>카라반</span></button><button>♙<span>동료</span></button><button>⚔<span>장비</span></button><button>▣<span>기록</span></button></nav>'
+    +'<section class="top-half">'+campScene()+tutorialPanel()+routeMap()+'</section>'+battleScene()
+    +'<div class="rotate-hint"><div>↻</div><strong>가로 화면으로 돌려주세요</strong><span>튜토리얼은 캠프와 전투장을 동시에 보는 16:9 화면으로 진행됩니다.</span></div></main>';
   bind();
 }
 
 function bind(){
-  if(state.phase==='plan'){
-    app.querySelectorAll('[data-hero],[data-hud]').forEach(function(el){
-      el.addEventListener('click',function(){
-        state.selected=el.dataset.hero||el.dataset.hud;
-        render();
-      });
-    });
-    app.querySelectorAll('[data-lane]').forEach(function(el){
-      el.addEventListener('click',function(){
-        if(state.selected!==null) moveSelected(Number(el.dataset.lane));
-      });
-    });
-    app.querySelector('#commit').addEventListener('click',startBattle);
-  }
-  const retry=app.querySelector('#retry');
-  if(retry) retry.addEventListener('click',function(){reset();render();});
-  const next=app.querySelector('#next');
-  if(next) next.addEventListener('click',function(){reset();render();setTimeout(function(){app.querySelector('.resonance-layer')?.classList.add('teach');},100);});
+  const read=app.querySelector('#readNext');if(read)read.addEventListener('click',function(){state.phase='place';render();});
+  app.querySelectorAll('[data-heroselect],[data-battlehero]').forEach(function(el){
+    el.addEventListener('click',function(){if(state.phase!=='place')return;state.selected=el.dataset.heroselect||el.dataset.battlehero;render();});
+  });
+  app.querySelectorAll('[data-lane]').forEach(function(el){
+    el.addEventListener('click',function(){if(state.phase!=='place'||!state.selected)return;moveSelected(Number(el.dataset.lane));});
+  });
+  app.querySelector('#commit')?.addEventListener('click',startBattle);
+  app.querySelector('#nextRoute')?.addEventListener('click',function(){state.phase='next';state.routeIndex=1;render();});
+  app.querySelector('#replay')?.addEventListener('click',function(){reset();render();});
+  app.querySelector('#speedBtn')?.addEventListener('click',function(){state.speed=state.speed===1?2:1;render();});
 }
 
 function moveSelected(target){
-  const id=state.selected;
-  const old=state.heroes[id].lane;
+  const id=state.selected,old=state.heroes[id].lane;
   const other=Object.values(state.heroes).find(function(h){return h.id!==id&&h.lane===target;});
-  if(other) other.lane=old;
-  state.heroes[id].lane=target;
-  render();
+  if(other)other.lane=old;
+  state.heroes[id].lane=target;state.selected=null;render();
 }
-
-function setHeroHp(id,hp,label){
+function setHeroHp(id,hp){
   state.heroes[id].hp=Math.max(0,Math.min(100,hp));
-  app.querySelectorAll('[data-hero="'+id+'"] .world-bar i,[data-hud="'+id+'"] .hud-hp i').forEach(function(bar){bar.style.width=state.heroes[id].hp+'%';});
-  const unit=app.querySelector('[data-hero="'+id+'"]');
-  if(unit&&label) unit.querySelector('.unit-state').textContent=label;
+  app.querySelectorAll('.ally.'+id+' .world-hp i').forEach(function(el){el.style.width=state.heroes[id].hp+'%';});
 }
-
 function setEnemyHp(id,hp){
   state.enemies[id].hp=Math.max(0,Math.min(100,hp));
-  const unit=app.querySelector('[data-enemy="'+id+'"]');
-  if(unit){
-    unit.querySelector('.world-bar i').style.width=state.enemies[id].hp+'%';
-    if(state.enemies[id].hp<=0) unit.classList.add('defeated');
-  }
+  const el=app.querySelector('[data-enemy="'+id+'"]');
+  if(el){el.querySelector('.world-hp i').style.width=state.enemies[id].hp+'%';if(state.enemies[id].hp<=0)el.classList.add('dead');}
+}
+function pushLog(text,danger){
+  state.logs.push({text:text,danger:!!danger});
+  const box=app.querySelector('.combat-log');
+  if(box)box.innerHTML='<div class="log-title">전투 기록</div>'+state.logs.slice(-5).map(function(l){return '<div class="log-line '+(l.danger?'danger':'')+'"><i>'+(l.danger?'!':'●')+'</i><span>'+l.text+'</span></div>';}).join('');
 }
 
 function startBattle(){
-  state.timers.forEach(clearTimeout);
-  state.timers=[];
-  state.phase='battle';
-  state.selected=null;
-  render();
+  clearTimers();state.phase='battle';state.selected=null;state.logs=[];render();
+  const front=heroAtLane(0),rear=heroAtLane(2);
 
-  const front=heroAtLane(0);
-  const rear=heroAtLane(2);
-  let sec=8;
-  const ticker=setInterval(function(){
-    sec--;
-    const clock=app.querySelector('#clock');
-    if(clock) clock.textContent='00:0'+Math.max(0,sec);
-    if(sec<=0) clearInterval(ticker);
-  },1000);
-
+  later(function(){pushLog(state.heroes[front].name+'이(가) 첫 강공격의 표적이 됩니다.');app.querySelector('.enemy.breaker')?.classList.add('charge');app.querySelector('.ally.'+front)?.classList.add('targeted');},500);
+  later(function(){const dmg=front==='vael'?22:46;setHeroHp(front,state.heroes[front].hp-dmg);app.querySelector('.ally.'+front)?.classList.add('hit');app.querySelector('.hit-fx')?.classList.add('play');pushLog(state.heroes[front].name+'이(가) 전열 공격을 받았습니다.',front!=='vael');},1200);
+  later(function(){app.querySelector('.enemy.hunter')?.classList.add('aim');app.querySelector('.ally.'+rear)?.classList.add('targeted');pushLog('맹안 추적자가 '+state.heroes[rear].name+'을(를) 노립니다.',true);},1800);
   later(function(){
-    app.querySelector('[data-enemy="breaker"]')?.classList.add('charge');
-    app.querySelector('[data-hero="'+front+'"]')?.classList.add('targeted');
-  },500);
-
-  later(function(){
-    setHeroHp(front,state.heroes[front].hp-(front==='vael'?22:46),'첫 충돌');
-    app.querySelector('[data-hero="'+front+'"]')?.classList.add('hit');
-    app.querySelector('.impact-vfx')?.classList.add('play');
-  },1250);
-
-  later(function(){
-    app.querySelector('[data-enemy="hunter"]')?.classList.add('aim');
-    app.querySelector('[data-hero="'+rear+'"]')?.classList.add('targeted');
-  },1800);
-
-  later(function(){
-    if(front==='vael'&&rear==='seris'){
-      setHeroHp('vael',state.heroes.vael.hp-14,'INTERCEPT');
-      app.querySelector('[data-hero="vael"]')?.classList.add('intercept');
-      app.querySelector('.shield-vfx')?.classList.add('play');
-      const seris=app.querySelector('[data-hero="seris"] .unit-state');
-      if(seris) seris.textContent='보호됨';
-    }else{
-      setHeroHp(rear,state.heroes[rear].hp-34,'후열 저격');
-      app.querySelector('[data-hero="'+rear+'"]')?.classList.add('hit');
-    }
-  },2450);
-
-  later(function(){
-    const weakest=Object.keys(state.heroes).sort(function(a,b){return state.heroes[a].hp-state.heroes[b].hp;})[0];
-    setHeroHp(weakest,state.heroes[weakest].hp+24,'꽃맥박');
-    app.querySelector('[data-hero="mirel"]')?.classList.add('heal-cast');
-    app.querySelector('.heal-vfx')?.classList.add('play');
-  },3350);
-
-  later(function(){
-    app.querySelector('[data-hero="seris"]')?.classList.add('channel');
-    const action=app.querySelector('[data-hero="seris"] .unit-state');
-    if(action) action.textContent='월광 의식';
-    app.querySelector('.resonance-layer')?.classList.add('active');
-  },4200);
-
-  later(function(){
-    app.querySelector('.moon-vfx')?.classList.add('play');
-    setEnemyHp('breaker',0); setEnemyHp('hound',18); setEnemyHp('hunter',32);
-  },5350);
-
-  later(function(){
-    setEnemyHp('hound',0); setEnemyHp('hunter',0);
-    app.querySelector('[data-hero="vael"]')?.classList.add('finish');
-  },6250);
-
-  later(function(){
-    clearInterval(ticker);
-    state.phase='result';
-    render();
-  },7600);
+    if(front==='vael'&&rear==='seris'){setHeroHp('vael',state.heroes.vael.hp-14);app.querySelector('.ally.vael')?.classList.add('intercept');app.querySelector('.shield-fx')?.classList.add('play');pushLog('베일이 세리스 대신 공격을 받아냅니다. (수호 본능)');}
+    else{setHeroHp(rear,state.heroes[rear].hp-34);app.querySelector('.ally.'+rear)?.classList.add('hit');pushLog(state.heroes[rear].name+'이(가) 후열 저격을 맞았습니다.',true);}
+  },2500);
+  later(function(){const weak=Object.keys(state.heroes).sort(function(a,b){return state.heroes[a].hp-state.heroes[b].hp;})[0];setHeroHp(weak,state.heroes[weak].hp+24);app.querySelector('.ally.mirel')?.classList.add('healcast');app.querySelector('.heal-fx')?.classList.add('play');pushLog('미렐이 '+state.heroes[weak].name+'을(를) 치유합니다.');},3400);
+  later(function(){app.querySelector('.ally.seris')?.classList.add('channel');pushLog('세리스가 월광 의식을 완성합니다.');},4200);
+  later(function(){app.querySelector('.moon-fx')?.classList.add('play');setEnemyHp('breaker',0);setEnemyHp('hound',18);setEnemyHp('hunter',32);pushLog('월광 폭발이 적 전열을 휩쓸었습니다.');},5300);
+  later(function(){setEnemyHp('hound',0);setEnemyHp('hunter',0);pushLog('전투 종료. 원인을 복기합니다.');},6400);
+  later(function(){state.phase='result';state.result={front:front,rear:rear};render();},7400);
 }
 
-function debriefItems(){
-  const front=heroAtLane(0);
-  const core=heroAtLane(1);
-  const rear=heroAtLane(2);
+function causeChain(){
+  const front=heroAtLane(0),mid=heroAtLane(1),rear=heroAtLane(2);
   return [
-    front==='vael'?{good:true,title:'FRONT',text:'베일이 첫 강공격을 받아내 전열이 유지됨'}:{good:false,title:'FRONT',text:state.heroes[front].name+'가 첫 강공격에 크게 흔들림'},
-    rear==='seris'&&front==='vael'?{good:true,title:'VEIL',text:'세리스가 수호를 받아 의식을 끝까지 유지함'}:{good:false,title:'VEIL',text:state.heroes[rear].name+'가 후열 저격에 노출됨'},
-    core==='mirel'?{good:true,title:'CORE',text:'미렐이 중앙에서 가장 위험한 동료를 즉시 치유함'}:{good:true,title:'CORE',text:state.heroes[core].name+'가 중앙 공명을 유지함'}
+    front==='vael'?{good:true,title:'전열',text:'베일이 첫 강공격을 안정적으로 받아냄'}:{good:false,title:'전열',text:state.heroes[front].name+'이(가) 첫 타격에서 큰 피해를 받음'},
+    rear==='seris'&&front==='vael'?{good:true,title:'수호',text:'후열 저격 → 베일 INTERCEPT → 세리스 의식 유지'}:{good:false,title:'후열',text:state.heroes[rear].name+'이(가) 저격에 직접 노출됨'},
+    mid==='mirel'?{good:true,title:'치유',text:'미렐이 중열에서 가장 위험한 동료를 즉시 회복'}:{good:true,title:'치유',text:'미렐이 자동으로 최저 HP 동료를 탐색해 회복'}
   ];
 }
 
