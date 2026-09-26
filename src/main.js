@@ -160,6 +160,13 @@ function bind(){
   if(next) next.addEventListener('click',function(){reset();render();setTimeout(function(){app.querySelector('.resonance-layer')?.classList.add('teach');},100);});
 }
 
+function pulseMotion(id,motion,ms){
+  const unit=app.querySelector('[data-hero="'+id+'"]');
+  if(!unit) return;
+  unit.classList.add('motion-'+motion);
+  later(function(){ unit.classList.remove('motion-'+motion); },ms||520);
+}
+
 function moveSelected(target){
   const id=state.selected;
   const old=state.heroes[id].lane;
@@ -167,6 +174,10 @@ function moveSelected(target){
   if(other) other.lane=old;
   state.heroes[id].lane=target;
   render();
+  requestAnimationFrame(function(){
+    pulseMotion(id,'move',460);
+    if(other) pulseMotion(other.id,'move',460);
+  });
 }
 
 function setHeroHp(id,hp,label){
@@ -205,11 +216,14 @@ function startBattle(){
   later(function(){
     app.querySelector('[data-enemy="breaker"]')?.classList.add('charge');
     app.querySelector('[data-hero="'+front+'"]')?.classList.add('targeted');
+    if(front==='vael') pulseMotion('vael','ready',620);
   },500);
 
   later(function(){
     setHeroHp(front,state.heroes[front].hp-(front==='vael'?22:46),'첫 충돌');
-    app.querySelector('[data-hero="'+front+'"]')?.classList.add('hit');
+    const frontUnit=app.querySelector('[data-hero="'+front+'"]');
+    if(front==='vael') pulseMotion('vael','hit',520);
+    else frontUnit?.classList.add('hit');
     app.querySelector('.impact-vfx')?.classList.add('play');
   },1250);
 
@@ -221,7 +235,7 @@ function startBattle(){
   later(function(){
     if(front==='vael'&&rear==='seris'){
       setHeroHp('vael',state.heroes.vael.hp-14,'INTERCEPT');
-      app.querySelector('[data-hero="vael"]')?.classList.add('intercept');
+      pulseMotion('vael','intercept',980);
       app.querySelector('.shield-vfx')?.classList.add('play');
       const seris=app.querySelector('[data-hero="seris"] .unit-state');
       if(seris) seris.textContent='보호됨';
@@ -252,7 +266,7 @@ function startBattle(){
 
   later(function(){
     setEnemyHp('hound',0); setEnemyHp('hunter',0);
-    app.querySelector('[data-hero="vael"]')?.classList.add('finish');
+    pulseMotion('vael','finish',900);
   },6250);
 
   later(function(){
