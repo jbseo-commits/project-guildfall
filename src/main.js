@@ -313,7 +313,7 @@ function buildBattleScene() {
   const progress = new Graphics();
   root.addChild(progress);
 
-  battleView = { margin, arenaTop, arenaH, message, actorContainers, actorSize, enemies, fx, praisePanel, praiseTitle, praiseDetail, progress, lastPraiseId: null };
+  battleView = { margin, arenaTop, arenaH, message, actorContainers, actorSize, enemies, fx, praisePanel, praiseTitle, praiseDetail, progress, lastPraiseId: null, actorState: {} };
 }
 
 function updateBattle(now) {
@@ -324,8 +324,11 @@ function updateBattle(now) {
   const w = app.screen.width;
 
   for (const [id, holder] of Object.entries(view.actorContainers)) {
-    holder.removeChildren().forEach((child) => child.destroy({ children: true }));
     const actor = actors[id];
+    const stateKey = `${Math.round(actor.hp)}:${actor.downed ? 1 : 0}`;
+    if (view.actorState[id] === stateKey) continue;
+    view.actorState[id] = stateKey;
+    holder.removeChildren().forEach((child) => child.destroy({ children: true }));
     holder.addChild(drawPortrait(CHARACTERS[id], view.actorSize, true, actor.hp, actor.downed));
     const n = textNode(CHARACTERS[id].name, 10, actor.downed ? COLORS.faint : COLORS.text, '700', 'center');
     n.anchor.set(0.5, 0);
@@ -438,6 +441,7 @@ function renderResult() {
 
 function renderEpilogue(choice) {
   clearRoot();
+  ui.screen = 'epilogue';
   ui.finalChoice = choice;
   drawHeader(root, choice === 'rescue' ? 'ATTACHMENT > EFFICIENCY' : 'EFFICIENCY > ATTACHMENT');
   const w = app.screen.width;
@@ -490,9 +494,9 @@ function renderEpilogue(choice) {
 app.ticker.add(() => updateBattle(performance.now()));
 window.addEventListener('resize', () => {
   if (ui.screen === 'plan') renderPlan();
-  else if (ui.screen === 'result') renderResult();
-  else if (ui.finalChoice) renderEpilogue(ui.finalChoice);
   else if (ui.screen === 'battle') buildBattleScene();
+  else if (ui.screen === 'result') renderResult();
+  else if (ui.screen === 'epilogue' && ui.finalChoice) renderEpilogue(ui.finalChoice);
 });
 
 renderPlan();
