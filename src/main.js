@@ -253,7 +253,11 @@ function render(){
     +'<nav class="side-nav"><button class="active">♜<span>카라반</span></button><button>♙<span>동료</span></button><button>⚔<span>장비</span></button><button>▣<span>기록</span></button></nav>'
     +'<section class="top-half">'+campScene()+tutorialPanel()+routeMap()+'</section>'+battleScene()
     +'<div class="rotate-hint"><div>↻</div><strong>가로 화면으로 돌려주세요</strong><span>튜토리얼은 캠프와 전투장을 동시에 보는 16:9 화면으로 진행됩니다.</span></div></main>';
-  app.style.setProperty('--concept-art','url("'+APPROVED_CONCEPT_ART+'")');
+  const conceptUrl='url("'+APPROVED_CONCEPT_ART+'")';
+  const portrait=app.querySelector('.concept-seris-portrait');
+  if(portrait) portrait.style.backgroundImage=conceptUrl;
+  const route=app.querySelector('.concept-route');
+  if(route) route.style.backgroundImage=conceptUrl;
   bind();
 }
 
