@@ -2836,3 +2836,74 @@ button{font:inherit;-webkit-tap-highlight-color:transparent}
   .enemy-art-wrap.hound{width:110px;height:92px}
   .enemy-art-wrap.hunter{width:90px;height:104px}
 }
+
+
+/* =========================================================
+   VISUAL REFERENCE CROPS V1
+   Use approved concept art as source for high-resolution portrait/map crops.
+   ========================================================= */
+
+.concept-seris-portrait{
+  background-image:var(--concept-art);
+  background-repeat:no-repeat;
+  background-size:auto 250%;
+  background-position:left bottom;
+  filter:drop-shadow(0 9px 10px rgba(0,0,0,.28));
+}
+.concept-seris-portrait .hero-art-wrap{
+  opacity:0;
+}
+
+.concept-route{
+  overflow:hidden;
+  background-image:
+    linear-gradient(rgba(239,222,188,.06),rgba(239,222,188,.06)),
+    var(--concept-art);
+  background-repeat:no-repeat;
+  background-size:auto 210%;
+  background-position:right 8%;
+  box-shadow:inset 0 0 0 1px rgba(77,54,31,.18);
+}
+.concept-route svg,
+.concept-route .route-node{
+  opacity:0;
+}
+.route-title{
+  z-index:4;
+}
+.route-live-marker{
+  position:absolute;
+  z-index:5;
+  width:38px;
+  height:38px;
+  margin:-19px 0 0 -19px;
+  border:3px solid rgba(255,215,112,.96);
+  border-radius:50%;
+  box-shadow:
+    0 0 0 4px rgba(97,63,28,.36),
+    0 0 18px rgba(255,196,82,.75),
+    inset 0 0 12px rgba(255,230,154,.45);
+  background:radial-gradient(circle,rgba(255,223,133,.28),rgba(255,186,65,.08) 55%,transparent 70%);
+  pointer-events:none;
+}
+.route-step-0 .route-live-marker{left:39%;top:19%}
+.route-step-1 .route-live-marker{left:63%;top:33%}
+.route-step-2 .route-live-marker{left:47%;top:52%}
+.route-step-3 .route-live-marker{left:70%;top:69%}
+.route-step-4 .route-live-marker{left:56%;top:83%}
+
+@media (orientation:landscape) and (max-height:650px){
+  .concept-seris-portrait{
+    background-size:auto 255%;
+    background-position:left bottom;
+  }
+  .route-live-marker{
+    width:28px;height:28px;margin:-14px 0 0 -14px;border-width:2px;
+  }
+}
+
+@media (orientation:landscape) and (min-height:651px){
+  .concept-seris-portrait{
+    background-size:auto 245%;
+  }
+}
