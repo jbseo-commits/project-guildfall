@@ -63,8 +63,12 @@ function heroAtLane(index){
 
 function spriteMarkup(id,small){
   const art=HERO_ART[id];
+  const fx=id==='seris'&&!small
+    ? '<span class="seris-orbit"><i></i><i></i><i></i></span><span class="seris-sigil"></span>'
+    : '';
   return '<div class="hero-art-wrap '+id+(small?' small':'')+'">'
     +'<span class="hero-art-shadow"></span>'
+    +fx
     +'<img class="hero-art-sprite" src="'+art+'" alt="" draggable="false">'
     +'</div>';
 }
@@ -163,6 +167,9 @@ function bind(){
 function pulseMotion(id,motion,ms){
   const unit=app.querySelector('[data-hero="'+id+'"]');
   if(!unit) return;
+  Array.from(unit.classList).forEach(function(name){
+    if(name.indexOf('motion-')===0) unit.classList.remove(name);
+  });
   unit.classList.add('motion-'+motion);
   later(function(){ unit.classList.remove('motion-'+motion); },ms||520);
 }
@@ -230,6 +237,7 @@ function startBattle(){
   later(function(){
     app.querySelector('[data-enemy="hunter"]')?.classList.add('aim');
     app.querySelector('[data-hero="'+rear+'"]')?.classList.add('targeted');
+    if(rear==='seris') pulseMotion('seris','danger',680);
   },1800);
 
   later(function(){
@@ -239,9 +247,11 @@ function startBattle(){
       app.querySelector('.shield-vfx')?.classList.add('play');
       const seris=app.querySelector('[data-hero="seris"] .unit-state');
       if(seris) seris.textContent='보호됨';
+      pulseMotion('seris','steady',720);
     }else{
       setHeroHp(rear,state.heroes[rear].hp-34,'후열 저격');
-      app.querySelector('[data-hero="'+rear+'"]')?.classList.add('hit');
+      if(rear==='seris') pulseMotion('seris','hit',620);
+      else app.querySelector('[data-hero="'+rear+'"]')?.classList.add('hit');
     }
   },2450);
 
@@ -253,20 +263,24 @@ function startBattle(){
   },3350);
 
   later(function(){
-    app.querySelector('[data-hero="seris"]')?.classList.add('channel');
+    pulseMotion('seris','channel',1650);
     const action=app.querySelector('[data-hero="seris"] .unit-state');
-    if(action) action.textContent='월광 의식';
+    if(action) action.textContent='월광 의식 · 집중';
     app.querySelector('.resonance-layer')?.classList.add('active');
   },4200);
 
   later(function(){
+    pulseMotion('seris','burst',1080);
     app.querySelector('.moon-vfx')?.classList.add('play');
     setEnemyHp('breaker',0); setEnemyHp('hound',18); setEnemyHp('hunter',32);
+    const action=app.querySelector('[data-hero="seris"] .unit-state');
+    if(action) action.textContent='월광 폭발';
   },5350);
 
   later(function(){
     setEnemyHp('hound',0); setEnemyHp('hunter',0);
     pulseMotion('vael','finish',900);
+    pulseMotion('seris','recover',820);
   },6250);
 
   later(function(){
