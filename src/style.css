@@ -2976,7 +2976,7 @@ button{font:inherit;-webkit-tap-highlight-color:transparent}
 /* Replace rejected vector portrait with a crop from the approved camp painting. */
 .camp-seris-portrait{
   background-repeat:no-repeat!important;
-  background-size:auto 278%!important;
+  background-size:auto 246%!important;
   background-position:18% 100%!important;
   filter:drop-shadow(0 9px 12px rgba(0,0,0,.34));
 }
@@ -2991,7 +2991,24 @@ button{font:inherit;-webkit-tap-highlight-color:transparent}
 
 @media (orientation:landscape) and (max-height:650px){
   .camp-seris-portrait{
-    background-size:auto 292%!important;
+    background-size:auto 258%!important;
     background-position:18% 100%!important;
   }
+}
+
+
+.locked-slots{
+  opacity:.72;
+}
+.locked-slot{
+  cursor:default!important;
+  pointer-events:none;
+}
+.battle-locked-cta{
+  opacity:.9;
+  cursor:default;
+  background:linear-gradient(180deg,#4c4033,#332b24)!important;
+  color:#f0ddbb!important;
+  border-color:#6b5845!important;
+  box-shadow:0 3px 0 #201a16!important;
 }
