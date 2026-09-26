@@ -1,5 +1,10 @@
 import './style.css';
 import { APPROVED_CONCEPT_ART } from './approvedConceptArt.js';
+import vaelArt from './assets/heroes/vael.webp';
+import serisArt from './assets/heroes/seris.webp';
+import mirelArt from './assets/heroes/mirel.webp';
+
+const HERO_ART = { vael: vaelArt, seris: serisArt, mirel: mirelArt };
 
 const app = document.querySelector('#app');
 
@@ -57,10 +62,10 @@ function heroAtLane(index){
 }
 
 function spriteMarkup(id,small){
-  return '<div class="actor-sprite '+id+(small?' small':'')+'">'
-    +'<i class="shadow"></i><i class="wing wing-a"></i><i class="wing wing-b"></i>'
-    +'<i class="horn horn-a"></i><i class="horn horn-b"></i><i class="hair"></i>'
-    +'<i class="head"><b></b><b></b></i><i class="body"></i><i class="weapon"></i><i class="ornament"></i>'
+  const art=HERO_ART[id];
+  return '<div class="hero-art-wrap '+id+(small?' small':'')+'">'
+    +'<span class="hero-art-shadow"></span>'
+    +'<img class="hero-art-sprite" src="'+art+'" alt="" draggable="false">'
     +'</div>';
 }
 
