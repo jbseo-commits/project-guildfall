@@ -1,5 +1,7 @@
 import './style.css';
-import { CAMP_PLATE, BATTLE_PLATE } from './scenePlates.js';
+import { CAMP_PLATE } from './scenePlates.js';
+import arenaArt from './assets/scenes/arena-clearing.svg';
+import journeyMapArt from './assets/scenes/journey-map.svg';
 import vaelArt from './assets/heroes/vael.webp';
 import serisArt from './assets/heroes/seris.webp';
 import mirelArt from './assets/heroes/mirel.webp';
@@ -189,7 +191,7 @@ function routeMap(){
     const icon=n===0?'⚔':n===1?'✦':n===2?'⚔':n===3?'☠':'⚔';
     return '<div class="route-node n'+n+' '+(n<state.routeIndex?'cleared ':'')+(n===state.routeIndex?'current':'')+'"><i>'+icon+'</i></div>';
   }).join('');
-  return '<aside class="route-map"><div class="route-title">첫 번째 여정</div><div class="route-paper">'
+  return '<aside class="route-map"><div class="route-title">첫 번째 여정</div><div class="route-paper" style="background-image:url(\''+journeyMapArt+'\')">'
     +'<svg viewBox="0 0 180 360" aria-hidden="true"><path d="M70 40 C120 70 55 110 102 145 C146 177 74 214 108 248 C140 278 90 310 112 336" class="route-line"/></svg>'
     +nodes+'</div></aside>';
 }
@@ -235,7 +237,7 @@ function battleScene(){
     resonanceLine='<svg class="resonance-pair-line '+(state.phase==='battle2'?'active':'')+'" viewBox="0 0 1000 420" preserveAspectRatio="none"><path d="M'+p1.x+' '+p1.y+' Q'+((p1.x+p2.x)/2)+' '+(Math.min(p1.y,p2.y)-55)+' '+p2.x+' '+p2.y+'"/><circle cx="'+p1.x+'" cy="'+p1.y+'" r="6"/><circle cx="'+p2.x+'" cy="'+p2.y+'" r="6"/></svg>';
   }
 
-  return '<section class="battle-zone"><div class="battle-bg" style="background-image:url(\''+BATTLE_PLATE+'\')"></div><div class="battle-grade"></div>'+resonanceLine
+  return '<section class="battle-zone"><div class="battle-bg" style="background-image:url(\''+arenaArt+'\')"></div><div class="battle-grade"></div>'+resonanceLine
     +'<div class="battle-controls"><b>'+(battle?'전투 중…':state.phase==='result'?'전투 종료':'배치 준비')+'</b><button>Ⅱ</button><button id="speedBtn">×'+state.speed+'</button></div>'
     +'<svg class="battle-arrows" viewBox="0 0 1000 420" preserveAspectRatio="none"><defs><marker id="redEnd" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0 0 L0 6 L8 3z" fill="#ee6a5f"/></marker><marker id="blueEnd" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0 0 L0 6 L8 3z" fill="#6db5ff"/></marker></defs><path class="arr red" d="M795 185 Q690 190 380 245" marker-end="url(#redEnd)"/><path class="arr blue" d="M840 255 Q700 245 560 235" marker-end="url(#blueEnd)"/></svg>'
     +enemies+allies+'<div class="shield-fx"></div><div class="heal-fx">✦ ✦ ✦</div><div class="moon-fx"></div><div class="hit-fx"></div>'
