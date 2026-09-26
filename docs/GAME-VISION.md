@@ -40,17 +40,18 @@ Before a 40-minute run exists, a 60–120 second repeatable micro-loop should al
 ### Fewer, more legible units
 Early prototypes should prefer 3–5 meaningful actors over 12 tiny units with unreadable interactions.
 
-## Open identity space
+## Current identity
 
-We have deliberately not chosen whether the player leads:
+Decision 001 is now locked in `docs/DECISIONS.md`.
 
-- a guild/company,
-- a doomed expedition,
-- a magical academy squad,
-- a monster caravan,
-- a dungeon ecosystem,
-- a mercenary theater troupe,
-- a pact of summoned spirits,
-- or something stranger.
+The game is built around **The Living Caravan**:
 
-Decision 001 chooses this.
+- a wandering living sanctuary / ecosystem;
+- a small cast of beautiful, dangerous, charismatic inhabitants;
+- visible interdependence between characters;
+- automatic reactions that make the ecosystem feel alive;
+- attachment strong enough that losing a character feels like losing part of the whole.
+
+Historical identity alternatives are no longer active design options unless the user explicitly reopens D001.
+
+The permanent control model, spatial model, run structure, and loss / recovery economy remain open decisions.

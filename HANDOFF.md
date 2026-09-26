@@ -2,127 +2,165 @@
 
 ## Current phase
 
-**Phase 1D — arena-first layered battle is implemented on branch `arena-layered-battle-v2`.**
+**Loop Engineering active.**
 
-The project has moved past the static high-fidelity concept mockup.
+The project is no longer in initial concept exploration.
 
-The current target is now:
+Current execution stage:
 
-**REAL ARENA LAYERS → REAL ACTOR MOVEMENT → READABLE AUTO COMBAT → LIVE HUD → DEBRIEF**
+> **G1 Visual Identity → G2 Autobattle Payoff**
 
-See:
-- `docs/ARENA-VISUAL-REBOOT-V1.md`
-- `docs/ARENA-LAYERED-BATTLE-V2.md`
+The current main already contains the first live tutorial/autobattle slice and screenshot-driven Visual QA.
+
+The authoritative operating documents are now:
+
+- `LOOP-ENGINEERING.md`
+- `docs/LOOP-STATE.md`
+
+Read both before changing code.
+
+---
 
 ## Locked identity
 
-Read `docs/DECISIONS.md` before changing anything.
-
 The current fantasy is the **Living Caravan**:
-a wandering living dungeon/sanctuary made of beautiful, dangerous, highly charismatic beings who function as an interdependent ecosystem.
+
+a wandering living sanctuary / ecosystem made of beautiful, dangerous, highly charismatic beings.
 
 Locked emotional principles:
+
 - characters are **organs, not inventory**;
 - losing one should feel like losing part of the living system;
 - characters can be lost;
-- recovery can exist but should be painfully expensive;
+- recovery can exist but should eventually be painfully expensive;
 - attachment may make the player strategically inefficient.
 
-## Critical visual direction
+See `docs/DECISIONS.md`.
 
-The user explicitly rejected a tutorial that looked like stacked cards / a UI prototype.
+---
 
-The accepted visual standard is an **arena-dominant commercial game screen**:
-- battlefield dominates;
-- characters exist in space;
-- bottom HUD supports the battlefield;
-- tutorial guidance overlays the live game;
-- no separate tutorial page replacing the game;
-- a screenshot without tutorial text should still look like a game.
+## Current playable slice
 
-The approved concept art is the current quality/composition proxy.
-
-## Current layered implementation
-
-Branch `arena-layered-battle-v2` now separates:
-
-- painted environment proxy;
-- player actors;
-- enemy actors;
-- FRONT / CORE / VEIL floor slots;
-- enemy intent arrows;
-- resonance tether;
-- world HP bars;
-- battle VFX;
-- party HUD;
-- enemy HUD;
-- tutorial coach;
-- post-battle debrief.
+The current game includes:
 
 ### Planning
-The player can:
-- select a hero in the world or HUD;
-- move them between FRONT / CORE / VEIL;
-- swap occupied positions;
-- see the HUD update immediately.
+- enemy intent reading;
+- FRONT / CORE / VEIL formation;
+- party-member swapping;
+- COMMIT boundary.
 
-### After COMMIT
-No micro-control.
+### Automatic battle
+- breaker telegraph / lunge / opening impact;
+- hunter rear-target acquisition / shot;
+- Vael INTERCEPT;
+- Mirel autonomous danger-read / healing;
+- Seris concentration / ritual / moon burst;
+- finish / resolution.
 
-The current autonomous sequence includes:
-- enemy charge;
-- target warning;
-- first collision;
-- Vael intercept if formation allows it;
-- Mirel autonomous heal of the weakest party member;
-- Seris channel;
-- moon burst;
-- enemy defeat;
-- cause-chain debrief.
+### Tutorial / explanation
+- live-game tutorial overlays;
+- battle dialogue;
+- combat log;
+- causal debrief;
+- resonance prototype;
+- route / journey presentation.
 
-Different formations change who receives damage and whether the clean protection chain occurs.
+### Visual QA
+Every relevant PR can render actual browser screenshots at:
+- mobile landscape;
+- desktop 16:9.
 
-## Art status
+Combat QA currently includes:
+- READ;
+- PLACEMENT;
+- CHARGE;
+- INTERCEPT;
+- BURST;
+- FINISH.
 
-The architecture is now ready for real art replacement.
+---
 
-Still temporary:
-- painted battlefield proxy derived from accepted concept composition;
-- live CSS/vector actor stand-ins;
-- enemy stand-ins.
+## Current art / motion status
 
-Do **not** call these production character assets.
+### Established
+- approved Vael / Seris / Mirel visual identities;
+- independent hero assets;
+- authored enemy silhouette assets;
+- layered camp / arena / route;
+- battle telegraphs and VFX;
+- real screenshot comparison loop.
 
-Final D005 still requires:
-- extremely attractive charismatic character designs;
-- elegant beautiful-but-uncanny fantasy;
-- production-quality authored sprites;
-- readable animation poses;
-- strong silhouettes.
+### Still prototype-level
+- hero body pose variation;
+- enemy body pose variation;
+- attack / impact / recovery transitions;
+- some dialogue / environment assets;
+- production-level motion continuity.
 
-## Engineering rule
+The highest-priority gap is no longer screen composition.
 
-Do not regress to a baked single-image mockup.
+It is:
 
-Any new art must plug into the current independent actor/environment/HUD layers.
+> **characters must visibly perform their roles with authored action poses rather than translated static cutouts.**
 
-Battle logic and art should remain replaceable independently.
+---
 
-## Next action
+## Exact next action
 
-1. User inspects the layered battle in-browser.
-2. If the live composition/readability feels correct, replace hero stand-ins first:
-   - Vael;
-   - Seris;
-   - Mirel.
-3. Give each hero at minimum:
-   - idle/breath;
-   - move;
-   - wind-up;
-   - attack/cast;
-   - hit reaction;
-   - special reaction;
-   - downed.
-4. Then replace enemy stand-ins.
-5. Then replace the blurred environment proxy with a clean authored battlefield.
-6. Only after art/motion passes, expand resonance/edict tutorial depth.
+Read `docs/LOOP-STATE.md`.
+
+At the current checkpoint the next loop is:
+
+> **Vael authored combat poses / frames V1**
+
+Suggested branch:
+
+`vael-authored-frames-v1`
+
+Do not move to content breadth before this and the other core combat-pose loops pass.
+
+---
+
+## Execution rules
+
+1. Use one focused loop per branch.
+2. Observe the actual game first.
+3. Fix the highest-impact player-facing bottleneck.
+4. Build.
+5. Capture real browser screenshots.
+6. Inspect mobile and desktop.
+7. Reject or iterate if worse.
+8. Merge only after evidence passes.
+9. Update `docs/LOOP-STATE.md`.
+10. Continue to the next bottleneck while the session allows.
+
+Do not stop merely because code was written.
+
+---
+
+## Do not silently lock open design decisions
+
+Current implementation contains provisional answers for formation / resonance / spatial logic.
+
+These are not automatically permanent.
+
+Major choices still requiring explicit user lock include:
+- permanent control-vs-automation model;
+- permanent spatial model;
+- permanent run structure;
+- permanent loss / restoration economy;
+- permanent recruitment model.
+
+Prototype them when useful, but label them provisional.
+
+---
+
+## External deployment note
+
+The latest repository/Visual QA checks passed after Combat Motion V2.
+
+At the last check, Vercel could report a **build-rate-limit** failure.
+
+Treat that as external infrastructure unless a real application build error appears.
+
+Do not confuse provider quota failure with broken game code.
