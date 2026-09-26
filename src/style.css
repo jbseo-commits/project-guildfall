@@ -3012,3 +3012,23 @@ button{font:inherit;-webkit-tap-highlight-color:transparent}
   border-color:#6b5845!important;
   box-shadow:0 3px 0 #201a16!important;
 }
+
+
+/* Clean camp plate: no baked blur strip between camp and tutorial panel. */
+.camp-bg{
+  inset:0!important;
+  background-size:54% 100%!important;
+  background-position:left center!important;
+  background-repeat:no-repeat!important;
+  background-color:#10131b!important;
+  filter:brightness(.98) saturate(1.02) contrast(1.03)!important;
+  transform:none!important;
+}
+.camp-overlay{
+  background:
+    linear-gradient(90deg,rgba(4,5,8,0) 0%,rgba(4,5,8,.01) 43%,rgba(7,8,12,.18) 52%,rgba(7,8,12,.68) 70%,rgba(7,8,12,.92) 100%),
+    linear-gradient(180deg,rgba(7,8,11,.01),rgba(7,8,11,.04))!important;
+}
+@media (orientation:landscape) and (max-height:650px){
+  .camp-bg{background-size:48% 100%!important}
+}
