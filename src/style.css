@@ -435,3 +435,278 @@ button{font:inherit;-webkit-tap-highlight-color:transparent}
   .world-unit.hero.mirel .hero-art-wrap{width:98px;height:108px}
   .hud-face .hero-art-wrap.small{transform:scale(.92)}
 }
+
+
+/* =========================================================
+   VAEL MOTION LOOP V1
+   Authored motion choreography using the locked Vael artwork.
+   ready -> impact -> intercept -> recover -> finish
+   ========================================================= */
+
+.world-unit.hero.vael{
+  --vael-ease:cubic-bezier(.18,.84,.22,1);
+}
+.battle .world-unit.hero.vael:not(.motion-ready):not(.motion-hit):not(.motion-intercept):not(.motion-finish) .hero-art-wrap{
+  animation:vaelIdleBreath 2.35s ease-in-out infinite;
+}
+.world-unit.hero.vael .hero-art-wrap:before{
+  content:"";
+  position:absolute;
+  z-index:0;
+  left:50%;
+  bottom:7px;
+  width:96px;
+  height:38px;
+  transform:translateX(-50%) scale(.8);
+  border-radius:50%;
+  background:radial-gradient(ellipse,rgba(137,174,255,.2),rgba(94,83,166,.08) 46%,transparent 72%);
+  opacity:.35;
+  filter:blur(1px);
+  pointer-events:none;
+}
+
+.world-unit.hero.vael.motion-move{
+  animation:vaelLaneMove .46s var(--vael-ease);
+  z-index:18;
+}
+.world-unit.hero.vael.motion-move .hero-art-wrap{
+  animation:vaelMoveBody .46s var(--vael-ease);
+}
+.world-unit.hero.vael.motion-move .hero-art-shadow{
+  animation:vaelShadowSkid .46s ease;
+}
+
+.world-unit.hero.vael.motion-ready{
+  z-index:19;
+}
+.world-unit.hero.vael.motion-ready .hero-art-wrap{
+  animation:vaelReady .62s var(--vael-ease) both;
+}
+.world-unit.hero.vael.motion-ready .hero-art-sprite{
+  animation:vaelReadySprite .62s var(--vael-ease) both;
+}
+.world-unit.hero.vael.motion-ready:before{
+  content:"GUARD";
+  position:absolute;
+  left:50%;
+  top:31px;
+  transform:translateX(-50%);
+  padding:3px 7px;
+  border:1px solid rgba(126,190,255,.55);
+  border-radius:999px;
+  background:rgba(24,40,66,.82);
+  color:#bfe5ff;
+  font-size:.42rem;
+  font-weight:900;
+  letter-spacing:.08em;
+  opacity:0;
+  animation:vaelGuardLabel .62s ease both;
+}
+
+.world-unit.hero.vael.motion-hit{
+  z-index:21;
+  animation:vaelHitUnit .52s cubic-bezier(.2,.85,.3,1);
+}
+.world-unit.hero.vael.motion-hit .hero-art-wrap{
+  animation:vaelHitBody .52s cubic-bezier(.2,.85,.3,1);
+}
+.world-unit.hero.vael.motion-hit .hero-art-sprite{
+  animation:vaelHitFlash .52s ease;
+}
+.world-unit.hero.vael.motion-hit:before{
+  content:"";
+  position:absolute;
+  z-index:4;
+  right:7px;
+  top:69px;
+  width:54px;
+  height:7px;
+  border-radius:999px;
+  background:linear-gradient(90deg,rgba(255,255,255,0),#fff6d7 40%,#ff9a68 72%,rgba(255,116,74,0));
+  filter:drop-shadow(0 0 7px #ff9b67);
+  transform-origin:left center;
+  animation:vaelImpactSlash .42s ease-out;
+}
+
+.world-unit.hero.vael.motion-intercept{
+  z-index:31;
+  animation:vaelInterceptUnit .98s cubic-bezier(.16,.8,.18,1) both;
+}
+.world-unit.hero.vael.motion-intercept .hero-art-wrap{
+  animation:vaelInterceptBody .98s cubic-bezier(.16,.8,.18,1) both;
+  filter:drop-shadow(0 0 18px rgba(119,192,255,.5));
+}
+.world-unit.hero.vael.motion-intercept .hero-art-sprite{
+  animation:vaelInterceptSprite .98s ease both;
+}
+.world-unit.hero.vael.motion-intercept .hero-art-wrap:before{
+  width:118px;
+  height:118px;
+  bottom:8px;
+  border:3px solid rgba(132,204,255,.86);
+  border-left-color:rgba(132,204,255,.15);
+  border-radius:50%;
+  background:
+    radial-gradient(circle,rgba(136,190,255,.09),transparent 58%),
+    conic-gradient(from 210deg,transparent 0 22%,rgba(153,212,255,.8) 28% 34%,transparent 40% 100%);
+  box-shadow:0 0 30px rgba(97,180,255,.38),inset 0 0 24px rgba(97,180,255,.15);
+  opacity:0;
+  filter:none;
+  animation:vaelShieldArc .98s ease both;
+}
+.world-unit.hero.vael.motion-intercept .hero-art-wrap:after{
+  content:"";
+  position:absolute;
+  z-index:-1;
+  left:-42px;
+  top:24px;
+  width:90px;
+  height:86px;
+  border-radius:48%;
+  background:radial-gradient(ellipse,rgba(118,181,255,.22),rgba(99,106,207,.08) 45%,transparent 70%);
+  filter:blur(4px);
+  opacity:0;
+  animation:vaelAfterImage .98s ease both;
+}
+
+.world-unit.hero.vael.motion-finish{
+  z-index:25;
+  animation:vaelFinishUnit .9s cubic-bezier(.16,.86,.2,1);
+}
+.world-unit.hero.vael.motion-finish .hero-art-wrap{
+  animation:vaelFinishBody .9s cubic-bezier(.16,.86,.2,1);
+  filter:drop-shadow(0 0 16px rgba(246,213,119,.42));
+}
+.world-unit.hero.vael.motion-finish .hero-art-wrap:before{
+  width:125px;
+  height:125px;
+  bottom:3px;
+  border-radius:50%;
+  background:
+    conic-gradient(from 25deg,transparent 0 24%,rgba(255,225,145,.74) 28% 31%,transparent 34% 58%,rgba(151,183,255,.55) 62% 66%,transparent 70% 100%);
+  opacity:0;
+  filter:drop-shadow(0 0 8px rgba(248,210,121,.42));
+  animation:vaelFinishHalo .9s ease both;
+}
+
+@keyframes vaelIdleBreath{
+  0%,100%{transform:translateY(0) rotate(-.35deg) scale(1)}
+  48%{transform:translateY(-3px) rotate(.35deg) scale(1.012)}
+  62%{transform:translateY(-2px) rotate(.1deg) scale(1.008)}
+}
+@keyframes vaelLaneMove{
+  0%{filter:blur(0);transform:translate(-50%,-82%) scale(1)}
+  24%{filter:blur(.6px);transform:translate(-54%,-86%) scale(1.035)}
+  64%{filter:blur(.2px);transform:translate(-48%,-83%) scale(1.01)}
+  100%{filter:blur(0);transform:translate(-50%,-82%) scale(1)}
+}
+@keyframes vaelMoveBody{
+  0%{transform:rotate(0) translateY(0)}
+  30%{transform:rotate(-4deg) translateY(-7px) scaleX(.97)}
+  68%{transform:rotate(2deg) translateY(-2px)}
+  100%{transform:rotate(0) translateY(0)}
+}
+@keyframes vaelShadowSkid{
+  0%,100%{transform:translateX(-50%) scaleX(1);opacity:.3}
+  38%{transform:translateX(-50%) scaleX(1.28);opacity:.18}
+}
+@keyframes vaelReady{
+  0%{transform:translateY(0) rotate(0)}
+  42%{transform:translateY(3px) rotate(-3deg) scale(.985)}
+  72%{transform:translateY(-2px) rotate(1deg) scale(1.012)}
+  100%{transform:translateY(0) rotate(0)}
+}
+@keyframes vaelReadySprite{
+  0%,100%{filter:drop-shadow(0 8px 6px rgba(0,0,0,.35))}
+  58%{filter:drop-shadow(0 7px 6px rgba(0,0,0,.35)) drop-shadow(10px 0 10px rgba(115,188,255,.22))}
+}
+@keyframes vaelGuardLabel{
+  0%,18%{opacity:0;transform:translate(-50%,5px)}
+  35%,72%{opacity:1;transform:translate(-50%,0)}
+  100%{opacity:0;transform:translate(-50%,-5px)}
+}
+@keyframes vaelHitUnit{
+  0%{transform:translate(-50%,-82%)}
+  18%{transform:translate(-61%,-80%) rotate(-4deg)}
+  42%{transform:translate(-54%,-84%) rotate(2deg)}
+  72%{transform:translate(-48%,-82%)}
+  100%{transform:translate(-50%,-82%)}
+}
+@keyframes vaelHitBody{
+  0%,100%{transform:translateY(0)}
+  22%{transform:translateY(5px) rotate(-5deg) scale(.96)}
+  58%{transform:translateY(-2px) rotate(2deg) scale(1.01)}
+}
+@keyframes vaelHitFlash{
+  0%,100%{filter:drop-shadow(0 8px 6px rgba(0,0,0,.35))}
+  16%{filter:brightness(1.75) saturate(.65) drop-shadow(0 0 13px rgba(255,194,143,.85))}
+  40%{filter:brightness(.92) saturate(.9) drop-shadow(0 7px 6px rgba(0,0,0,.35))}
+}
+@keyframes vaelImpactSlash{
+  0%{opacity:0;transform:translateX(25px) rotate(-10deg) scaleX(.2)}
+  26%{opacity:1;transform:translateX(2px) rotate(-10deg) scaleX(1.12)}
+  100%{opacity:0;transform:translateX(-20px) rotate(-10deg) scaleX(1.3)}
+}
+@keyframes vaelInterceptUnit{
+  0%{transform:translate(-50%,-82%);filter:blur(0)}
+  18%{transform:translate(-60%,-86%) scale(.96);filter:blur(0)}
+  38%{transform:translate(-7%,-91%) scale(1.08);filter:blur(.5px)}
+  52%{transform:translate(4%,-90%) scale(1.11);filter:blur(0)}
+  67%{transform:translate(-2%,-88%) scale(1.06)}
+  100%{transform:translate(-50%,-82%) scale(1)}
+}
+@keyframes vaelInterceptBody{
+  0%{transform:rotate(0)}
+  22%{transform:rotate(-7deg) translateY(2px)}
+  48%{transform:rotate(5deg) translateY(-5px) scale(1.025)}
+  66%{transform:rotate(1deg) translateY(-2px)}
+  100%{transform:rotate(0) translateY(0)}
+}
+@keyframes vaelInterceptSprite{
+  0%,100%{filter:drop-shadow(0 8px 6px rgba(0,0,0,.35))}
+  34%{filter:brightness(1.06) drop-shadow(12px 0 13px rgba(128,198,255,.58))}
+  51%{filter:brightness(1.2) drop-shadow(16px 0 18px rgba(153,213,255,.78))}
+  74%{filter:drop-shadow(7px 0 12px rgba(112,179,255,.42))}
+}
+@keyframes vaelShieldArc{
+  0%,25%{opacity:0;transform:translateX(-50%) scale(.45) rotate(-50deg)}
+  42%{opacity:1;transform:translateX(-50%) scale(1.04) rotate(0)}
+  58%{opacity:.96;transform:translateX(-50%) scale(1.13) rotate(22deg)}
+  100%{opacity:0;transform:translateX(-50%) scale(1.35) rotate(70deg)}
+}
+@keyframes vaelAfterImage{
+  0%,20%{opacity:0;transform:translateX(-10px) scale(.88)}
+  34%{opacity:.9;transform:translateX(0) scale(1)}
+  65%{opacity:.35;transform:translateX(35px) scale(1.05)}
+  100%{opacity:0;transform:translateX(58px) scale(1.08)}
+}
+@keyframes vaelFinishUnit{
+  0%{transform:translate(-50%,-82%)}
+  20%{transform:translate(-57%,-86%) scale(.98)}
+  46%{transform:translate(2%,-92%) scale(1.1)}
+  62%{transform:translate(5%,-86%) scale(1.13)}
+  78%{transform:translate(-18%,-82%) scale(1.04)}
+  100%{transform:translate(-50%,-82%) scale(1)}
+}
+@keyframes vaelFinishBody{
+  0%{transform:rotate(0)}
+  24%{transform:rotate(-8deg) translateY(3px)}
+  48%{transform:rotate(7deg) translateY(-7px)}
+  64%{transform:rotate(2deg) translateY(-2px)}
+  100%{transform:rotate(0) translateY(0)}
+}
+@keyframes vaelFinishHalo{
+  0%,20%{opacity:0;transform:translateX(-50%) scale(.45) rotate(-35deg)}
+  45%{opacity:.95;transform:translateX(-50%) scale(1.05) rotate(15deg)}
+  65%{opacity:.72;transform:translateX(-50%) scale(1.28) rotate(72deg)}
+  100%{opacity:0;transform:translateX(-50%) scale(1.6) rotate(120deg)}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .world-unit.hero.vael,
+  .world-unit.hero.vael .hero-art-wrap,
+  .world-unit.hero.vael .hero-art-sprite{
+    animation-duration:.01ms!important;
+    animation-iteration-count:1!important;
+  }
+}
