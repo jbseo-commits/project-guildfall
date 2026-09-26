@@ -32,7 +32,7 @@ jobs:
       - name: Capture actual game screenshots
         run: |
           mkdir -p visual-qa
-          cat > /tmp/capture.cjs <<'NODE'
+          cat > capture.cjs <<'NODE'
           const { chromium } = require('playwright');
 
           async function capture(width, height, prefix) {
@@ -57,7 +57,7 @@ jobs:
             await capture(1536, 864, 'desktop-16x9');
           })();
           NODE
-          node /tmp/capture.cjs
+          node capture.cjs
       - name: Upload visual QA artifact
         uses: actions/upload-artifact@v4
         with:
