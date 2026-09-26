@@ -31,7 +31,7 @@ const PROGRESS=[
   {id:'next',label:'다음',sub:'선택지'}
 ];
 
-const state={phase:'read',selected:null,heroes:null,enemies:null,speed:1,timers:[],logs:[],routeIndex:0,result:null};
+const state={phase:'read',selected:null,heroes:null,enemies:null,speed:1,timers:[],logs:[],routeIndex:0,result:null,resonance:[],resonanceTriggered:false};
 
 function clone(v){return JSON.parse(JSON.stringify(v));}
 function clearTimers(){state.timers.forEach(clearTimeout);state.timers=[];}
@@ -41,7 +41,7 @@ function heroAtLane(lane){const h=Object.values(state.heroes).find(function(x){r
 function reset(){
   clearTimers();
   state.phase='read';state.selected=null;state.heroes=clone(HEROES);state.enemies=clone(ENEMIES);
-  state.speed=1;state.logs=[];state.routeIndex=0;state.result=null;
+  state.speed=1;state.logs=[];state.routeIndex=0;state.result=null;state.resonance=[];state.resonanceTriggered=false;
 }
 
 function heroSprite(id,small){
@@ -58,11 +58,19 @@ function enemySprite(id,small){
   return '<div class="enemy-sprite '+id+(small?' mini':'')+'"><i class="ground-shadow"></i><i class="ear a"></i><i class="ear b"></i>'
     +'<i class="body"></i><i class="head"><b></b><b></b></i><i class="weapon"></i></div>';
 }
-function progressIndex(){return {read:0,place:1,battle:2,result:3,next:4}[state.phase]||0;}
+function progressIndex(){return {read:0,place:1,battle:2,result:3,next:1,battle2:2,result2:3,complete:4}[state.phase]||0;}
 
 function renderProgress(){
+  const resonancePhase=['next','battle2','result2','complete'].includes(state.phase);
+  const items=resonancePhase?[
+    {label:'이해',sub:'공명 규칙'},
+    {label:'연결',sub:'동료 2명 선택'},
+    {label:'반응',sub:'조건 자동 발동'},
+    {label:'결과',sub:'연쇄 복기'},
+    {label:'다음',sub:'명령 예고'}
+  ]:PROGRESS;
   const cur=progressIndex();
-  return '<div class="progress-track">'+PROGRESS.map(function(item,i){
+  return '<div class="progress-track '+(resonancePhase?'resonance-progress':'')+'">'+items.map(function(item,i){
     return '<button class="progress-node '+(i<cur?'done ':'')+(i===cur?'active':'')+'">'
       +'<i>'+(i<cur?'✓':i+1)+'</i><b>'+item.label+'</b><span>'+item.sub+'</span></button>';
   }).join('')+'</div>';
@@ -108,12 +116,62 @@ function tutorialPanel(){
       +'<button class="paper-cta primary" id="nextRoute">첫 번째 여정으로 →</button></aside>';
   }
   if(state.phase==='next'){
-    return '<aside class="tutorial-paper next-paper"><div class="paper-ribbon">튜토리얼 완료</div><h2>이제 카라반을 움직입니다</h2>'
-      +'<p>다음 전투부터는 <b>공명</b>이 추가됩니다. 두 동료를 연결하면 특정 상황에서 서로 자동 반응합니다.</p>'
-      +'<div class="unlock-card"><span>NEW</span><strong>공명 · 수호의 월식</strong><em>세리스가 큰 피해를 받으면 베일이 자동으로 가로막습니다.</em></div>'
-      +'<button class="paper-cta" id="replay">튜토리얼 다시 보기</button></aside>';
+    const heroButtons=['vael','seris','mirel'].map(function(id){
+      const h=state.heroes[id],on=state.resonance.includes(id);
+      return '<button class="resonance-hero '+(on?'selected':'')+'" data-reshero="'+id+'"><span>'+heroSprite(id,true)+'</span><b>'+h.name+'</b><em>'+h.role+'</em></button>';
+    }).join('');
+    const pair=resonancePairInfo();
+    return '<aside class="tutorial-paper next-paper resonance-paper"><div class="paper-ribbon">튜토리얼 2 · 공명</div><h2>두 동료를 연결하세요</h2>'
+      +'<p>공명은 능력치 보너스가 아니라 <b>조건 → 자동 반응</b>을 추가합니다. 두 명을 선택해 하나의 행동 사슬을 만드세요.</p>'
+      +'<div class="resonance-picker">'+heroButtons+'</div>'
+      +(pair?'<div class="resonance-preview"><span>TRIGGER → REACTION</span><strong>'+pair.name+'</strong><em>'+pair.desc+'</em></div>':'<div class="resonance-empty">동료 2명을 선택하면 공명 규칙이 나타납니다.</div>')
+      +'<button class="paper-cta primary" id="startResonance" '+(state.resonance.length===2?'':'disabled')+'>공명 전투 시작 →</button></aside>';
+  }
+  if(state.phase==='battle2'){
+    const pair=resonancePairInfo();
+    return '<aside class="tutorial-paper battle-paper resonance-watch"><div class="paper-ribbon">공명 · 실전</div><h2>'+pair.name+'</h2>'
+      +'<p>'+pair.desc+'</p><div class="resonance-chain"><span>1 · 조건 감지</span><i>→</i><span>2 · 자동 반응</span><i>→</i><span>3 · 전투 결과 변화</span></div>'
+      +'<div class="battle-paper-note">직접 스킬을 누르지 마세요. 연결해 둔 두 동료가 스스로 반응합니다.</div></aside>';
+  }
+  if(state.phase==='result2'){
+    const pair=resonancePairInfo();
+    return '<aside class="tutorial-paper result-paper resonance-result"><div class="paper-ribbon">공명 · 복기</div><h2>'+(state.resonanceTriggered?'공명이 실제로 작동했습니다':'조건이 맞지 않았습니다')+'</h2>'
+      +'<p><b>'+pair.name+'</b> · '+pair.desc+'</p>'
+      +'<div class="resonance-result-chain"><div class="'+(state.resonanceTriggered?'good':'bad')+'"><i>'+(state.resonanceTriggered?'✓':'!')+'</i><span><b>TRIGGER</b><em>'+resonanceTriggerText()+'</em></span></div>'
+      +'<div class="'+(state.resonanceTriggered?'good':'bad')+'"><i>'+(state.resonanceTriggered?'✓':'!')+'</i><span><b>REACTION</b><em>'+resonanceReactionText()+'</em></span></div></div>'
+      +'<button class="paper-cta primary" id="finishResonance">다음 시스템으로 →</button></aside>';
+  }
+  if(state.phase==='complete'){
+    return '<aside class="tutorial-paper next-paper"><div class="paper-ribbon">공명 학습 완료</div><h2>이제 ‘명령’을 배웁니다</h2>'
+      +'<p>배치는 <b>어디서</b> 싸울지 정했고, 공명은 <b>서로 어떻게 반응할지</b> 정했습니다. 다음은 전투 전에 한 가지 우선 명령을 심는 단계입니다.</p>'
+      +'<div class="unlock-card"><span>NEXT</span><strong>전술 명령</strong><em>조건 하나를 골라 카라반 전체의 첫 반응을 바꿉니다.</em></div>'
+      +'<button class="paper-cta" id="replay">처음부터 다시 보기</button></aside>';
   }
   return '';
+}
+
+function resonancePairInfo(){
+  if(state.resonance.length!==2)return null;
+  const key=state.resonance.slice().sort().join('+');
+  const map={
+    'seris+vael':{key:key,name:'수호의 월식',desc:'세리스가 저격 표적이 되면 베일이 위치와 상관없이 끼어들어 피해를 대신 받습니다.'},
+    'mirel+vael':{key:key,name:'철화의 맹세',desc:'베일의 체력이 크게 떨어지면 미렐이 일반 치유보다 먼저 긴급 회복을 발동합니다.'},
+    'mirel+seris':{key:key,name:'월화 개화',desc:'미렐의 치유가 성공하면 세리스의 월광 의식이 즉시 가속되어 더 강한 폭발로 이어집니다.'}
+  };
+  return map[key];
+}
+function hasResonance(a,b){
+  return state.resonance.includes(a)&&state.resonance.includes(b);
+}
+function resonanceTriggerText(){
+  if(hasResonance('vael','seris'))return '세리스가 후열 저격의 표적이 됨';
+  if(hasResonance('vael','mirel'))return '베일의 HP가 85% 아래로 내려감';
+  return '미렐의 치유가 동료에게 적중함';
+}
+function resonanceReactionText(){
+  if(hasResonance('vael','seris'))return '베일이 자동 INTERCEPT → 세리스 집중 유지';
+  if(hasResonance('vael','mirel'))return '미렐이 긴급 꽃맥박 → 베일 즉시 회복';
+  return '세리스 의식 가속 → 월광 폭발 피해 증가';
 }
 
 function routeMap(){
@@ -136,7 +194,7 @@ function campScene(){
 }
 
 function battleScene(){
-  const battle=state.phase==='battle';
+  const battle=state.phase==='battle'||state.phase==='battle2';
   const front=heroAtLane(0),mid=heroAtLane(1),rear=heroAtLane(2);
   const pos=[{x:35,y:61},{x:45,y:67},{x:54,y:61}];
   const enemies=[{id:'breaker',x:74,y:59},{id:'hound',x:81,y:66},{id:'hunter',x:88,y:55}].map(function(e){
@@ -156,7 +214,14 @@ function battleScene(){
     return '<div class="log-line '+(l.danger?'danger':'')+'"><i>'+(l.danger?'!':'●')+'</i><span>'+l.text+'</span></div>';
   }).join('');
 
-  return '<section class="battle-zone"><div class="battle-bg" style="--art:url('+APPROVED_CONCEPT_ART+')"></div><div class="battle-grade"></div>'
+  let resonanceLine='';
+  if(state.resonance.length===2){
+    const a=state.heroes[state.resonance[0]].lane,b=state.heroes[state.resonance[1]].lane;
+    const coords=[{x:350,y:255},{x:450,y:280},{x:540,y:255}],p1=coords[a],p2=coords[b];
+    resonanceLine='<svg class="resonance-pair-line '+(state.phase==='battle2'?'active':'')+'" viewBox="0 0 1000 420" preserveAspectRatio="none"><path d="M'+p1.x+' '+p1.y+' Q'+((p1.x+p2.x)/2)+' '+(Math.min(p1.y,p2.y)-55)+' '+p2.x+' '+p2.y+'"/><circle cx="'+p1.x+'" cy="'+p1.y+'" r="6"/><circle cx="'+p2.x+'" cy="'+p2.y+'" r="6"/></svg>';
+  }
+
+  return '<section class="battle-zone"><div class="battle-bg" style="--art:url('+APPROVED_CONCEPT_ART+')"></div><div class="battle-grade"></div>'+resonanceLine
     +'<div class="battle-controls"><b>'+(battle?'전투 중…':state.phase==='result'?'전투 종료':'배치 준비')+'</b><button>Ⅱ</button><button id="speedBtn">×'+state.speed+'</button></div>'
     +'<svg class="battle-arrows" viewBox="0 0 1000 420" preserveAspectRatio="none"><defs><marker id="redEnd" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0 0 L0 6 L8 3z" fill="#ee6a5f"/></marker><marker id="blueEnd" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0 0 L0 6 L8 3z" fill="#6db5ff"/></marker></defs><path class="arr red" d="M795 185 Q690 190 380 245" marker-end="url(#redEnd)"/><path class="arr blue" d="M840 255 Q700 245 560 235" marker-end="url(#blueEnd)"/></svg>'
     +enemies+allies+'<div class="shield-fx"></div><div class="heal-fx">✦ ✦ ✦</div><div class="moon-fx"></div><div class="hit-fx"></div>'
@@ -185,7 +250,18 @@ function bind(){
     el.addEventListener('click',function(){if(state.phase!=='place'||!state.selected)return;moveSelected(Number(el.dataset.lane));});
   });
   app.querySelector('#commit')?.addEventListener('click',startBattle);
-  app.querySelector('#nextRoute')?.addEventListener('click',function(){state.phase='next';state.routeIndex=1;render();});
+  app.querySelector('#nextRoute')?.addEventListener('click',function(){state.phase='next';state.routeIndex=1;state.resonance=[];render();});
+  app.querySelectorAll('[data-reshero]').forEach(function(el){
+    el.addEventListener('click',function(){
+      const id=el.dataset.reshero;
+      if(state.resonance.includes(id))state.resonance=state.resonance.filter(function(x){return x!==id;});
+      else if(state.resonance.length<2)state.resonance.push(id);
+      else state.resonance=[state.resonance[1],id];
+      render();
+    });
+  });
+  app.querySelector('#startResonance')?.addEventListener('click',startResonanceBattle);
+  app.querySelector('#finishResonance')?.addEventListener('click',function(){state.phase='complete';state.routeIndex=2;render();});
   app.querySelector('#replay')?.addEventListener('click',function(){reset();render();});
   app.querySelector('#speedBtn')?.addEventListener('click',function(){
     if(state.phase==='battle') return;
@@ -323,6 +399,121 @@ function startBattle(){
   },6400);
 
   later(function(){state.phase='result';state.result={front:front,rear:rear};render();},7400);
+}
+
+function startResonanceBattle(){
+  if(state.resonance.length!==2)return;
+  clearTimers();
+  state.phase='battle2';
+  state.logs=[];
+  state.resonanceTriggered=false;
+  Object.values(state.heroes).forEach(function(h){h.hp=100;});
+  state.enemies=clone(ENEMIES);
+  render();
+
+  const front=heroAtLane(0),rear=heroAtLane(2);
+
+  later(function(){
+    pushLog('공명 연결이 활성화되었습니다.');
+    app.querySelector('.resonance-pair-line')?.classList.add('flare');
+  },300);
+
+  later(function(){
+    app.querySelector('.enemy.breaker')?.classList.add('charge');
+    app.querySelector('.ally.'+front)?.classList.add('targeted');
+    if(front==='vael')pulseMotion('vael','ready',620);
+    pushLog(state.heroes[front].name+'이(가) 첫 강공격의 표적이 됩니다.');
+  },650);
+
+  later(function(){
+    const dmg=front==='vael'?24:44;
+    setHeroHp(front,state.heroes[front].hp-dmg,'첫 충돌');
+    if(front==='vael')pulseMotion('vael','hit',520);
+    app.querySelector('.hit-fx')?.classList.add('play');
+    pushLog(state.heroes[front].name+'의 HP가 감소했습니다.',front!=='vael');
+  },1200);
+
+  later(function(){
+    if(hasResonance('vael','mirel')&&state.heroes.vael.hp<85){
+      state.resonanceTriggered=true;
+      pulseMotion('mirel','sense',420);
+      pulseMotion('vael','ready',520);
+      app.querySelector('.resonance-pair-line')?.classList.add('triggered');
+      pushLog('공명 발동 · 철화의 맹세',false);
+      later(function(){
+        pulseMotion('mirel','heal',900);
+        setHeroHp('vael',state.heroes.vael.hp+22,'긴급 꽃맥박');
+        app.querySelector('.ally.vael')?.classList.add('healing-target');
+        app.querySelector('.heal-fx')?.classList.add('play');
+      },260);
+    }
+  },1550);
+
+  later(function(){
+    app.querySelector('.enemy.hunter')?.classList.add('aim');
+    app.querySelector('.ally.'+rear)?.classList.add('targeted');
+    if(rear==='seris')pulseMotion('seris','danger',620);
+    pushLog('맹안 추적자가 '+state.heroes[rear].name+'을(를) 노립니다.',true);
+  },2050);
+
+  later(function(){
+    if(hasResonance('vael','seris')&&rear==='seris'){
+      state.resonanceTriggered=true;
+      app.querySelector('.resonance-pair-line')?.classList.add('triggered');
+      pulseMotion('vael','intercept',980);
+      pulseMotion('seris','steady',720);
+      setHeroHp('vael',state.heroes.vael.hp-12,'공명 INTERCEPT');
+      app.querySelector('.shield-fx')?.classList.add('play');
+      pushLog('공명 발동 · 수호의 월식');
+    }else{
+      setHeroHp(rear,state.heroes[rear].hp-30,'후열 저격');
+      if(rear==='seris')pulseMotion('seris','hit',620);
+      pushLog(state.heroes[rear].name+'이(가) 저격 피해를 받았습니다.',true);
+    }
+  },2500);
+
+  later(function(){
+    const weak=Object.keys(state.heroes).sort(function(a,b){return state.heroes[a].hp-state.heroes[b].hp;})[0];
+    pulseMotion('mirel','heal',920);
+    setHeroHp(weak,state.heroes[weak].hp+20,'꽃맥박');
+    app.querySelector('.ally.'+weak)?.classList.add('healing-target');
+    app.querySelector('.heal-fx')?.classList.add('play');
+    pushLog('미렐이 '+state.heroes[weak].name+'을(를) 치유합니다.');
+
+    if(hasResonance('seris','mirel')){
+      state.resonanceTriggered=true;
+      app.querySelector('.resonance-pair-line')?.classList.add('triggered');
+      pulseMotion('seris','channel',1450);
+      pushLog('공명 발동 · 월화 개화');
+    }
+  },3200);
+
+  later(function(){
+    if(!hasResonance('seris','mirel'))pulseMotion('seris','channel',1450);
+    pushLog('세리스가 월광 의식을 완성합니다.');
+  },3950);
+
+  later(function(){
+    pulseMotion('seris','burst',1080);
+    app.querySelector('.moon-fx')?.classList.add('play');
+    const bonus=hasResonance('seris','mirel')&&state.resonanceTriggered;
+    setEnemyHp('breaker',0);
+    setEnemyHp('hound',bonus?0:14);
+    setEnemyHp('hunter',bonus?0:24);
+    pushLog(bonus?'공명 증폭 월광이 전장을 휩쓸었습니다.':'월광 폭발이 적을 크게 약화시켰습니다.');
+  },4950);
+
+  later(function(){
+    setEnemyHp('hound',0);setEnemyHp('hunter',0);
+    pulseMotion('vael','finish',820);
+    pulseMotion('seris','recover',760);
+  },5750);
+
+  later(function(){
+    state.phase='result2';
+    state.routeIndex=2;
+    render();
+  },6600);
 }
 
 function causeChain(){
