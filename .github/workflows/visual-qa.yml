@@ -47,8 +47,20 @@ jobs:
             await page.screenshot({ path: 'visual-qa/' + prefix + '-placement.png' });
 
             await page.locator('#commit').click();
-            await page.waitForTimeout(3100);
+            const battleStartedAt = Date.now();
+
+            async function shotAt(offset, name) {
+              const elapsed = Date.now() - battleStartedAt;
+              const remaining = Math.max(0, offset - elapsed);
+              if (remaining) await page.waitForTimeout(remaining);
+              await page.screenshot({ path: 'visual-qa/' + prefix + '-' + name + '.png' });
+            }
+
+            await shotAt(980, 'battle-charge');
+            await shotAt(2800, 'battle-intercept');
             await page.screenshot({ path: 'visual-qa/' + prefix + '-battle.png' });
+            await shotAt(5650, 'battle-burst');
+            await shotAt(7100, 'battle-finish');
             await browser.close();
           }
 

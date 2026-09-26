@@ -240,10 +240,17 @@ function battleScene(){
     resonanceLine='<svg class="resonance-pair-line '+(state.phase==='battle2'?'active':'')+'" viewBox="0 0 1000 420" preserveAspectRatio="none"><path d="M'+p1.x+' '+p1.y+' Q'+((p1.x+p2.x)/2)+' '+(Math.min(p1.y,p2.y)-55)+' '+p2.x+' '+p2.y+'"/><circle cx="'+p1.x+'" cy="'+p1.y+'" r="6"/><circle cx="'+p2.x+'" cy="'+p2.y+'" r="6"/></svg>';
   }
 
-  return '<section class="battle-zone"><div class="battle-bg" style="background-image:url(\''+arenaArt+'\')"></div><div class="battle-texture" style="background-image:url(\''+BATTLE_PLATE+'\')"></div><div class="battle-grade"></div>'+resonanceLine
+  const frontPoint=pos[0],rearPoint=pos[2];
+  const breakerFrom={x:63,y:59},hunterFrom={x:74,y:55};
+  const motionSvg='<svg class="combat-motion-svg" viewBox="0 0 1000 420" preserveAspectRatio="none" aria-hidden="true">'
+    +'<path class="breaker-motion-path" d="M'+(breakerFrom.x*10)+' '+(breakerFrom.y*4.2)+' Q520 220 '+(frontPoint.x*10)+' '+(frontPoint.y*4.2)+'"/>'
+    +'<path class="hunter-shot-path" d="M'+(hunterFrom.x*10)+' '+(hunterFrom.y*4.2)+' Q650 200 '+(rearPoint.x*10)+' '+(rearPoint.y*4.2)+'"/>'
+    +'</svg>';
+
+  return '<section class="battle-zone"><div class="battle-bg" style="background-image:url(\''+arenaArt+'\')"></div><div class="battle-texture" style="background-image:url(\''+BATTLE_PLATE+'\')"></div><div class="battle-grade"></div>'+resonanceLine+motionSvg
     +'<div class="battle-controls"><b>'+(battle?'전투 중…':state.phase==='result'?'전투 종료':'배치 준비')+'</b><button>Ⅱ</button><button id="speedBtn">×'+state.speed+'</button></div>'
     +'<svg class="battle-arrows" viewBox="0 0 1000 420" preserveAspectRatio="none"><defs><marker id="redEnd" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0 0 L0 6 L8 3z" fill="#ee6a5f"/></marker><marker id="blueEnd" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0 0 L0 6 L8 3z" fill="#6db5ff"/></marker></defs><path class="arr red" d="M795 185 Q690 190 380 245" marker-end="url(#redEnd)"/><path class="arr blue" d="M840 255 Q700 245 560 235" marker-end="url(#blueEnd)"/></svg>'
-    +enemies+allies+'<div class="shield-fx"></div><div class="heal-fx">✦ ✦ ✦</div><div class="moon-fx"></div><div class="hit-fx"></div>'
+    +enemies+allies+'<div class="shield-fx"></div><div class="heal-fx">✦ ✦ ✦</div><div class="moon-fx"></div><div class="hit-fx"></div><div class="combat-impact-flash"></div><div class="combat-callout"></div>'
     +'<div class="battle-dialogue"><div class="dialogue-portrait camp-seris-portrait" style="background-image:url(\''+CAMP_PLATE+'\')"></div><div><b>세리스</b><span>'
     +(battle?'적의 후열에 저격수가 있어. 내가 집중하고 있는 동안 부탁할게…!':'후열에 저격수가 있어. 누가 내 앞을 막을지 정해줘.')+'</span></div></div>'
     +'<div class="combat-log"><div class="log-title">전투 기록</div>'+logs+'</div>'
@@ -299,6 +306,32 @@ function pulseMotion(id,motion,ms){
   later(function(){unit.classList.remove('motion-'+motion);},ms||520);
 }
 
+function pulseSelector(selector,className,ms){
+  const el=app.querySelector(selector);
+  if(!el)return;
+  el.classList.add(className);
+  later(function(){el.classList.remove(className);},ms||520);
+}
+function battleBeat(className,ms){
+  const zone=app.querySelector('.battle-zone');
+  if(!zone)return;
+  zone.classList.add(className);
+  later(function(){zone.classList.remove(className);},ms||320);
+}
+function combatCallout(text,tone,ms){
+  const el=app.querySelector('.combat-callout');
+  if(!el)return;
+  el.className='combat-callout show '+(tone||'');
+  el.textContent=text;
+  later(function(){el.className='combat-callout';el.textContent='';},ms||650);
+}
+function hitStop(ms){
+  const zone=app.querySelector('.battle-zone');
+  if(!zone)return;
+  zone.classList.add('hitstop');
+  later(function(){zone.classList.remove('hitstop');},ms||110);
+}
+
 function moveSelected(target){
   const id=state.selected,old=state.heroes[id].lane;
   const other=Object.values(state.heroes).find(function(h){return h.id!==id&&h.lane===target;});
@@ -336,88 +369,129 @@ function startBattle(){
   const front=heroAtLane(0),rear=heroAtLane(2);
 
   later(function(){
-    pushLog(state.heroes[front].name+'이(가) 첫 강공격의 표적이 됩니다.');
-    app.querySelector('.enemy.breaker')?.classList.add('charge');
-    app.querySelector('.ally.'+front)?.classList.add('targeted');
-    if(front==='vael')pulseMotion('vael','ready',620);
-  },500);
+    pushLog('수정 파쇄자가 '+state.heroes[front].name+'을(를) 강공격 대상으로 고정합니다.');
+    pulseSelector('.enemy.breaker','motion-windup',720);
+    pulseSelector('.ally.'+front,'danger-lock',760);
+    battleBeat('beat-warning',720);
+    combatCallout('강공격 예고','danger',720);
+    if(front==='vael')pulseMotion('vael','ready',760);
+  },350);
+
+  later(function(){
+    pulseSelector('.enemy.breaker','motion-lunge',600);
+    battleBeat('breaker-path-live',620);
+    combatCallout('파쇄 돌진','danger',520);
+  },900);
 
   later(function(){
     const dmg=front==='vael'?22:46;
+    hitStop(120);
+    battleBeat('impact-beat',420);
+    pulseSelector('.enemy.breaker','motion-recoil',520);
     setHeroHp(front,state.heroes[front].hp-dmg,'첫 충돌');
-    if(front==='vael')pulseMotion('vael','hit',520);
-    else app.querySelector('.ally.'+front)?.classList.add('hit');
+    if(front==='vael')pulseMotion('vael','hit',620);
+    else pulseSelector('.ally.'+front,'hit',620);
     app.querySelector('.hit-fx')?.classList.add('play');
-    pushLog(state.heroes[front].name+'이(가) 전열 공격을 받았습니다.',front!=='vael');
-  },1200);
+    pulseSelector('.combat-impact-flash','play',360);
+    pushLog(state.heroes[front].name+'이(가) 파쇄 돌진을 버텼습니다.',front!=='vael');
+  },1280);
 
   later(function(){
-    app.querySelector('.enemy.hunter')?.classList.add('aim');
-    app.querySelector('.ally.'+rear)?.classList.add('targeted');
-    if(rear==='seris')pulseMotion('seris','danger',680);
-    pushLog('맹안 추적자가 '+state.heroes[rear].name+'을(를) 노립니다.',true);
-  },1800);
+    pulseSelector('.enemy.hunter','motion-aim-lock',980);
+    pulseSelector('.ally.'+rear,'danger-lock',1000);
+    battleBeat('hunter-aim-live',1050);
+    if(rear==='seris')pulseMotion('seris','danger',760);
+    combatCallout('후열 조준','danger',700);
+    pushLog('맹안 추적자가 '+state.heroes[rear].name+'을(를) 조준합니다.',true);
+  },1850);
+
+  later(function(){
+    pulseSelector('.enemy.hunter','motion-fire',680);
+    battleBeat('hunter-shot-live',720);
+    combatCallout('저격 발사','danger',480);
+  },2350);
 
   later(function(){
     if(front==='vael'&&rear==='seris'){
+      hitStop(90);
       setHeroHp('vael',state.heroes.vael.hp-14,'INTERCEPT');
-      pulseMotion('vael','intercept',980);
-      pulseMotion('seris','steady',720);
+      pulseMotion('vael','intercept',1120);
+      pulseMotion('seris','steady',820);
       app.querySelector('.shield-fx')?.classList.add('play');
-      pushLog('베일이 세리스 대신 공격을 받아냅니다. (수호 본능)');
+      battleBeat('guard-impact-beat',860);
+      combatCallout('INTERCEPT','guard',760);
+      pushLog('베일이 궤도에 끼어들어 세리스 대신 저격을 받아냅니다. (수호 본능)');
     }else{
+      hitStop(90);
       setHeroHp(rear,state.heroes[rear].hp-34,'후열 저격');
-      if(rear==='seris')pulseMotion('seris','hit',620);
-      else app.querySelector('.ally.'+rear)?.classList.add('hit');
+      if(rear==='seris')pulseMotion('seris','hit',720);
+      else pulseSelector('.ally.'+rear,'hit',720);
+      battleBeat('impact-beat',420);
       pushLog(state.heroes[rear].name+'이(가) 후열 저격을 맞았습니다.',true);
     }
-  },2500);
+  },2700);
 
   later(function(){
-    pulseMotion('mirel','sense',540);
+    pulseMotion('mirel','sense',620);
+    battleBeat('support-read-beat',620);
     const unit=app.querySelector('.ally.mirel small');
     if(unit)unit.textContent='위험 감지';
-  },2920);
+    combatCallout('위험 감지','heal',520);
+  },3160);
 
   later(function(){
     const weak=Object.keys(state.heroes).sort(function(a,b){return state.heroes[a].hp-state.heroes[b].hp;})[0];
-    pulseMotion('mirel','heal',1120);
+    pulseMotion('mirel','heal',1260);
     const target=app.querySelector('.ally.'+weak);
     if(target){
       target.classList.add('healing-target');
-      later(function(){target.classList.remove('healing-target');},900);
+      later(function(){target.classList.remove('healing-target');},1080);
     }
     setHeroHp(weak,state.heroes[weak].hp+24,'꽃맥박');
     app.querySelector('.heal-fx')?.classList.add('play');
-    pushLog('미렐이 '+state.heroes[weak].name+'을(를) 치유합니다.');
-  },3400);
+    battleBeat('heal-wave-beat',980);
+    combatCallout('꽃맥박 → '+state.heroes[weak].name,'heal',760);
+    pushLog('미렐이 가장 위험한 '+state.heroes[weak].name+'을(를) 치유합니다.');
+  },3520);
 
   later(function(){
     pulseMotion('mirel','recover',620);
-  },3970);
-
-  later(function(){
-    pulseMotion('seris','channel',1650);
+    pulseMotion('seris','channel',1880);
+    battleBeat('ritual-charge-beat',1900);
     const unit=app.querySelector('.ally.seris small');
-    if(unit)unit.textContent='월광 의식 · 집중';
-    pushLog('세리스가 월광 의식을 준비합니다.');
-  },4200);
+    if(unit)unit.textContent='월광 의식 · 가속';
+    combatCallout('월광 의식','moon',820);
+    pushLog('세리스가 보호받은 집중을 월광 의식으로 전환합니다.');
+  },4320);
 
   later(function(){
-    pulseMotion('seris','burst',1080);
+    battleBeat('ritual-peak-beat',520);
+    combatCallout('의식 완성','moon',520);
+  },5270);
+
+  later(function(){
+    hitStop(130);
+    pulseMotion('seris','burst',1280);
     app.querySelector('.moon-fx')?.classList.add('play');
+    battleBeat('moon-burst-beat',1180);
+    pulseSelector('.enemy.breaker','motion-stagger',900);
+    pulseSelector('.enemy.hound','motion-stagger',900);
+    pulseSelector('.enemy.hunter','motion-stagger',900);
     setEnemyHp('breaker',0);setEnemyHp('hound',18);setEnemyHp('hunter',32);
-    pushLog('월광 폭발이 적 전열을 휩쓸었습니다.');
-  },5300);
+    combatCallout('월광 폭발','moon',900);
+    pushLog('월광 폭발이 적 진형 전체를 무너뜨립니다.');
+  },5550);
 
   later(function(){
     setEnemyHp('hound',0);setEnemyHp('hunter',0);
-    pulseMotion('vael','finish',900);
-    pulseMotion('seris','recover',820);
-    pushLog('전투 종료. 원인을 복기합니다.');
-  },6400);
+    pulseMotion('vael','finish',980);
+    pulseMotion('seris','recover',880);
+    battleBeat('victory-beat',1100);
+    combatCallout('연쇄 완성','victory',880);
+    pushLog('전투 종료 · 배치 → 수호 → 치유 → 의식의 연쇄가 완성되었습니다.');
+  },6820);
 
-  later(function(){state.phase='result';state.result={front:front,rear:rear};render();},7400);
+  later(function(){state.phase='result';state.result={front:front,rear:rear};render();},8050);
 }
 
 function startResonanceBattle(){
