@@ -2607,3 +2607,158 @@ button{font:inherit;-webkit-tap-highlight-color:transparent}
 @media (orientation:landscape) and (min-height:651px){
   .enemy-sprite{transform:scale(1.08)}
 }
+
+
+/* =========================================================
+   SCREENSHOT QA POLISH V5
+   Preserve formation context during combat + dialogue portrait staging.
+   ========================================================= */
+
+.formation-card.locked{
+  cursor:default;
+  pointer-events:none;
+  border-color:#b7a385;
+  background:linear-gradient(180deg,#e3d2b4,#d7c3a2);
+}
+.phase-battle .battle-paper .battle-paper-note{
+  margin-top:9px;
+  padding:9px 10px;
+  border-radius:9px;
+  background:#3b322a;
+  color:#f2debb;
+  font-size:.5rem;
+  text-align:center;
+  font-weight:800;
+  letter-spacing:.02em;
+}
+
+.battle-bg{
+  filter:blur(1.5px) brightness(.86) saturate(1.02) contrast(1.07);
+}
+.battle-grade{
+  background:
+    linear-gradient(180deg,rgba(5,7,12,.01),rgba(5,6,10,.015) 55%,rgba(5,6,9,.25) 92%),
+    radial-gradient(circle at 49% 44%,rgba(118,126,176,.1),transparent 40%);
+}
+
+/* Target composition: portrait art sits outside a compact dialogue bubble. */
+.battle-dialogue{
+  background:transparent;
+  border:0;
+  box-shadow:none;
+  display:block;
+  padding:0;
+}
+.battle-dialogue .dialogue-portrait{
+  position:absolute;
+  left:0;
+  bottom:0;
+  width:42%;
+  height:100%;
+  overflow:visible;
+  display:grid;
+  place-items:end center;
+}
+.battle-dialogue>div:last-child{
+  position:absolute;
+  left:34%;
+  right:0;
+  bottom:8%;
+  min-height:42%;
+  padding:12px 13px;
+  border:2px solid #6a523a;
+  border-radius:8px;
+  background:#efe2c8;
+  color:#3b2b21;
+  box-shadow:0 8px 18px rgba(0,0,0,.32);
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+.battle-dialogue>div:last-child:before{
+  content:"";
+  position:absolute;
+  left:-13px;
+  bottom:24%;
+  border:12px solid transparent;
+  border-right-color:#6a523a;
+  border-left:0;
+}
+.battle-dialogue>div:last-child:after{
+  content:"";
+  position:absolute;
+  left:-10px;
+  bottom:calc(24% + 2px);
+  border:10px solid transparent;
+  border-right-color:#efe2c8;
+  border-left:0;
+}
+
+@media (orientation:landscape) and (min-height:651px){
+  .battle-dialogue{
+    left:.3%;
+    bottom:1%;
+    width:31%;
+    min-height:68%;
+  }
+  .dialogue-portrait .hero-art-wrap.small{
+    width:128px;
+    height:160px;
+    transform:scale(1.34);
+    transform-origin:center bottom;
+  }
+  .dialogue-portrait .hero-art-wrap.small .hero-art-sprite{
+    height:160px;
+    max-width:132px;
+  }
+  .battle-dialogue>div:last-child{
+    left:36%;
+    bottom:7%;
+    min-height:38%;
+    padding:13px 14px;
+  }
+  .battle-dialogue b{font-size:.82rem}
+  .battle-dialogue span{font-size:.62rem;line-height:1.45}
+}
+
+@media (orientation:landscape) and (max-height:650px){
+  .phase-battle .battle-paper{
+    padding:9px 10px 8px;
+  }
+  .phase-battle .battle-paper h2{font-size:.8rem}
+  .phase-battle .battle-paper>p{font-size:.42rem}
+  .phase-battle .battle-paper .formation-preview{margin-top:4px}
+  .phase-battle .battle-paper .formation-portrait{height:47px}
+  .phase-battle .battle-paper .formation-card small{display:none}
+  .phase-battle .battle-paper .battle-paper-note{
+    margin-top:5px;
+    padding:6px 8px;
+    font-size:.4rem;
+  }
+
+  .battle-dialogue{
+    left:2.5%;
+    bottom:.8%;
+    width:30.5%;
+    min-height:70%;
+  }
+  .dialogue-portrait .hero-art-wrap.small{
+    width:86px;
+    height:108px;
+    transform:scale(1.14);
+    transform-origin:center bottom;
+  }
+  .dialogue-portrait .hero-art-wrap.small .hero-art-sprite{
+    height:108px;
+    max-width:90px;
+  }
+  .battle-dialogue>div:last-child{
+    left:35%;
+    bottom:7%;
+    min-height:42%;
+    padding:8px 9px;
+    border-width:1px;
+  }
+  .battle-dialogue b{font-size:.56rem}
+  .battle-dialogue span{font-size:.43rem;line-height:1.35}
+}
