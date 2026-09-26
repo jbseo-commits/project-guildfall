@@ -1,6 +1,7 @@
 import './style.css';
 import { CAMP_PLATE } from './scenePlates.js';
 import arenaArt from './assets/scenes/arena-clearing.svg';
+import campCleanArt from './assets/scenes/camp-clean.svg';
 import journeyMapArt from './assets/scenes/journey-map.svg';
 import vaelArt from './assets/heroes/vael.webp';
 import serisArt from './assets/heroes/seris.webp';
@@ -203,7 +204,7 @@ function campScene(){
     return '<div class="camp-hero camp-'+id+'" style="--ci:'+idx+'"><div class="speech"><b>'+state.heroes[id].name+'</b><span>'+state.heroes[id].camp+'</span></div>'
       +heroSprite(id,false)+'</div>';
   }).join('');
-  return '<section class="camp-zone"><div class="camp-bg" style="background-image:url(\''+CAMP_PLATE+'\')"></div><div class="camp-overlay"></div>'
+  return '<section class="camp-zone"><div class="camp-bg" style="background-image:url(\''+campCleanArt+'\')"></div><div class="camp-overlay"></div>'
     +'<div class="camp-fire"><i></i><i></i><i></i></div><div class="camp-party">'+party+'</div><div class="camp-pet">◕ᴥ◕</div></section>';
 }
 
