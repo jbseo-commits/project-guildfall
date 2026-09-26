@@ -710,3 +710,395 @@ button{font:inherit;-webkit-tap-highlight-color:transparent}
     animation-iteration-count:1!important;
   }
 }
+
+
+/* =========================================================
+   SERIS MOTION LOOP V1
+   danger-read -> steady -> channel -> moon burst -> recover
+   Uses the locked Seris artwork; no visual reinterpretation.
+   ========================================================= */
+
+.world-unit.hero.seris{
+  --seris-blue:#a9c8ff;
+  --seris-violet:#9f92ff;
+  --seris-ease:cubic-bezier(.2,.82,.22,1);
+}
+.battle .world-unit.hero.seris:not(.motion-danger):not(.motion-hit):not(.motion-steady):not(.motion-channel):not(.motion-burst):not(.motion-recover) .hero-art-wrap{
+  animation:serisIdleFloat 2.75s ease-in-out infinite;
+}
+.world-unit.hero.seris .hero-art-wrap:before{
+  content:"";
+  position:absolute;
+  z-index:0;
+  left:50%;
+  bottom:4px;
+  width:88px;
+  height:28px;
+  transform:translateX(-50%);
+  border-radius:50%;
+  background:radial-gradient(ellipse,rgba(137,166,255,.18),rgba(109,92,211,.06) 45%,transparent 72%);
+  filter:blur(1px);
+  opacity:.45;
+}
+.seris-orbit{
+  position:absolute;
+  z-index:1;
+  left:50%;
+  top:43%;
+  width:104px;
+  height:104px;
+  transform:translate(-50%,-50%);
+  border:1px solid rgba(172,202,255,.08);
+  border-radius:50%;
+  opacity:0;
+  pointer-events:none;
+}
+.seris-orbit i{
+  position:absolute;
+  width:9px;
+  height:9px;
+  border-radius:50%;
+  background:#d9e8ff;
+  box-shadow:0 0 10px rgba(154,195,255,.85),0 0 20px rgba(124,108,255,.3);
+}
+.seris-orbit i:nth-child(1){left:48px;top:-5px}
+.seris-orbit i:nth-child(2){right:0;bottom:18px}
+.seris-orbit i:nth-child(3){left:4px;bottom:13px}
+.seris-sigil{
+  position:absolute;
+  z-index:0;
+  left:50%;
+  bottom:7px;
+  width:88px;
+  height:28px;
+  transform:translateX(-50%) scale(.72);
+  border:2px solid rgba(169,200,255,.55);
+  border-radius:50%;
+  opacity:0;
+  box-shadow:0 0 16px rgba(131,166,255,.22),inset 0 0 14px rgba(142,177,255,.08);
+}
+.seris-sigil:before,
+.seris-sigil:after{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:56px;
+  height:1px;
+  background:linear-gradient(90deg,transparent,#cfe0ff,transparent);
+  transform:translate(-50%,-50%) rotate(32deg);
+  opacity:.7;
+}
+.seris-sigil:after{transform:translate(-50%,-50%) rotate(-32deg)}
+
+.world-unit.hero.seris.motion-move{
+  z-index:18;
+  animation:serisLaneMove .46s var(--seris-ease);
+}
+.world-unit.hero.seris.motion-move .hero-art-wrap{
+  animation:serisMoveBody .46s var(--seris-ease);
+}
+
+.world-unit.hero.seris.motion-danger{
+  z-index:20;
+}
+.world-unit.hero.seris.motion-danger .hero-art-wrap{
+  animation:serisDangerBody .68s var(--seris-ease);
+}
+.world-unit.hero.seris.motion-danger .hero-art-sprite{
+  animation:serisDangerSprite .68s ease;
+}
+.world-unit.hero.seris.motion-danger:before{
+  content:"TARGET";
+  position:absolute;
+  left:50%;
+  top:25px;
+  transform:translateX(-50%);
+  padding:3px 7px;
+  border:1px solid rgba(235,93,102,.55);
+  border-radius:999px;
+  background:rgba(72,25,35,.84);
+  color:#ffb9bd;
+  font-size:.4rem;
+  font-weight:900;
+  letter-spacing:.08em;
+  opacity:0;
+  animation:serisTargetLabel .68s ease both;
+}
+
+.world-unit.hero.seris.motion-steady{
+  z-index:22;
+}
+.world-unit.hero.seris.motion-steady .hero-art-wrap{
+  animation:serisSteady .72s var(--seris-ease);
+  filter:drop-shadow(0 0 13px rgba(150,196,255,.38));
+}
+.world-unit.hero.seris.motion-steady .seris-sigil{
+  animation:serisSigilQuick .72s ease both;
+}
+.world-unit.hero.seris.motion-steady:before{
+  content:"FOCUS KEPT";
+  position:absolute;
+  left:50%;
+  top:24px;
+  transform:translateX(-50%);
+  padding:3px 7px;
+  border-radius:999px;
+  border:1px solid rgba(135,194,255,.5);
+  background:rgba(23,39,68,.84);
+  color:#c9e5ff;
+  font-size:.39rem;
+  font-weight:900;
+  letter-spacing:.06em;
+  opacity:0;
+  animation:serisFocusLabel .72s ease both;
+}
+
+.world-unit.hero.seris.motion-hit{
+  z-index:21;
+  animation:serisHitUnit .62s cubic-bezier(.2,.84,.28,1);
+}
+.world-unit.hero.seris.motion-hit .hero-art-wrap{
+  animation:serisHitBody .62s cubic-bezier(.2,.84,.28,1);
+}
+.world-unit.hero.seris.motion-hit .hero-art-sprite{
+  animation:serisHitFlash .62s ease;
+}
+.world-unit.hero.seris.motion-hit .seris-sigil{
+  animation:serisSigilBreak .62s ease both;
+}
+
+.world-unit.hero.seris.motion-channel{
+  z-index:24;
+}
+.world-unit.hero.seris.motion-channel .hero-art-wrap{
+  animation:serisChannelBody 1.65s ease-in-out both;
+  filter:drop-shadow(0 0 17px rgba(142,181,255,.55));
+}
+.world-unit.hero.seris.motion-channel .hero-art-sprite{
+  animation:serisChannelSprite 1.65s ease-in-out both;
+}
+.world-unit.hero.seris.motion-channel .seris-orbit{
+  animation:serisOrbitAppear 1.65s ease-in-out both,serisOrbitSpin 2.1s linear infinite;
+}
+.world-unit.hero.seris.motion-channel .seris-sigil{
+  animation:serisSigilCharge 1.65s ease-in-out both;
+}
+.world-unit.hero.seris.motion-channel:after{
+  content:"";
+  position:absolute;
+  z-index:-1;
+  left:50%;
+  top:55%;
+  width:116px;
+  height:142px;
+  transform:translate(-50%,-50%) scale(.6);
+  border-radius:50%;
+  background:radial-gradient(ellipse,rgba(158,190,255,.22),rgba(113,93,220,.08) 48%,transparent 72%);
+  filter:blur(4px);
+  opacity:0;
+  animation:serisAuraCharge 1.65s ease-in-out both;
+}
+
+.world-unit.hero.seris.motion-burst{
+  z-index:30;
+  animation:serisBurstUnit 1.08s cubic-bezier(.15,.85,.2,1) both;
+}
+.world-unit.hero.seris.motion-burst .hero-art-wrap{
+  animation:serisBurstBody 1.08s cubic-bezier(.15,.85,.2,1) both;
+  filter:drop-shadow(0 0 24px rgba(185,218,255,.72));
+}
+.world-unit.hero.seris.motion-burst .hero-art-sprite{
+  animation:serisBurstSprite 1.08s ease both;
+}
+.world-unit.hero.seris.motion-burst .seris-orbit{
+  animation:serisOrbitBurst 1.08s ease both;
+}
+.world-unit.hero.seris.motion-burst .seris-sigil{
+  animation:serisSigilBurst 1.08s ease both;
+}
+.world-unit.hero.seris.motion-burst:before{
+  content:"";
+  position:absolute;
+  z-index:-1;
+  left:50%;
+  top:48%;
+  width:148px;
+  height:148px;
+  transform:translate(-50%,-50%) scale(.3);
+  border:3px solid rgba(207,230,255,.84);
+  border-radius:50%;
+  background:
+    radial-gradient(circle,rgba(225,239,255,.28),rgba(151,180,255,.08) 45%,transparent 68%),
+    conic-gradient(from 0deg,transparent 0 12%,rgba(213,230,255,.72) 14% 16%,transparent 18% 32%,rgba(171,157,255,.6) 34% 36%,transparent 38% 100%);
+  box-shadow:0 0 42px rgba(139,181,255,.48),inset 0 0 32px rgba(172,203,255,.18);
+  opacity:0;
+  animation:serisMoonRingBurst 1.08s ease both;
+}
+
+.world-unit.hero.seris.motion-recover{
+  z-index:18;
+}
+.world-unit.hero.seris.motion-recover .hero-art-wrap{
+  animation:serisRecover .82s var(--seris-ease) both;
+}
+.world-unit.hero.seris.motion-recover .hero-art-sprite{
+  animation:serisRecoverSprite .82s ease both;
+}
+
+@keyframes serisIdleFloat{
+  0%,100%{transform:translateY(0) rotate(-.25deg) scale(1)}
+  45%{transform:translateY(-4px) rotate(.35deg) scale(1.01)}
+  65%{transform:translateY(-3px) rotate(.1deg) scale(1.006)}
+}
+@keyframes serisLaneMove{
+  0%{transform:translate(-50%,-82%)}
+  28%{transform:translate(-54%,-88%) scale(1.02)}
+  65%{transform:translate(-47%,-85%) scale(1.01)}
+  100%{transform:translate(-50%,-82%)}
+}
+@keyframes serisMoveBody{
+  0%,100%{transform:translateY(0)}
+  34%{transform:translateY(-8px) rotate(-2deg)}
+  68%{transform:translateY(-3px) rotate(1deg)}
+}
+@keyframes serisDangerBody{
+  0%{transform:translateY(0) rotate(0)}
+  24%{transform:translateY(-4px) rotate(-3deg) scale(.99)}
+  48%{transform:translateY(-2px) rotate(2deg) scale(1.015)}
+  100%{transform:translateY(0) rotate(0)}
+}
+@keyframes serisDangerSprite{
+  0%,100%{filter:drop-shadow(0 8px 6px rgba(0,0,0,.35))}
+  28%{filter:brightness(1.12) drop-shadow(0 0 10px rgba(255,119,128,.35))}
+}
+@keyframes serisTargetLabel{
+  0%,16%{opacity:0;transform:translate(-50%,5px)}
+  32%,70%{opacity:1;transform:translate(-50%,0)}
+  100%{opacity:0;transform:translate(-50%,-5px)}
+}
+@keyframes serisSteady{
+  0%{transform:translateY(0) scale(1)}
+  34%{transform:translateY(4px) scale(.98)}
+  64%{transform:translateY(-4px) scale(1.025)}
+  100%{transform:translateY(0) scale(1)}
+}
+@keyframes serisSigilQuick{
+  0%{opacity:0;transform:translateX(-50%) scale(.45) rotate(-25deg)}
+  42%{opacity:.9;transform:translateX(-50%) scale(1.02) rotate(0)}
+  100%{opacity:0;transform:translateX(-50%) scale(1.2) rotate(28deg)}
+}
+@keyframes serisFocusLabel{
+  0%,18%{opacity:0;transform:translate(-50%,5px)}
+  36%,70%{opacity:1;transform:translate(-50%,0)}
+  100%{opacity:0;transform:translate(-50%,-6px)}
+}
+@keyframes serisHitUnit{
+  0%{transform:translate(-50%,-82%)}
+  18%{transform:translate(-42%,-78%) rotate(4deg)}
+  44%{transform:translate(-56%,-84%) rotate(-2deg)}
+  100%{transform:translate(-50%,-82%)}
+}
+@keyframes serisHitBody{
+  0%,100%{transform:translateY(0)}
+  20%{transform:translateY(6px) rotate(5deg) scale(.95)}
+  58%{transform:translateY(-2px) rotate(-1deg) scale(1.01)}
+}
+@keyframes serisHitFlash{
+  0%,100%{filter:drop-shadow(0 8px 6px rgba(0,0,0,.35))}
+  18%{filter:brightness(1.65) saturate(.7) drop-shadow(0 0 13px rgba(255,162,172,.65))}
+  42%{filter:brightness(.92) saturate(.88)}
+}
+@keyframes serisSigilBreak{
+  0%{opacity:.8;transform:translateX(-50%) scale(.86) rotate(0)}
+  36%{opacity:.6;transform:translateX(-50%) scale(1.12) rotate(18deg)}
+  100%{opacity:0;transform:translateX(-50%) scale(1.38) rotate(55deg)}
+}
+@keyframes serisChannelBody{
+  0%{transform:translateY(0) scale(1)}
+  22%{transform:translateY(-3px) scale(1.01)}
+  55%{transform:translateY(-8px) scale(1.025)}
+  78%{transform:translateY(-10px) scale(1.035)}
+  100%{transform:translateY(-7px) scale(1.03)}
+}
+@keyframes serisChannelSprite{
+  0%{filter:drop-shadow(0 8px 6px rgba(0,0,0,.35)) brightness(1)}
+  50%{filter:drop-shadow(0 0 15px rgba(143,184,255,.54)) brightness(1.08)}
+  100%{filter:drop-shadow(0 0 22px rgba(176,207,255,.72)) brightness(1.14)}
+}
+@keyframes serisOrbitAppear{
+  0%,12%{opacity:0;transform:translate(-50%,-50%) scale(.65)}
+  40%{opacity:.55;transform:translate(-50%,-50%) scale(.9)}
+  100%{opacity:1;transform:translate(-50%,-50%) scale(1)}
+}
+@keyframes serisOrbitSpin{
+  from{rotate:0deg}
+  to{rotate:360deg}
+}
+@keyframes serisSigilCharge{
+  0%{opacity:0;transform:translateX(-50%) scale(.55) rotate(-18deg)}
+  32%{opacity:.45;transform:translateX(-50%) scale(.8) rotate(0)}
+  68%{opacity:.82;transform:translateX(-50%) scale(1.03) rotate(18deg)}
+  100%{opacity:1;transform:translateX(-50%) scale(1.12) rotate(34deg)}
+}
+@keyframes serisAuraCharge{
+  0%{opacity:0;transform:translate(-50%,-50%) scale(.55)}
+  50%{opacity:.5;transform:translate(-50%,-50%) scale(.9)}
+  100%{opacity:.95;transform:translate(-50%,-50%) scale(1.12)}
+}
+@keyframes serisBurstUnit{
+  0%{transform:translate(-50%,-82%)}
+  20%{transform:translate(-50%,-92%) scale(1.04)}
+  45%{transform:translate(-50%,-98%) scale(1.1)}
+  62%{transform:translate(-50%,-90%) scale(1.06)}
+  100%{transform:translate(-50%,-82%) scale(1)}
+}
+@keyframes serisBurstBody{
+  0%{transform:rotate(0) scale(1)}
+  25%{transform:rotate(-3deg) scale(1.02)}
+  48%{transform:rotate(3deg) scale(1.06)}
+  100%{transform:rotate(0) scale(1)}
+}
+@keyframes serisBurstSprite{
+  0%{filter:drop-shadow(0 8px 6px rgba(0,0,0,.35)) brightness(1)}
+  34%{filter:brightness(1.22) drop-shadow(0 0 20px rgba(176,211,255,.75))}
+  50%{filter:brightness(1.55) saturate(.85) drop-shadow(0 0 28px rgba(218,234,255,.95))}
+  100%{filter:drop-shadow(0 8px 6px rgba(0,0,0,.35)) brightness(1)}
+}
+@keyframes serisOrbitBurst{
+  0%{opacity:.9;transform:translate(-50%,-50%) scale(.95) rotate(0)}
+  40%{opacity:1;transform:translate(-50%,-50%) scale(1.25) rotate(95deg)}
+  100%{opacity:0;transform:translate(-50%,-50%) scale(1.85) rotate(210deg)}
+}
+@keyframes serisSigilBurst{
+  0%{opacity:1;transform:translateX(-50%) scale(1.1) rotate(0)}
+  38%{opacity:1;transform:translateX(-50%) scale(1.32) rotate(48deg)}
+  100%{opacity:0;transform:translateX(-50%) scale(1.7) rotate(130deg)}
+}
+@keyframes serisMoonRingBurst{
+  0%,15%{opacity:0;transform:translate(-50%,-50%) scale(.28) rotate(-35deg)}
+  40%{opacity:1;transform:translate(-50%,-50%) scale(.92) rotate(10deg)}
+  62%{opacity:.95;transform:translate(-50%,-50%) scale(1.2) rotate(55deg)}
+  100%{opacity:0;transform:translate(-50%,-50%) scale(1.75) rotate(125deg)}
+}
+@keyframes serisRecover{
+  0%{transform:translateY(-8px) scale(1.03)}
+  32%{transform:translateY(4px) scale(.985)}
+  64%{transform:translateY(-2px) scale(1.008)}
+  100%{transform:translateY(0) scale(1)}
+}
+@keyframes serisRecoverSprite{
+  0%{filter:drop-shadow(0 0 18px rgba(165,199,255,.56)) brightness(1.08)}
+  100%{filter:drop-shadow(0 8px 6px rgba(0,0,0,.35)) brightness(1)}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .world-unit.hero.seris,
+  .world-unit.hero.seris .hero-art-wrap,
+  .world-unit.hero.seris .hero-art-sprite,
+  .world-unit.hero.seris .seris-orbit,
+  .world-unit.hero.seris .seris-sigil{
+    animation-duration:.01ms!important;
+    animation-iteration-count:1!important;
+  }
+}
