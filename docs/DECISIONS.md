@@ -90,6 +90,33 @@ The target emotion is:
 
 > **“I did not lose a unit. Something that had become part of us is missing.”**
 
+
+### D001-C — Attachment should create meaningful inefficiency
+**Status:** LOCKED DESIGN PRINCIPLE
+
+Characters can be lost.
+
+However, loss should not automatically mean that the optimal response is to replace the missing character with a fresh equivalent.
+
+The game should deliberately allow emotional attachment to create strategically inefficient choices.
+
+If the player wants a beloved character back, recovery should be possible in some form, but it should demand a **large and meaningful cost**: resources, time, route opportunity, risk, ecosystem damage, or another sacrifice.
+
+The exact recovery mechanic and economy are NOT decided yet.
+
+The important principle is:
+
+> **“Love makes you inefficient — and choosing that inefficiency is part of the game.”**
+
+Design consequences:
+- recovery must feel like a real sacrifice, not a trivial reset button;
+- the player should sometimes face a painful choice between preserving the run and preserving a character;
+- replacement should often be cheaper than restoration, but emotionally worse;
+- a restored character should feel like someone who was saved, not a file reloaded;
+- permanent loss must remain possible enough that survival has weight.
+
+This principle will constrain the later loss / damage / recovery economy decision.
+
 ---
 
 ## D002 — What does the player control, and what do they surrender?
