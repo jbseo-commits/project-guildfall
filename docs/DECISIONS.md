@@ -19,68 +19,98 @@ Use PixiJS + Vite for the first web/mobile prototype. This is a prototype techno
 ## D001 — What fantasy are we actually selling?
 **Status:** LOCKED
 
-### Chosen direction — The Contract Guild
+### Chosen direction — The Living Caravan
 
-The player fantasy is to be the **mastermind of a small fantasy guild**: not the hero manually swinging the sword, but the person who prepares the team, makes a few meaningful tactical decisions, commits the plan, and then watches the guild execute it.
+The player leads a **wandering, living dungeon-caravan**: a mobile sanctuary/ecosystem made of beautiful, dangerous, otherworldly beings.
 
-#### World premise
-The guild accepts dangerous contracts that cannot be solved by raw strength alone. Each encounter is an assignment where the player reads the situation, assembles a compact team, gives them a plan, and sends them in.
+This is a fusion of:
+- the **journey, procession, attachment, and visible travel** of a monster caravan;
+- the **reactive ecology, interdependence, and living-system identity** of a sentient dungeon.
+
+The fantasy is not “collect generic monsters.” It is to cultivate and lead a **beautiful, uncanny living ecosystem** whose members visibly depend on one another.
+
+#### Player fantasy
+The player is the keeper/conductor of a moving sanctuary: responsible for where it travels, who belongs within it, and how its inhabitants coexist and respond when threatened.
 
 #### What the player is building
-Primarily a **guild + battle plan**, not a large army.
+Not merely a party and not a disposable army.
 
-The important expression of a build should be visible behavior: who protects whom, who follows up, what event triggers another action, how the team reacts when the plan succeeds or breaks.
+The player is building:
+- a small cast of highly distinctive inhabitants;
+- relationships and dependencies between them;
+- a living structure that changes how they behave;
+- a caravan/ecosystem whose composition is visible during automatic combat.
 
 #### Why automatic combat makes sense
-Once the operation begins, the guild members carry out the plan themselves. The player's authorship happens before the commitment boundary; the payoff is watching the plan become action.
+When danger appears, the ecosystem reacts.
+
+Its inhabitants defend, protect, feed, empower, transform, lure, or rescue one another according to their nature and the relationships the player has created. The player's authorship happens before the commitment boundary; the reward is watching the whole organism respond.
+
+#### Character identity constraint
+The inhabitants must be **extremely attractive, charismatic, and emotionally desirable characters**, even when they are inhuman.
+
+The intended visual/emotional space is:
+- beautiful + dangerous;
+- elegant + uncanny;
+- alluring rather than disposable;
+- strong silhouette and individual identity;
+- “I want this character to stay with me,” not “this is another recruit token.”
+
+Avoid a roster that reads as ugly fodder, generic fantasy units, or interchangeable monsters.
 
 #### Signature fantasy hook
-> **“I don't swing the sword. I make the plan that makes my guild look brilliant.”**
-
-#### Accessibility / mastery principle
-The fantasy must **not require heavyweight tactical scripting from the beginning**.
-
-Early play should use:
-- very few choices at once;
-- highly legible consequences;
-- short battles;
-- generous, exciting feedback when the player's plan works;
-- choices that feel smarter than they are difficult to input.
-
-The game should make a new player feel like a clever guild master quickly.
-
-As mastery grows, the same fantasy may open into more detailed tactical authorship: richer conditions, priorities, sequencing, contingency planning, or other advanced controls. The exact form and unlock structure are **not decided here** and belong to D002 and later decisions.
-
-This creates the intended progression:
-
-**EASY TO COMMAND → SATISFYING TO WATCH → CLEAR TO UNDERSTAND → DEEP TO MASTER**
-
-#### Visual identity implied by D001
-Potential motifs include contracts, seals, guild marks, tactical directives, mission preparation, and visible cause-and-effect cues during battle. These are identity cues, not a locked art style.
+> **“I lead a wandering sanctuary of beautiful, dangerous beings — and watch the ecosystem I built come alive when threatened.”**
 
 #### What makes it unlike generic fantasy heroes fighting monsters
-The core fantasy is not “collect heroes and watch stats collide.” The player's identity is expressed through **authorship of team behavior**, with the battle visibly proving whether the plan worked.
+The core build is an **interdependent moving ecosystem**, not a stack of class bonuses.
+
+Potential synergy language should grow from the fiction — for example protection, symbiosis, resonance, predation, mutation, shelter, attraction, or sacrifice — rather than defaulting to generic race/class +X% bonuses.
+
+The exact synergy system is NOT locked here.
+
+---
+
+### D001-B — Characters are organs, not inventory
+**Status:** LOCKED DESIGN PRINCIPLE
+
+A member of the caravan should feel less like a replaceable unit and more like **a limb, organ, sense, or beloved part of the player's living ecosystem**.
+
+The player should become attached to specific characters and should strongly resist abandoning them.
+
+Design consequences:
+- characters must accumulate personal meaning, not only power;
+- replacing a member with a numerically better stranger should not be an emotionally neutral optimization;
+- relationships and dependencies should make one member's absence visibly affect others and the whole caravan;
+- loss, separation, injury, rescue, and recovery should carry emotional and mechanical weight;
+- the game should avoid treating recruitment as a conveyor belt of disposable bodies.
+
+This principle does **not** yet decide whether death is permanent, reversible, rare, preventable, or transformed into another state. Those mechanics belong to the later loss/damage/recovery decision.
+
+The target emotion is:
+
+> **“I did not lose a unit. Something that had become part of us is missing.”**
 
 ---
 
 ## D002 — What does the player control, and what do they surrender?
 **Status:** OPEN — NEXT DECISION
 
-D001 now establishes an important constraint for D002:
+D001 establishes constraints for D002:
 
-- the first-session control scheme must stay simple and immediately rewarding;
-- advanced tactical authorship should exist as a mastery ceiling rather than an onboarding requirement;
-- the commitment boundary must remain clear: prepare first, then watch the guild execute.
+- controls should make the ecosystem feel authored without requiring constant micro;
+- the first-session interaction must remain simple and immediately rewarding;
+- player choices should create visible relationships/behaviors between characters;
+- the commitment boundary must remain clear: prepare/arrange first, then watch the living system respond;
+- deeper tactical authorship may emerge later as mastery, but must not burden onboarding.
 
 Candidate axes to decide:
-- formation / placement;
-- unit selection;
-- ability loadout;
-- command cards / tactics;
-- target priorities;
-- initiative/order scripting;
-- pre-battle mana/resource allocation;
-- conditional rules (“if ally < 40%, guard them”);
+- caravan order / formation / placement;
+- which inhabitants join an encounter;
+- relationship or bond assignments;
+- behavior priorities;
+- environmental/ecosystem nodes;
+- ability or instinct loadout;
+- conditional reactions;
 - between-wave adaptation.
 
 The battle must contain a real commitment boundary after which the player watches the consequences.
@@ -103,11 +133,17 @@ Not yet decided whether combat uses:
 ## D004 — Run structure
 **Status:** BLOCKED
 
-Do not automatically use a Slay-the-Spire map. Decide whether the fantasy calls for a branching map, contracts, chapters, expeditions, days, districts, floors, seasons, or another structure.
+Do not automatically use a Slay-the-Spire map. Decide whether the fantasy calls for a branching map, routes, migrations, regions, seasons, shelters, hunts, pilgrimages, or another structure.
 
 ---
 
 ## D005 — Art identity
 **Status:** BLOCKED
 
-Do not default to generic high-fantasy anime, generic pixel RPG, or card-game UI. Build visual identity from D001.
+Do not default to generic high-fantasy anime, generic pixel RPG, or card-game UI.
+
+D001 now requires that the art direction preserve:
+- highly attractive and charismatic character designs;
+- beautiful-but-uncanny fantasy;
+- a visibly living caravan/ecosystem;
+- individual characters that feel worth protecting and remembering.
