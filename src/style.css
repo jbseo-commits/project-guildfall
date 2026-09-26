@@ -2439,3 +2439,171 @@ button{font:inherit;-webkit-tap-highlight-color:transparent}
   .progress-track{left:30%;right:23.3%;bottom:1.2%}
   .battle-unit{transform:translate(-50%,-76%) scale(.9)}
 }
+
+
+/* =========================================================
+   SCREENSHOT QA POLISH V4
+   Mobile-landscape composition and enemy silhouette pass.
+   ========================================================= */
+
+/* Make placeholder enemies read as authored silhouettes instead of soft blobs. */
+.enemy-sprite.breaker .body{
+  left:16px;top:31px;width:72px;height:48px;
+  border-radius:38% 50% 34% 42%;
+  background:
+    linear-gradient(145deg,#3b252d 0 32%,#6f3740 33% 58%,#291d24 59% 100%);
+  border:1px solid rgba(244,112,104,.2);
+  box-shadow:inset -8px -5px 0 rgba(0,0,0,.13);
+}
+.enemy-sprite.breaker .body:before,
+.enemy-sprite.breaker .body:after{
+  content:"";
+  position:absolute;
+  top:-18px;
+  width:18px;height:34px;
+  background:linear-gradient(180deg,#eb675d,#752f3b 58%,#33212a);
+  clip-path:polygon(50% 0,100% 100%,0 82%);
+  filter:drop-shadow(0 0 5px rgba(226,75,67,.25));
+}
+.enemy-sprite.breaker .body:before{left:10px;transform:rotate(-16deg)}
+.enemy-sprite.breaker .body:after{right:9px;transform:rotate(18deg)}
+.enemy-sprite.breaker .head{
+  left:12px;top:40px;width:38px;height:31px;
+  background:linear-gradient(145deg,#7c3d47,#46252e);
+  border:1px solid rgba(255,121,105,.18);
+}
+.enemy-sprite.breaker .ear{background:#a5494d}
+
+.enemy-sprite.hound .body{
+  left:18px;top:37px;width:68px;height:39px;
+  background:linear-gradient(145deg,#5d3338,#2e2229);
+  border:1px solid rgba(213,90,82,.18);
+}
+.enemy-sprite.hound:before{
+  content:"";
+  position:absolute;
+  z-index:3;
+  left:28px;top:31px;
+  width:34px;height:28px;
+  border-radius:48% 44% 50% 40%;
+  background:linear-gradient(145deg,#8a4446,#4e2b32);
+  box-shadow:24px 5px 0 -3px #6b353a;
+}
+.enemy-sprite.hound:after{
+  content:"";
+  position:absolute;
+  right:6px;top:42px;
+  width:30px;height:7px;
+  border-radius:999px;
+  background:#4c2b31;
+  transform:rotate(-28deg);
+  transform-origin:left center;
+}
+
+.enemy-sprite.hunter .body{
+  left:31px;top:21px;width:43px;height:65px;
+  clip-path:polygon(50% 0,86% 17%,100% 100%,0 100%,14% 17%);
+  border-radius:0 0 13px 13px;
+  background:linear-gradient(160deg,#32343d,#171920 72%);
+  box-shadow:inset 7px 0 0 rgba(255,255,255,.025);
+}
+.enemy-sprite.hunter .head{
+  left:37px;top:27px;width:32px;height:29px;
+  background:radial-gradient(circle at 47% 48%,#111319 0 45%,#292b35 46% 100%);
+  border:1px solid rgba(255,255,255,.05);
+}
+.enemy-sprite.hunter .head:after{
+  content:"";
+  position:absolute;
+  left:9px;top:12px;
+  width:14px;height:2px;
+  background:#d55b56;
+  box-shadow:0 0 6px rgba(229,75,72,.55);
+}
+.enemy-sprite.hunter .weapon{
+  right:-3px;top:43px;width:48px;height:4px;
+  background:linear-gradient(90deg,#8b6946,#d7bd8c);
+  transform:rotate(22deg);
+  box-shadow:0 0 0 1px rgba(0,0,0,.15);
+}
+
+@media (orientation:landscape) and (max-height:650px){
+  /* The user's real mobile browser viewport is much wider than 16:9.
+     Overlap the tutorial paper onto the camp art instead of leaving a dead strip. */
+  .tutorial-paper{
+    right:14.5%;
+    width:42.3%;
+    top:3.2%;
+    min-height:91%;
+    max-height:94%;
+  }
+  .route-map{
+    right:.6%;
+    width:13.4%;
+    top:4.1%;
+    height:91.5%;
+  }
+
+  .camp-bg{
+    background-size:57% 100%;
+  }
+  .camp-overlay{
+    background:
+      linear-gradient(90deg,rgba(5,6,9,0) 0%,rgba(5,6,9,.015) 48%,rgba(7,8,12,.10) 55%,rgba(7,8,12,.58) 68%,rgba(7,8,12,.9) 100%),
+      linear-gradient(180deg,rgba(7,8,11,.01),rgba(7,8,11,.04));
+  }
+
+  .placement-paper{
+    padding:10px 11px 8px;
+  }
+  .placement-paper h2{font-size:.82rem;margin-bottom:4px}
+  .placement-paper>p{font-size:.44rem}
+  .placement-paper .intent-legend{margin:4px 0}
+  .placement-paper .formation-preview{gap:5px;margin-top:4px}
+  .placement-paper .formation-card{padding:4px 3px}
+  .placement-paper .formation-portrait{height:48px}
+  .placement-paper .formation-card small{display:none}
+  .placement-paper .slot-buttons{margin-top:4px}
+  .placement-paper .slot-buttons button{padding:3px}
+  .placement-paper .paper-cta{margin-top:5px;padding:6px 8px}
+
+  .battle-dialogue{
+    left:4.8%;
+    bottom:2.6%;
+    width:27.8%;
+    min-height:61%;
+    grid-template-columns:82px 1fr;
+  }
+  .dialogue-portrait{height:88px}
+  .dialogue-portrait .hero-art-wrap.small{
+    width:72px;height:84px;transform:scale(1.02);
+  }
+  .dialogue-portrait .hero-art-wrap.small .hero-art-sprite{
+    height:86px;max-width:76px;
+  }
+
+  .combat-log{
+    right:.8%;
+    top:8%;
+    width:22.8%;
+    min-height:58%;
+  }
+  .tip-card{
+    right:.8%;
+    width:22.5%;
+  }
+
+  .progress-track{
+    left:31.5%;
+    right:22.8%;
+    bottom:1.1%;
+  }
+
+  .battle-unit{
+    transform:translate(-50%,-76%) scale(.94);
+  }
+}
+
+@media (orientation:landscape) and (min-height:651px){
+  .enemy-sprite{transform:scale(1.08)}
+}
