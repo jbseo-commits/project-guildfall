@@ -55,6 +55,8 @@ Before editing code:
    - `docs/LOOP-STATE.md`
    - `docs/DECISIONS.md`
    - `docs/GAME-VISION.md`
+   - `docs/WORLD-BIBLE.md`
+   - `docs/NARRATIVE-VERTICAL-SLICE.md`
    - `HANDOFF.md`
    - relevant implementation docs
 3. Inspect the latest merged commits and open PRs.
