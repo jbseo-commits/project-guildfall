@@ -22,9 +22,12 @@ For any new ChatGPT / coding-agent session:
 3. Read `docs/LOOP-STATE.md`.
 4. Read `docs/DECISIONS.md`.
 5. Read `docs/GAME-VISION.md`.
-6. Read `HANDOFF.md`.
-7. Inspect current `main`, latest Visual QA artifacts, and live deployment when available.
-8. Continue the highest-priority loop.
+6. Read `docs/WORLD-BIBLE.md`.
+7. Read `docs/CHARACTER-BIBLE.md`.
+8. Read `docs/NARRATIVE-SPINE.md`.
+9. Read `HANDOFF.md`.
+10. Inspect current `main`, latest Visual QA artifacts, and live deployment when available.
+11. Continue the highest-priority loop.
 
 Do **not** restart Decision 001.
 

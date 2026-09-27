@@ -27,8 +27,11 @@ Every new session / agent must read in this order:
 3. `docs/LOOP-STATE.md`
 4. `docs/DECISIONS.md`
 5. `docs/GAME-VISION.md`
-6. `HANDOFF.md`
-7. relevant implementation docs
+6. `docs/WORLD-BIBLE.md`
+7. `docs/CHARACTER-BIBLE.md`
+8. `docs/NARRATIVE-SPINE.md`
+9. `HANDOFF.md`
+10. relevant implementation docs
 
 Then inspect:
 - current `main`;
