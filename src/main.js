@@ -9,11 +9,32 @@ import mirelArt from './assets/heroes/mirel.webp';
 import breakerArt from './assets/enemies/breaker.svg';
 import houndArt from './assets/enemies/hound.svg';
 import hunterArt from './assets/enemies/hunter.svg';
+import { CHAPTER_01 } from './content/chapter01.js';
 
 const HERO_ART={vael:vaelArt,seris:serisArt,mirel:mirelArt};
 const ENEMY_ART={breaker:breakerArt,hound:houndArt,hunter:hunterArt};
 
 const app = document.querySelector('#app');
+
+const CHAPTER_BEATS=Object.fromEntries(CHAPTER_01.beats.map(function(beat){return [beat.id,beat];}));
+const OPENING_BEATS=['camp-warmth','hush-sign','threat-arrives'];
+const AFTERMATH_BEATS=['postbattle','departure'];
+const BATTLE_BARKS=CHAPTER_BEATS['battle-01'].battle_barks;
+
+function chapterBeat(id){return CHAPTER_BEATS[id];}
+function speakerName(id){
+  return id==='vael'?'베일':id==='seris'?'세리스':id==='mirel'?'미렐':id;
+}
+function selectedStoryLines(beat){
+  const indexes={
+    'camp-warmth':[0,1,2],
+    'hush-sign':[2,3,4],
+    'threat-arrives':[0,3,4],
+    'postbattle':[0,1,2,3],
+    'departure':[0,2,4]
+  }[beat.id]||[0];
+  return indexes.map(function(i){return beat.lines[i];}).filter(Boolean);
+}
 
 const HEROES = {
   vael:{id:'vael',name:'베일',role:'수호',lane:0,hp:100,camp:'이번에는 내가 앞을 맡을게. 너희는 뒤에서 준비해.'},
@@ -38,7 +59,7 @@ const PROGRESS=[
   {id:'next',label:'다음',sub:'선택지'}
 ];
 
-const state={phase:'read',selected:null,heroes:null,enemies:null,speed:1,timers:[],logs:[],routeIndex:0,result:null,resonance:[],resonanceTriggered:false};
+const state={phase:'story',storyStep:0,aftermathStep:0,selected:null,heroes:null,enemies:null,speed:1,timers:[],logs:[],routeIndex:0,result:null,resonance:[],resonanceTriggered:false};
 
 function clone(v){return JSON.parse(JSON.stringify(v));}
 function clearTimers(){state.timers.forEach(clearTimeout);state.timers=[];}
@@ -47,7 +68,7 @@ function heroAtLane(lane){const h=Object.values(state.heroes).find(function(x){r
 
 function reset(){
   clearTimers();
-  state.phase='read';state.selected=null;state.heroes=clone(HEROES);state.enemies=clone(ENEMIES);
+  state.phase='story';state.storyStep=0;state.aftermathStep=0;state.selected=null;state.heroes=clone(HEROES);state.enemies=clone(ENEMIES);
   state.speed=1;state.logs=[];state.routeIndex=0;state.result=null;state.resonance=[];state.resonanceTriggered=false;
 }
 
@@ -65,7 +86,7 @@ function enemySprite(id,small){
   return '<div class="enemy-art-wrap '+id+(small?' mini':'')+'"><span class="enemy-art-shadow"></span>'
     +'<img class="enemy-art-sprite" src="'+ENEMY_ART[id]+'" alt="" draggable="false"></div>';
 }
-function progressIndex(){return {read:0,place:1,battle:2,result:3,next:1,battle2:2,result2:3,complete:4}[state.phase]||0;}
+function progressIndex(){return {story:0,read:0,place:1,battle:2,result:3,aftermath:3,next:1,battle2:2,result2:3,complete:4}[state.phase]||0;}
 
 function renderProgress(){
   const resonancePhase=['next','battle2','result2','complete'].includes(state.phase);
@@ -84,6 +105,19 @@ function renderProgress(){
 }
 
 function tutorialPanel(){
+  if(state.phase==='story'){
+    const beat=chapterBeat(OPENING_BEATS[state.storyStep]||OPENING_BEATS[OPENING_BEATS.length-1]);
+    const lines=selectedStoryLines(beat).map(function(line){
+      return '<div class="story-line"><b>'+speakerName(line.speaker)+'</b><span>“'+line.text+'”</span></div>';
+    }).join('');
+    const kicker=beat.id==='camp-warmth'?'1일차 · 떠나는 밤':beat.id==='hush-sign'?'허시의 징후':'습격 직전';
+    const cta=state.storyStep<OPENING_BEATS.length-1?'계속 →':'적의 의도를 읽는다 →';
+    return '<aside class="tutorial-paper story-paper story-'+beat.id+'"><div class="paper-ribbon">'+kicker+'</div>'
+      +'<h2>'+(beat.id==='camp-warmth'?'카라반이 잠들기 전':beat.id==='hush-sign'?'불꽃이 움직이지 않는다':'누군가 세리스를 데려가려 한다')+'</h2>'
+      +'<div class="story-lines">'+lines+'</div>'
+      +'<p class="story-note">'+beat.purpose+'</p>'
+      +'<button class="paper-cta primary" id="storyNext">'+cta+'</button></aside>';
+  }
   if(state.phase==='read'){
     return '<aside class="tutorial-paper">'
       +'<div class="paper-ribbon">튜토리얼 1/4</div><h2>적의 의도 읽기</h2>'
@@ -106,7 +140,8 @@ function tutorialPanel(){
       +'<p>동료를 선택한 뒤 원하는 위치를 눌러 배치하세요. 위치는 자동 행동의 우선순위를 바꿉니다.</p>'
       +'<div class="intent-legend"><span>🔴 전열 강공격</span><span>🔵 후열 저격</span></div>'
       +'<div class="formation-preview">'+cards+'</div><div class="slot-buttons">'+slots+'</div>'
-      +'<button class="paper-cta primary" id="commit">배치 완료 →</button></aside>';
+      +'<button class="paper-cta primary commit-story" id="commit">문을 닫는다 →</button>'
+      +'<small class="commit-sub">이제 서로를 믿어야 합니다.</small></aside>';
   }
   if(state.phase==='battle'){
     const cards=LANES.map(function(lane,i){
@@ -128,7 +163,19 @@ function tutorialPanel(){
     }).join('');
     return '<aside class="tutorial-paper result-paper"><div class="paper-ribbon">튜토리얼 4/4</div><h2>전투 복기</h2>'
       +'<p>승패보다 중요한 것은 <b>왜</b> 그렇게 싸웠는지 이해하는 것입니다.</p><div class="cause-list">'+items+'</div>'
-      +'<button class="paper-cta primary" id="nextRoute">첫 번째 여정으로 →</button></aside>';
+      +'<button class="paper-cta primary" id="postBattle">캠프로 돌아간다 →</button></aside>';
+  }
+  if(state.phase==='aftermath'){
+    const beat=chapterBeat(AFTERMATH_BEATS[state.aftermathStep]||AFTERMATH_BEATS[AFTERMATH_BEATS.length-1]);
+    const lines=selectedStoryLines(beat).map(function(line){
+      return '<div class="story-line"><b>'+speakerName(line.speaker)+'</b><span>“'+line.text+'”</span></div>';
+    }).join('');
+    const isLast=state.aftermathStep>=AFTERMATH_BEATS.length-1;
+    return '<aside class="tutorial-paper story-paper aftermath-paper"><div class="paper-ribbon">'+(isLast?'떠나는 밤':'전투 직후')+'</div>'
+      +'<h2>'+(isLast?'같은 꽃은 아니어도 다시 피면 돼':'전투에서 끝난 행동이 관계가 된다')+'</h2>'
+      +'<div class="story-lines">'+lines+'</div>'
+      +'<p class="story-note">'+beat.purpose+'</p>'
+      +'<button class="paper-cta primary" id="aftermathNext">'+(isLast?'첫 번째 여정으로 →':'계속 →')+'</button></aside>';
   }
   if(state.phase==='next'){
     const heroButtons=['vael','seris','mirel'].map(function(id){
@@ -157,10 +204,11 @@ function tutorialPanel(){
       +'<button class="paper-cta primary" id="finishResonance">다음 시스템으로 →</button></aside>';
   }
   if(state.phase==='complete'){
-    return '<aside class="tutorial-paper next-paper"><div class="paper-ribbon">공명 학습 완료</div><h2>이제 ‘명령’을 배웁니다</h2>'
-      +'<p>배치는 <b>어디서</b> 싸울지 정했고, 공명은 <b>서로 어떻게 반응할지</b> 정했습니다. 다음은 전투 전에 한 가지 우선 명령을 심는 단계입니다.</p>'
-      +'<div class="unlock-card"><span>NEXT</span><strong>전술 명령</strong><em>조건 하나를 골라 카라반 전체의 첫 반응을 바꿉니다.</em></div>'
-      +'<button class="paper-cta" id="replay">처음부터 다시 보기</button></aside>';
+    const hook=chapterBeat('first-journey').optional_hook;
+    return '<aside class="tutorial-paper next-paper chapter-hook"><div class="paper-ribbon">DAY 1 · END</div><h2>문 안쪽에서 네 번째 맥박이 들렸다</h2>'
+      +'<p>'+hook.setup+'</p>'
+      +'<div class="sealed-door-hook"><span>HEARTHHEART</span><b>쿵.</b><b>…쿵.</b><em>'+hook.payoff+'</em></div>'
+      +'<button class="paper-cta" id="replay">1일차 다시 보기</button></aside>';
   }
   return '';
 }
@@ -204,7 +252,9 @@ function campScene(){
     return '<div class="camp-hero camp-'+id+'" style="--ci:'+idx+'"><div class="speech"><b>'+state.heroes[id].name+'</b><span>'+state.heroes[id].camp+'</span></div>'
       +heroSprite(id,false)+'</div>';
   }).join('');
-  return '<section class="camp-zone"><div class="camp-bg" style="background-image:url(\''+campCleanArt+'\')"></div><div class="camp-overlay"></div>'
+  const storyClass=state.phase==='story'?' story-stage story-step-'+state.storyStep:(state.phase==='aftermath'?' aftermath-stage':'');
+  return '<section class="camp-zone'+storyClass+'"><div class="camp-bg" style="background-image:url(\''+campCleanArt+'\')"></div><div class="camp-overlay"></div>'
+    +'<div class="hush-sign"><i></i><span>정적</span></div>'
     +'<div class="camp-fire"><i></i><i></i><i></i></div><div class="camp-party">'+party+'</div><div class="camp-pet">◕ᴥ◕</div></section>';
 }
 
@@ -252,7 +302,7 @@ function battleScene(){
     +'<svg class="battle-arrows" viewBox="0 0 1000 420" preserveAspectRatio="none"><defs><marker id="redEnd" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0 0 L0 6 L8 3z" fill="#ee6a5f"/></marker><marker id="blueEnd" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0 0 L0 6 L8 3z" fill="#6db5ff"/></marker></defs><path class="arr red" d="M795 185 Q690 190 380 245" marker-end="url(#redEnd)"/><path class="arr blue" d="M840 255 Q700 245 560 235" marker-end="url(#blueEnd)"/></svg>'
     +enemies+allies+'<div class="shield-fx"></div><div class="heal-fx">✦ ✦ ✦</div><div class="moon-fx"></div><div class="hit-fx"></div><div class="combat-impact-flash"></div><div class="combat-callout"></div>'
     +'<div class="battle-dialogue"><div class="dialogue-portrait camp-seris-portrait" style="background-image:url(\''+CAMP_PLATE+'\')"></div><div><b>세리스</b><span>'
-    +(battle?'적의 후열에 저격수가 있어. 내가 집중하고 있는 동안 부탁할게…!':'후열에 저격수가 있어. 누가 내 앞을 막을지 정해줘.')+'</span></div></div>'
+    +(battle?'저 추적자는 나를 데려가려 해. 내가 집중하는 동안… 부탁할게.':'후드 쓴 추적자는 나를 노리고 있어. 누가 그 흐름을 끊을지 정해줘.')+'</span></div></div>'
     +'<div class="combat-log"><div class="log-title">전투 기록</div>'+logs+'</div>'
     +'<div class="tip-card"><b>TIP</b><span>전열에 튼튼한 동료를 배치해 후열의 약한 동료를 지키세요.</span><div class="tip-pet">◕ᴥ◕</div></div>'
     +renderProgress()+'</section>';
@@ -268,6 +318,11 @@ function render(){
 }
 
 function bind(){
+  const storyNext=app.querySelector('#storyNext');
+  if(storyNext)storyNext.addEventListener('click',function(){
+    if(state.storyStep<OPENING_BEATS.length-1){state.storyStep+=1;render();}
+    else{state.phase='read';render();}
+  });
   const read=app.querySelector('#readNext');if(read)read.addEventListener('click',function(){state.phase='place';render();});
   app.querySelectorAll('[data-heroselect],[data-battlehero]').forEach(function(el){
     el.addEventListener('click',function(){if(state.phase!=='place')return;state.selected=el.dataset.heroselect||el.dataset.battlehero;render();});
@@ -276,7 +331,11 @@ function bind(){
     el.addEventListener('click',function(){if(state.phase!=='place'||!state.selected)return;moveSelected(Number(el.dataset.lane));});
   });
   app.querySelector('#commit')?.addEventListener('click',startBattle);
-  app.querySelector('#nextRoute')?.addEventListener('click',function(){state.phase='next';state.routeIndex=1;state.resonance=[];render();});
+  app.querySelector('#postBattle')?.addEventListener('click',function(){state.phase='aftermath';state.aftermathStep=0;render();});
+  app.querySelector('#aftermathNext')?.addEventListener('click',function(){
+    if(state.aftermathStep<AFTERMATH_BEATS.length-1){state.aftermathStep+=1;render();}
+    else{state.phase='next';state.routeIndex=1;state.resonance=[];render();}
+  });
   app.querySelectorAll('[data-reshero]').forEach(function(el){
     el.addEventListener('click',function(){
       const id=el.dataset.reshero;
@@ -311,6 +370,16 @@ function pulseSelector(selector,className,ms){
   if(!el)return;
   el.classList.add(className);
   later(function(){el.classList.remove(className);},ms||520);
+}
+function heroBark(id,text,ms){
+  const unit=app.querySelector('.ally.'+id);
+  if(!unit||!text)return;
+  let bark=unit.querySelector('.battle-bark');
+  if(!bark){bark=document.createElement('span');bark.className='battle-bark';unit.appendChild(bark);}
+  bark.textContent=text;
+  bark.classList.remove('show');
+  requestAnimationFrame(function(){bark.classList.add('show');});
+  later(function(){bark.classList.remove('show');},ms||720);
 }
 function battleBeat(className,ms){
   const zone=app.querySelector('.battle-zone');
@@ -374,7 +443,7 @@ function startBattle(){
     pulseSelector('.ally.'+front,'danger-lock',760);
     battleBeat('beat-warning',720);
     combatCallout('강공격 예고','danger',720);
-    if(front==='vael')pulseMotion('vael','ready',760);
+    if(front==='vael'){pulseMotion('vael','ready',760);heroBark('vael',BATTLE_BARKS.vael.guard,680);}
   },350);
 
   later(function(){
@@ -416,7 +485,9 @@ function startBattle(){
       hitStop(90);
       setHeroHp('vael',state.heroes.vael.hp-14,'INTERCEPT');
       pulseMotion('vael','intercept',1120);
+      heroBark('vael',BATTLE_BARKS.vael.intercept,760);
       pulseMotion('seris','steady',820);
+      heroBark('seris',BATTLE_BARKS.seris.protected,840);
       app.querySelector('.shield-fx')?.classList.add('play');
       battleBeat('guard-impact-beat',860);
       combatCallout('INTERCEPT','guard',760);
@@ -433,6 +504,7 @@ function startBattle(){
 
   later(function(){
     pulseMotion('mirel','sense',620);
+    heroBark('mirel',BATTLE_BARKS.mirel.sense,700);
     battleBeat('support-read-beat',620);
     const unit=app.querySelector('.ally.mirel small');
     if(unit)unit.textContent='위험 감지';
@@ -442,6 +514,7 @@ function startBattle(){
   later(function(){
     const weak=Object.keys(state.heroes).sort(function(a,b){return state.heroes[a].hp-state.heroes[b].hp;})[0];
     pulseMotion('mirel','heal',1260);
+    heroBark('mirel',BATTLE_BARKS.mirel.heal,760);
     const target=app.querySelector('.ally.'+weak);
     if(target){
       target.classList.add('healing-target');
@@ -457,6 +530,7 @@ function startBattle(){
   later(function(){
     pulseMotion('mirel','recover',620);
     pulseMotion('seris','channel',1880);
+    heroBark('seris',BATTLE_BARKS.seris.channel,820);
     battleBeat('ritual-charge-beat',1900);
     const unit=app.querySelector('.ally.seris small');
     if(unit)unit.textContent='월광 의식 · 가속';
@@ -472,6 +546,7 @@ function startBattle(){
   later(function(){
     hitStop(130);
     pulseMotion('seris','burst',1280);
+    heroBark('seris',BATTLE_BARKS.seris.burst,760);
     app.querySelector('.moon-fx')?.classList.add('play');
     battleBeat('moon-burst-beat',1180);
     pulseSelector('.enemy.breaker','motion-stagger',900);
@@ -612,9 +687,9 @@ function startResonanceBattle(){
 function causeChain(){
   const front=heroAtLane(0),mid=heroAtLane(1),rear=heroAtLane(2);
   return [
-    front==='vael'?{good:true,title:'전열',text:'베일이 첫 강공격을 안정적으로 받아냄'}:{good:false,title:'전열',text:state.heroes[front].name+'이(가) 첫 타격에서 큰 피해를 받음'},
-    rear==='seris'&&front==='vael'?{good:true,title:'수호',text:'후열 저격 → 베일 INTERCEPT → 세리스 의식 유지'}:{good:false,title:'후열',text:state.heroes[rear].name+'이(가) 저격에 직접 노출됨'},
-    mid==='mirel'?{good:true,title:'치유',text:'미렐이 중열에서 가장 위험한 동료를 즉시 회복'}:{good:true,title:'치유',text:'미렐이 자동으로 최저 HP 동료를 탐색해 회복'}
+    front==='vael'?{good:true,title:'베일이 경계를 맡았다',text:'파쇄자의 첫 강공격을 받아내며 후열이 준비할 시간을 만듦'}:{good:false,title:'경계가 흔들렸다',text:state.heroes[front].name+'이(가) 첫 충돌에서 큰 피해를 받음'},
+    rear==='seris'&&front==='vael'?{good:true,title:'베일이 세리스를 지켰다',text:'추적자의 저격 → INTERCEPT → 세리스의 집중이 끊기지 않음'}:{good:false,title:'세리스가 노출됐다',text:state.heroes[rear].name+'이(가) 추적자의 저격에 직접 노출됨'},
+    mid==='mirel'?{good:true,title:'미렐이 손상을 먼저 읽었다',text:'가장 위험한 동료를 회복해 월광 의식 완성 시간을 벌음'}:{good:true,title:'미렐이 상처를 읽었다',text:'최저 HP 동료를 찾아 자동으로 회복함'}
   ];
 }
 
