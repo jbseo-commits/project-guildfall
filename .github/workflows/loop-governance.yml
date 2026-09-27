@@ -1,0 +1,61 @@
+name: Loop Governance
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - edited
+
+jobs:
+  protocol:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    env:
+      PR_BODY: ${{ github.event.pull_request.body }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify loop protocol files
+        run: |
+          test -s LOOP-ENGINEERING.md
+          test -s docs/LOOP-STATE.md
+          test -s docs/DECISIONS.md
+          test -s START-HERE.md
+          test -s HANDOFF.md
+
+      - name: Verify loop protocol headings
+        run: |
+          grep -Fq "# 3. The loop kernel" LOOP-ENGINEERING.md
+          grep -Fq "# 14. Completion ladder" LOOP-ENGINEERING.md
+          grep -Fq "# NEXT LOOP" docs/LOOP-STATE.md
+          grep -Fq "Suggested branch" docs/LOOP-STATE.md
+
+      - name: Verify evidence-first PR body
+        run: |
+          required=(
+            "## Loop target"
+            "### Observed problem"
+            "### Hypothesis"
+            "## Evidence"
+            "## Next bottleneck"
+          )
+
+          for heading in "${required[@]}"; do
+            if ! printf '%s' "$PR_BODY" | grep -Fq "$heading"; then
+              echo "::error::Missing required PR section: $heading"
+              exit 1
+            fi
+          done
+
+      - name: Confirm execution entrypoint
+        run: |
+          grep -Fq "LOOP-ENGINEERING.md" START-HERE.md
+          grep -Fq "docs/LOOP-STATE.md" START-HERE.md
+          grep -Fq "LOOP-ENGINEERING.md" README.md

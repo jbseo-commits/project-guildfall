@@ -2,9 +2,9 @@
 
 ## Current phase
 
-**Phase 2 — Core Loop Engineering is implemented.**
+**Loop Engineering active — Phase 2 & Phase 3 Implemented.**
 
-The project has transitioned from scripted visual mockups to a **fully decoupled, deterministic simulation engine and continuous macro loop**:
+The project has transitioned from scripted visual mockups to a **fully decoupled, deterministic simulation engine, continuous macro loop, and 2.5D animated sprite locomotion**:
 
 1. **Independent Deterministic Combat Engine (`src/game/engine/CombatEngine.js`)**:
    - Seed-based, frame-rate independent tick simulation (0.05s dt).
@@ -22,77 +22,72 @@ The project has transitioned from scripted visual mockups to a **fully decoupled
    - **Camp Screen**: Faithfully implements the approved mockup screen (full 16:9 campfire scene, top-left moon badge, left navigation bar, authentic notched RPG parchment speech bubbles for Vael, Seris, Mirel, and drawer panels for Formation/Tactics/Map).
    - **Battle Screen**: Dedicated full-screen arena (battlefield occupies 82% height, live actors, real bottom HUD with high-res portraits, in-arena Causal Debrief overlay).
 
+The authoritative operating documents are:
+- `LOOP-ENGINEERING.md`
+- `docs/LOOP-STATE.md`
+
+---
+
 ## Locked identity
 
-Read `docs/DECISIONS.md` before changing anything.
-
 The current fantasy is the **Living Caravan**:
-a wandering living dungeon/sanctuary made of beautiful, dangerous, highly charismatic beings who function as an interdependent ecosystem.
+
+a wandering living sanctuary / ecosystem made of beautiful, dangerous, highly charismatic beings.
 
 Locked emotional principles:
+
 - characters are **organs, not inventory**;
 - losing one should feel like losing part of the living system;
 - characters can be lost;
-- recovery can exist but should be painfully expensive;
+- recovery can exist but should eventually be painfully expensive;
 - attachment may make the player strategically inefficient.
 
-## Critical visual direction
+See `docs/DECISIONS.md`.
 
-The user explicitly rejected a tutorial that looked like stacked cards / a UI prototype.
+---
 
-The accepted visual standard is an **arena-dominant commercial game screen**:
-- battlefield dominates;
-- characters exist in space;
-- bottom HUD supports the battlefield;
-- tutorial guidance overlays the live game;
-- no separate tutorial page replacing the game;
-- a screenshot without tutorial text should still look like a game.
+## Current playable slice
 
-The approved concept art is the current quality/composition proxy.
-
-## Current layered implementation
-
-Branch `arena-layered-battle-v2` now separates:
-
-- painted environment proxy;
-- player actors;
-- enemy actors;
-- FRONT / CORE / VEIL floor slots;
-- enemy intent arrows;
-- resonance tether;
-- world HP bars;
-- battle VFX;
-- party HUD;
-- enemy HUD;
-- tutorial coach;
-- post-battle debrief.
+The current game includes:
 
 ### Planning
-The player can:
-- select a hero in the world or HUD;
-- move them between FRONT / CORE / VEIL;
-- swap occupied positions;
-- see the HUD update immediately.
+- enemy intent reading;
+- FRONT / CORE / VEIL formation;
+- party-member swapping;
+- COMMIT boundary.
 
-### After COMMIT
-No micro-control.
+### Automatic battle
+- breaker telegraph / lunge / opening impact;
+- hunter rear-target acquisition / shot;
+- Vael INTERCEPT;
+- Mirel autonomous danger-read / healing;
+- Seris concentration / ritual / moon burst;
+- finish / resolution.
 
-The current autonomous sequence includes:
-- enemy charge;
-- target warning;
-- first collision;
-- Vael intercept if formation allows it;
-- Mirel autonomous heal of the weakest party member;
-- Seris channel;
-- moon burst;
-- enemy defeat;
-- cause-chain debrief.
+### Tutorial / explanation
+- live-game tutorial overlays;
+- battle dialogue;
+- combat log;
+- causal debrief;
+- resonance prototype;
+- route / journey presentation.
 
-Different formations change who receives damage and whether the clean protection chain occurs.
+### Visual QA
+Every relevant PR can render actual browser screenshots at:
+- mobile landscape;
+- desktop 16:9.
 
-## Art status
+Combat QA currently includes:
+- READ;
+- PLACEMENT;
+- CHARGE;
+- INTERCEPT;
+- BURST;
+- FINISH.
 
-**Phase 3 — Sprite-Gen Production Pipeline is implemented.**
+---
+
+## Art & Motion Pipeline (`sprite-gen` & Locomotion Engine)
 
 Hero and boss stand-ins have been replaced with full-body 8-keypose production sprite sheets adhering to the `sprite-gen` specification:
 - **Vael (베일 - 흑요석 수호자)**: 4x2 grid (Idle, Windup, Brace, Crouch, Hit, Lunge, Intercept, Recovery). Obsidian horns, violet cloak, dark gold-filigree armor, kite shield.
@@ -102,10 +97,11 @@ Hero and boss stand-ins have been replaced with full-body 8-keypose production s
 
 ### Pipeline Technical Features:
 1. **Real-time Chroma Cutout & Defringing**: `#FF00FF` magenta chroma unmixed to clean alpha transparency on-the-fly via [SpriteAtlas.js](file:///c:/Users/정현아/project-guildfall/src/game/render/SpriteAtlas.js).
-2. **Foot-Anchor Alignment**: Bottom contact line dynamically calculated so actors never float or slide during stance changes.
-3. **Team Silhouette Backlight**: Gold outline glow (`#ffe694`) for allies, Crimson outline glow (`#ff708a`) for enemies.
-4. **Palette Swapping & Variant Recoloring (`sprite-gen` Workflow 3)**: Lancer (백철 창기병) automatically recolored with silver/white-iron palette swap (`hue-rotate(170deg)`).
-5. **Cinematic Battle Beats & Camera Trauma**:
+2. **Foot-Anchor Alignment**: Bottom 12% contact line dynamically calculated (`measureFootCenter`) so actors never float or slide during stance changes.
+3. **Scale Locking**: Frame 0 height (`this.baseCharHeight`) locked as master scale to prevent crouching/hit-reaction ballooning.
+4. **Spatial Locomotion Engine**: Characters physically advance across the arena to clash lines, dash with afterimage trails, intercept dive, and recoil with spring damping.
+5. **Team Silhouette Backlight**: Gold outline glow (`#ffe694`) for allies, Crimson outline glow (`#ff708a`) for enemies.
+6. **Cinematic Battle Beats & Camera Trauma**:
    - `hitstop`: Instant contrast spike and micro-freeze on heavy impacts.
    - `impact-beat`: Punchy horizontal screen trauma camera shake.
    - `guard-impact-beat`: Golden radial shield bloom and heavy shudder during Vael's intercept.
@@ -113,12 +109,40 @@ Hero and boss stand-ins have been replaced with full-body 8-keypose production s
    - `moon-burst-beat`: Grand celestial flash, zoom in, and heavy resonant shake during Seris's ritual burst.
    - `combat-callout`: Dramatic glowing banners for INTERCEPT, 월광 폭발, 꽃맥박, 위기 조준.
    - `dead`: Defeated units dynamically collapse into a dim grayscale posture.
-6. **Runtime Manifests**: [vael_manifest.json](file:///c:/Users/정현아/project-guildfall/src/assets/heroes/vael_manifest.json), [seris_manifest.json](file:///c:/Users/정현아/project-guildfall/src/assets/heroes/seris_manifest.json), [mirel_manifest.json](file:///c:/Users/정현아/project-guildfall/src/assets/heroes/mirel_manifest.json), [boss_warden_manifest.json](file:///c:/Users/정현아/project-guildfall/src/assets/enemies/boss_warden_manifest.json).
-7. **CI / Automation Pipeline**: [prototype-ci.yml](file:///c:/Users/정현아/project-guildfall/.github/workflows/prototype-ci.yml) with automated `npm test` (deterministic simulation) + `npm run build`.
+7. **Runtime Manifests**: [vael_manifest.json](file:///c:/Users/정현아/project-guildfall/src/assets/heroes/vael_manifest.json), [seris_manifest.json](file:///c:/Users/정현아/project-guildfall/src/assets/heroes/seris_manifest.json), [mirel_manifest.json](file:///c:/Users/정현아/project-guildfall/src/assets/heroes/mirel_manifest.json), [boss_warden_manifest.json](file:///c:/Users/정현아/project-guildfall/src/assets/enemies/boss_warden_manifest.json).
+8. **CI / Automation Pipeline**: [prototype-ci.yml](file:///c:/Users/정현아/project-guildfall/.github/workflows/prototype-ci.yml) with automated `npm test` (deterministic simulation) + `npm run build`.
 
-## Next action
+---
+
+## Exact next action
 
 1. User inspects the live layered battle in-browser at `http://localhost:5173/`.
 2. Observe the full Anticipation → Action → Impact → Recovery cycle, hit-stop, camera shake, and dramatic callout banners.
 3. When image API quota resets, generate dedicated quadruped Stigmata Hound and Blind-eye Hunter sprite sheets.
-4. Expand multi-wave caravan encounters and meta-progression adaptation depth.
+4. Expand multi-wave caravan encounters and meta-progression adaptation depth according to `docs/LOOP-STATE.md`.
+
+---
+
+## Execution rules
+
+1. Use one focused loop per branch.
+2. Observe the actual game first.
+3. Fix the highest-impact player-facing bottleneck.
+4. Build.
+5. Capture real browser screenshots.
+6. Inspect mobile and desktop.
+7. Reject or iterate if worse.
+8. Merge only after evidence passes.
+9. Update `docs/LOOP-STATE.md`.
+10. Continue to the next bottleneck while the session allows.
+
+Do not stop merely because code was written.
+
+---
+
+## External deployment note
+
+The latest repository/Visual QA checks passed.
+At the last check, Vercel could report a **build-rate-limit** failure.
+Treat that as external infrastructure unless a real application build error appears.
+Do not confuse provider quota failure with broken game code.
