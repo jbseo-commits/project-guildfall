@@ -3539,3 +3539,131 @@ button{font:inherit;-webkit-tap-highlight-color:transparent}
     animation-iteration-count:1!important;
   }
 }
+
+
+/* =========================================================
+   FIRST PULSE NARRATIVE LAYER V1
+   Worldbuilding is embedded into the live tutorial, not a lore dump.
+   ========================================================= */
+
+.chapter-stamp{
+  position:absolute;
+  z-index:7;
+  left:13.5%;
+  top:4.5%;
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+  width:24%;
+  padding:8px 11px 9px;
+  border-left:2px solid rgba(244,204,121,.72);
+  background:linear-gradient(90deg,rgba(11,15,22,.78),rgba(11,15,22,.22),transparent);
+  color:#f2e5cf;
+  pointer-events:none;
+  text-shadow:0 2px 6px rgba(0,0,0,.72);
+}
+.chapter-stamp span{
+  color:#d6b46d;
+  font-size:.42rem;
+  font-weight:1000;
+  letter-spacing:.12em;
+}
+.chapter-stamp b{
+  font-size:.62rem;
+  line-height:1.2;
+}
+.chapter-stamp em{
+  color:#c7c0b6;
+  font-style:normal;
+  font-size:.46rem;
+  line-height:1.25;
+}
+
+.story-kicker{
+  display:grid;
+  grid-template-columns:auto 1fr;
+  gap:8px;
+  align-items:center;
+  margin:9px 0 10px;
+  padding:8px 9px;
+  border:1px solid rgba(124,93,55,.18);
+  border-radius:8px;
+  background:rgba(111,79,41,.07);
+}
+.story-kicker span{
+  padding:3px 6px;
+  border-radius:999px;
+  background:#4a3a2c;
+  color:#f0dcae;
+  font-size:.42rem;
+  font-weight:900;
+  letter-spacing:.06em;
+}
+.story-kicker b{
+  color:#55402e;
+  font-size:.52rem;
+  line-height:1.35;
+}
+
+.route-destination{
+  position:absolute;
+  z-index:5;
+  top:42px;
+  left:15px;
+  right:15px;
+  color:rgba(77,57,35,.74);
+  font-size:.39rem;
+  font-weight:900;
+  letter-spacing:.08em;
+  text-align:center;
+  pointer-events:none;
+}
+
+.story-complete .story-quote{
+  margin:12px 0;
+  padding:11px 12px;
+  border-left:3px solid #8d77ad;
+  border-radius:4px 9px 9px 4px;
+  background:linear-gradient(90deg,rgba(112,88,151,.12),rgba(112,88,151,.035));
+  color:#4b3a5e;
+  font-size:.72rem;
+  font-weight:900;
+  line-height:1.35;
+  letter-spacing:-.01em;
+}
+.story-complete .unlock-card{
+  margin-top:8px;
+}
+
+@media (orientation:landscape) and (max-height:650px){
+  .chapter-stamp{
+    left:12.5%;
+    top:3.2%;
+    width:25%;
+    gap:1px;
+    padding:5px 8px;
+  }
+  .chapter-stamp span{font-size:.34rem}
+  .chapter-stamp b{font-size:.46rem}
+  .chapter-stamp em{font-size:.35rem}
+  .story-kicker{
+    margin:4px 0 5px;
+    padding:5px 6px;
+    gap:5px;
+  }
+  .story-kicker span{font-size:.34rem;padding:2px 5px}
+  .story-kicker b{font-size:.4rem}
+  .route-destination{
+    top:31px;
+    font-size:.31rem;
+  }
+  .story-complete .story-quote{
+    margin:6px 0;
+    padding:7px 8px;
+    font-size:.52rem;
+  }
+}
+
+@media (orientation:portrait){
+  .chapter-stamp{display:none}
+}
