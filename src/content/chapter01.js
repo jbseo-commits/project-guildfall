@@ -58,6 +58,8 @@ export const CHAPTER_01 = {
         { speaker: 'seris', text: '그리고… 나를 보고 있는 것 하나.' },
         { speaker: 'vael', text: '이번에는 내가 앞을 막을게. 너희는 뒤에서 준비해.' }
       ],
+      enemy_goal: 'capture-seris',
+      note: '첫 전투의 위협은 무차별 살육보다 “우리 중 한 사람을 데려가려 한다”가 더 강한 감정적 동기다.',
       handoff_to: 'tutorial-read'
     },
 
@@ -85,6 +87,11 @@ export const CHAPTER_01 = {
         { speaker: 'seris', text: '그럼 끝까지 집중할 수 있어.' },
         { speaker: 'mirel', text: '무리하면 바로 말해. …안 말할 거 알아.' }
       ],
+      commit_copy_candidate: {
+        primary: '문을 닫는다',
+        secondary: '이제 서로를 믿어야 합니다.',
+        status: 'PROVISIONAL'
+      },
       next: 'battle-01'
     },
 
@@ -173,7 +180,13 @@ export const CHAPTER_01 = {
         '공명 튜토리얼 후보',
         '카라반 이동 화면',
         '첫 지속 부상 / 관계 이벤트 후보'
-      ]
+      ],
+      optional_hook: {
+        status: 'PROVISIONAL',
+        setup: '습격자에게서 회수한 표식이 카라반 내부의 오래된 봉인과 같은 문양을 가진다.',
+        payoff: '봉인 너머에서 카라반의 심장박동과 다른 네 번째 박동이 한 번 응답한다.',
+        purpose: '카라반 자체의 과거가 장기 미스터리라는 사실만 제시한다.'
+      }
     }
   ],
 
