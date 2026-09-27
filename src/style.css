@@ -3898,3 +3898,14 @@ button{font:inherit;-webkit-tap-highlight-color:transparent}
   .route-choice-confirm{margin-top:4px;padding:4px 6px}
   .hush-sign{left:45%;top:10%;transform:scale(.78)}
 }
+
+
+.route-choice-paper .paper-cta:disabled{
+  opacity:.48;
+  filter:grayscale(.72);
+  box-shadow:none;
+  cursor:default;
+}
+.route-choice-paper .paper-cta:not(:disabled){
+  box-shadow:0 4px 0 #a56519,0 8px 18px rgba(139,86,24,.16);
+}
