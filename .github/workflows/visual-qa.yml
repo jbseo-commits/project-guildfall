@@ -40,6 +40,18 @@ jobs:
             const page = await browser.newPage({ viewport: { width, height } });
             await page.goto('http://127.0.0.1:4173', { waitUntil: 'networkidle' });
             await page.waitForTimeout(600);
+            await page.screenshot({ path: 'visual-qa/' + prefix + '-story-warmth.png' });
+
+            await page.locator('#storyNext').click();
+            await page.waitForTimeout(180);
+            await page.screenshot({ path: 'visual-qa/' + prefix + '-story-hush.png' });
+
+            await page.locator('#storyNext').click();
+            await page.waitForTimeout(180);
+            await page.screenshot({ path: 'visual-qa/' + prefix + '-story-threat.png' });
+
+            await page.locator('#storyNext').click();
+            await page.waitForTimeout(180);
             await page.screenshot({ path: 'visual-qa/' + prefix + '-read.png' });
 
             await page.locator('#readNext').click();
@@ -61,12 +73,26 @@ jobs:
             await page.screenshot({ path: 'visual-qa/' + prefix + '-battle.png' });
             await shotAt(5650, 'battle-burst');
             await shotAt(7100, 'battle-finish');
+            await shotAt(8350, 'result');
+
+            if (await page.locator('#postBattle').count()) {
+              await page.locator('#postBattle').click();
+              await page.waitForTimeout(180);
+              await page.screenshot({ path: 'visual-qa/' + prefix + '-aftermath.png' });
+
+              if (await page.locator('#aftermathNext').count()) {
+                await page.locator('#aftermathNext').click();
+                await page.waitForTimeout(180);
+                await page.screenshot({ path: 'visual-qa/' + prefix + '-departure.png' });
+              }
+            }
             await browser.close();
           }
 
           (async () => {
-            await capture(1388, 550, 'mobile-landscape');
+            await capture(1648, 928, 'golden-1648x928');
             await capture(1536, 864, 'desktop-16x9');
+            await capture(1388, 550, 'mobile-landscape');
           })();
           NODE
           node capture.cjs

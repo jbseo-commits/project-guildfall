@@ -16,6 +16,15 @@ import { RunManager } from './game/loop/RunManager.js';
 import { BattleDirector } from './game/director/BattleDirector.js';
 import { SpriteAtlas } from './game/render/SpriteAtlas.js';
 import { runEngineTests } from './game/engine/__tests__/CombatEngine.test.js';
+import { CHAPTER_01 } from './content/chapter01.js';
+
+const CHAPTER_BEATS = Object.fromEntries(CHAPTER_01.beats.map((b) => [b.id, b]));
+const BATTLE_BARKS = CHAPTER_BEATS['battle-01']?.battle_barks || {
+  vael: { guard: '내가 먼저 막는다.', intercept: '방패는 부서지지 않는다!' },
+  seris: { protected: '고마워, 베일…!', channel: '달빛이 모인다…', burst: '모두 물러서!' },
+  mirel: { sense: '상처를 읽을게요.', heal: '아직 피어날 수 있어요!' }
+};
+
 
 // SpriteAtlas integration (aldegad/sprite-gen & Hero Inc. 2.5D animation standards)
 const heroAtlases = {
@@ -641,6 +650,21 @@ function hitStop(ms) {
   setTimeout(() => zone.classList.remove('hitstop'), (ms || 110) / playbackSpeed);
 }
 
+function heroBark(id, text, ms) {
+  const unit = app.querySelector('.ally.' + id);
+  if (!unit || !text) return;
+  let bark = unit.querySelector('.battle-bark');
+  if (!bark) {
+    bark = document.createElement('span');
+    bark.className = 'battle-bark';
+    unit.appendChild(bark);
+  }
+  bark.textContent = text;
+  bark.classList.remove('show');
+  requestAnimationFrame(() => bark.classList.add('show'));
+  setTimeout(() => bark.classList.remove('show'), (ms || 720) / playbackSpeed);
+}
+
 function setHeroHp(id, hp, label) {
   const maxHp = HEROES_DATA[id]?.maxHp || 100;
   const pct = Math.max(0, Math.min(100, Math.round((hp / maxHp) * 100)));
@@ -853,6 +877,7 @@ function startAutonomousBattle() {
     callbacks: {
       onBattleStart: () => {
         pushLog('전투 개시 · 생태계 자동 반응 활성화');
+        heroBark('vael', BATTLE_BARKS.vael.guard, 800);
         advanceToClash();
         battleBeat('beat-warning', 600);
       },
@@ -893,6 +918,8 @@ function startAutonomousBattle() {
           setHeroHp('vael', e.vaelHp, '가로막기');
           spawnFloatingText('.ally.vael', `가로막기 -${e.damageTaken}`, 'intercept');
           pushLog(`베일이 끼어들어 세리스를 지켜냈습니다! (피해 -${e.damageTaken})`);
+          heroBark('vael', BATTLE_BARKS.vael.intercept, 850);
+          heroBark('seris', BATTLE_BARKS.seris.protected, 900);
         });
       },
       onHeal: (e) => {
@@ -908,6 +935,7 @@ function startAutonomousBattle() {
           setHeroHp(e.target, e.currentHp, '치유됨');
           spawnFloatingText(`.ally.${e.target}`, `+${e.amount} HP`, 'heal');
           pushLog(`미렐이 가장 위급한 ${e.targetName}을(를) 치유했습니다 (+${e.amount})`);
+          heroBark('mirel', BATTLE_BARKS.mirel.heal, 800);
         });
       },
       onBarrier: () => {
@@ -931,6 +959,7 @@ function startAutonomousBattle() {
         setHeroHp('seris', run.heroes.seris.hp, '월광 집중');
         combatCallout('월광 의식', 'moon', 800);
         pushLog('세리스가 월광 의식을 집중합니다.');
+        heroBark('seris', BATTLE_BARKS.seris.channel, 900);
       },
       onChannelInterrupt: () => {
         const pos = unitPositions['seris'];
@@ -950,6 +979,7 @@ function startAutonomousBattle() {
         combatCallout('월광 폭발!', 'moon', 900);
         spawnFloatingText('.ally.seris', '월광 폭발!', 'burst');
         pushLog('세리스의 월광 폭발이 적 진형 전체를 강타했습니다!');
+        heroBark('seris', BATTLE_BARKS.seris.burst, 850);
 
         blastKnockbackAllEnemies(14, 600);
 

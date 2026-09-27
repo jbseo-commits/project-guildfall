@@ -2,6 +2,11 @@
 
 > **Last updated:** 2026-09-27
 >
+> **MODE OVERRIDE: MOCKUP LOCK & SPRITE-GEN LOCOMOTION CONVERGED**
+>
+> The Golden Frame geometry, Chapter 01 narrative spine, and 2.5D animated sprite locomotion engine are now unified on main.
+> Read `docs/MOCKUP-LOCK.md` and `docs/art/CHARACTER-SPRITE-SSOT.md` before choosing the next loop.
+
 > This file is the current execution checkpoint for `LOOP-ENGINEERING.md`.
 > It should be updated after every meaningful merged loop.
 
@@ -9,26 +14,26 @@
 
 ## Current main baseline
 
-- Main commit: `07a6bc98a80c943dce649ff173700ad9c74d2326`
-- Latest merged milestone: **Combat Motion V2**
-- Latest merged PR: **#16 — Combat motion v2: connected attacks, intercepts and ritual payoff**
+- Latest merged milestones:
+  - **Mockup Lock V1 + Painterly Battle Plate** (#26, #27)
+  - **World foundation & Chapter 01 runtime** (#18, #20)
+  - **Sprite-Gen Production Pipeline & Spatial Locomotion Engine**
 - Visual QA: **PASS**
-- Prototype CI: **PASS**
+- Prototype CI: **PASS (11/11 deterministic simulation tests passing)**
 - Vercel status at last check: **external build-rate-limit failure**, not an application build failure
 
 ---
 
 ## Current product phase
 
-> **G1 → G2 transition**
+> **G1 Mockup Lock + G2 Sprite-Gen Locomotion Payoff**
 
-The game already has a recognizable visual identity and a functioning tutorial/autobattle slice.
-
-The current highest-value work is no longer “make the screen exist.”
-
-It is:
-
-> **make the characters and enemies actually perform authored combat actions instead of moving static cutouts through effects.**
+The game has unified the approved mockup composition, Chapter 01 narrative beats, and 2.5D animated sprite locomotion:
+- Hero and Boss production sprite sheets (Vael, Seris, Mirel, Boss Warden) with 8 authored keyposes each.
+- Real-time magenta (#FF00FF) chroma cutout and defringing in `SpriteAtlas.js`.
+- Foot contact anchor calculation (`measureFootCenter`) preventing stance sliding.
+- Base standing scale locking preventing crouch/hit-reaction ballooning.
+- Spatial locomotion engine: dynamic clash line advance, intercept dash with afterimage trails, and spring-damped knockback.
 
 ---
 
@@ -56,27 +61,34 @@ Current non-negotiables:
 - COMMIT boundary
 - automatic combat
 - causal combat log
-- battle debrief
+- battle debrief & Causal Debrief cause chains
 - resonance tutorial prototype
 - journey map presentation
 
 ### Current party
-- Vael
-- Seris
-- Mirel
+- Vael (흑요석 수호자 — 2.5D Animated Sprite Atlas)
+- Seris (월광나방 예언자 — 2.5D Animated Sprite Atlas)
+- Mirel (개화의 사제 — 2.5D Animated Sprite Atlas)
+
+### Narrative now live
+- camp warmth before tutorial mechanics
+- visible Hush warning
+- targeted threat to Seris
+- in-world COMMIT language
+- character battle barks
+- relationship-focused debrief
+- post-battle care scene
+- departure scene
+- provisional sealed-caravan / fourth-heartbeat hook
 
 ### Current live combat chain
-- breaker telegraph
-- breaker lunge
-- opening impact
-- hunter rear-target acquisition
-- hunter shot
-- Vael INTERCEPT
-- Mirel danger read
-- Mirel heal
-- Seris ritual charge
-- Seris moon burst
-- finish / resolution
+- breaker telegraph & clash advance
+- breaker lunge & opening impact
+- hunter rear-target acquisition & projectile shot
+- Vael dynamic INTERCEPT dash with afterimages
+- Mirel danger read & targeted heal ripple
+- Seris ritual charge & screen-shaking moonlight burst
+- finish / victory march resolution
 
 ### Current visual QA
 The workflow captures real browser renders at:
@@ -90,8 +102,6 @@ Current keyframes:
 - INTERCEPT
 - BURST
 - FINISH
-
-Keyframe timing is anchored to battle start.
 
 ---
 
@@ -115,33 +125,30 @@ The current formation/resonance systems are useful prototypes and may become fin
 ## Current visual status
 
 ### GREEN
-- overall split-screen tutorial composition
+- Living Caravan world foundation
+- initial Vael / Seris / Mirel characterization
+- Chapter 01 content separation & runtime narrative flow
+- overall split-screen tutorial composition & Golden Frame
 - camp / tutorial / route / battle hierarchy
 - independent live layers
-- hero visual identity direction
+- hero visual identity direction & 2.5D animated atlases
 - enemy silhouette differentiation
 - mobile landscape support
 - screenshot-driven QA pipeline
 - combat intent arrows / targeting language
-- Vael INTERCEPT readability
+- Vael INTERCEPT dynamic dive & readability
 
 ### YELLOW
-- hero combat motion
-- enemy combat motion
-- battle impact continuity
-- Seris dialogue portrait solution
-- arena depth / production finish
+- enemy authored attack / hit / defeat frames (Hound and Hunter still using animated silhouette atlases)
+- battle impact continuity & audio cues
 - route-map production finish
-- debrief causality presentation
-- VFX density / restraint balance
+- debrief causality presentation polish
 
 ### RED
-- authored hero action poses / frames
-- authored enemy attack / hit / defeat frames
-- production-level body motion
+- dedicated Stigmata Hound and Blind-eye Hunter authored sprite sheets
 - persistent character attachment systems
 - loss / recovery proof
-- run-loop proof
+- run-loop multi-wave proof
 - content breadth
 
 ---
@@ -186,77 +193,18 @@ Repository work may continue.
 # NEXT LOOP — HIGHEST PRIORITY
 
 ## Target
-**Vael authored combat poses / frames V1**
+**Dedicated Enemy Authored Sprite Sheets (Hound & Hunter) & Multi-Wave Run Flow**
 
 ### Why this is next
-Vael is the clearest proof character for the game's autobattle fantasy.
-
-His defining behavior is:
-- read threat;
-- brace;
-- move to protect;
-- absorb contact;
-- recover / counter.
-
-Right now this logic reads, but most body motion is still the same static artwork being translated / rotated.
-
-That is the current largest gap between:
-- “functional prototype”
-and
-- “commercial-feeling character combat.”
-
-### Required pose set
-At minimum:
-
-1. idle / breath
-2. guard-ready
-3. brace
-4. intercept travel
-5. shield-impact
-6. hit reaction
-7. counter / finish
-8. recovery
-9. critical / downed candidate
+Hero and Boss units are now completely live with 2.5D animated sprite sheets and dynamic locomotion.
+The Hound and Hunter are currently animated using palette-adjusted silhouette atlases. Creating dedicated quad and ranged sprite sheets following `sprite-gen` specification will bring all combat participants to full commercial fidelity.
 
 ### Pass condition
 The loop is GREEN only if:
-
-- Vael visibly changes pose, not merely position;
-- the intercept chain is readable without the log;
-- the character still looks like the approved Vael;
-- no face / silhouette / costume style drift;
-- mobile landscape remains readable;
-- CHARGE / INTERCEPT / FINISH Visual QA frames all improve;
-- movement does not introduce obvious stutter.
-
-### Suggested branch
-`vael-authored-frames-v1`
-
-### Likely files
-- `src/assets/heroes/`
-- `src/main.js`
-- `src/style.css`
-- `.github/workflows/visual-qa.yml` only if new evidence timing is needed
-
----
-
-# Queue after Vael
-
-Proceed in this order unless evidence reveals a higher-priority regression:
-
-1. Vael authored combat poses
-2. Seris authored concentration / cast / burst poses
-3. Mirel authored sense / heal / recovery poses
-4. enemy authored attack / hit / defeat poses
-5. transition smoothing / performance pass
-6. stronger causal debrief
-7. two-build strategic divergence test
-8. D002 user lock if the prototype has enough evidence
-9. attachment / injury persistence prototype
-10. loss / restoration economy decision with user
-11. run-structure decision with user
-12. run-loop prototype
-13. content breadth only after core gates pass
+- Hound and Hunter have distinct 8-keypose frames;
+- quad run / ranged fire animations are natural and anchored to foot contact lines;
+- 11/11 deterministic engine tests pass;
+- mobile landscape and desktop layouts remain pristine.
 
 ---
 

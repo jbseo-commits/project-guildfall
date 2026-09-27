@@ -140,6 +140,23 @@ Do not stop merely because code was written.
 
 ---
 
+## Do not silently lock open design decisions
+
+Current implementation contains provisional answers for formation / resonance / spatial logic.
+
+These are not automatically permanent.
+
+Major choices still requiring explicit user lock include:
+- permanent control-vs-automation model;
+- permanent spatial model;
+- permanent run structure;
+- permanent loss / restoration economy;
+- permanent recruitment model.
+
+Prototype them when useful, but label them provisional.
+
+---
+
 ## External deployment note
 
 The latest repository/Visual QA checks passed.

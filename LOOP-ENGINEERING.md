@@ -55,6 +55,9 @@ Before editing code:
    - `docs/LOOP-STATE.md`
    - `docs/DECISIONS.md`
    - `docs/GAME-VISION.md`
+   - `docs/WORLD-BIBLE.md`
+   - `docs/CHARACTER-BIBLE.md`
+   - `docs/NARRATIVE-SPINE.md`
    - `HANDOFF.md`
    - relevant implementation docs
 3. Inspect the latest merged commits and open PRs.
@@ -75,6 +78,17 @@ Do not start a new feature merely because it is easy to implement.
 
 Every engineering loop follows exactly this cycle:
 
+## MODE OVERRIDE
+
+Before selecting a bottleneck, inspect the top of `docs/LOOP-STATE.md`.
+
+If it declares an active temporary mode such as **MOCKUP LOCK**, that mode overrides the normal priority queue until its pass condition is GREEN.
+
+For MOCKUP LOCK:
+- read `docs/MOCKUP-LOCK.md`;
+- do not expand systems/content;
+- optimize for Golden Frame similarity first;
+- animation must happen inside the locked composition.
 ## OBSERVE
 Inspect the **actual game**, not only source code.
 

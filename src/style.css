@@ -588,8 +588,7 @@ button{font:inherit;-webkit-tap-highlight-color:transparent}
 @keyframes rotateHint{0%,100%{transform:rotate(0)}45%,55%{transform:rotate(90deg)}}
 
 
-/* =========================================================
-   CHARACTER ART INTEGRATION V3
+/* ==================================================   CHARACTER ART INTEGRATION V3
    Approved Vael / Seris / Mirel battle silhouettes
    ========================================================= */
 
@@ -4636,3 +4635,524 @@ button{font:inherit;-webkit-tap-highlight-color:transparent}
 
 
 
+
+/* =========================================================
+   CHAPTER 01 RUNTIME INTEGRATION
+   Warmth -> Hush sign -> threat -> battle -> care -> departure.
+   ========================================================= */
+
+.story-paper{
+  display:flex;
+  flex-direction:column;
+}
+.story-lines{
+  display:grid;
+  gap:7px;
+  margin:10px 0 8px;
+}
+.story-line{
+  display:grid;
+  grid-template-columns:58px 1fr;
+  gap:8px;
+  align-items:start;
+  padding:7px 8px;
+  border-radius:8px;
+  background:rgba(91,65,42,.07);
+  border:1px solid rgba(106,78,49,.09);
+}
+.story-line b{
+  color:#483323;
+  font-size:.52rem;
+}
+.story-line span{
+  color:#5f4b3b;
+  font-size:.53rem;
+  line-height:1.42;
+}
+.story-note{
+  margin-top:auto!important;
+  padding:8px 9px;
+  border-left:2px solid rgba(130,104,78,.46);
+  background:rgba(110,88,60,.05);
+  color:#715e4b!important;
+  font-size:.47rem!important;
+}
+.story-hush-sign .story-lines{
+  filter:saturate(.88);
+}
+.story-threat-arrives .story-lines{
+  border-radius:9px;
+  box-shadow:inset 0 0 0 1px rgba(159,67,62,.08);
+}
+.commit-sub{
+  display:block;
+  margin-top:5px;
+  color:#776450;
+  text-align:center;
+  font-size:.45rem;
+  font-weight:700;
+}
+.after­math-paper{
+  gap:0;
+}
+.sealed-door-hook{
+  margin:12px 0;
+  padding:12px 13px;
+  display:grid;
+  grid-template-columns:auto auto 1fr;
+  gap:8px;
+  align-items:center;
+  border:1px solid rgba(92,78,112,.28);
+  border-radius:9px;
+  background:
+    radial-gradient(circle at 28% 50%,rgba(148,120,188,.12),transparent 32%),
+    rgba(67,55,78,.08);
+}
+.sealed-door-hook span{
+  grid-column:1/-1;
+  color:#735b91;
+  font-size:.42rem;
+  font-weight:1000;
+  letter-spacing:.12em;
+}
+.sealed-door-hook b{
+  color:#44364f;
+  font-size:.78rem;
+}
+.sealed-door-hook em{
+  color:#65556f;
+  font-size:.47rem;
+  line-height:1.35;
+  font-style:normal;
+}
+
+.hush-sign{
+  position:absolute;
+  z-index:8;
+  right:49%;
+  top:21%;
+  display:flex;
+  gap:7px;
+  align-items:center;
+  padding:5px 8px;
+  border:1px solid rgba(214,227,240,.14);
+  border-radius:999px;
+  background:rgba(19,25,32,.68);
+  color:#dce8ef;
+  opacity:0;
+  pointer-events:none;
+  transform:translateY(5px);
+  transition:.25s ease;
+  box-shadow:0 0 20px rgba(190,224,240,.08);
+}
+.hush-sign i{
+  width:13px;
+  height:13px;
+  border-radius:50%;
+  background:
+    radial-gradient(circle at 50% 50%,#f1f7fb 0 18%,#a3bed0 20% 40%,transparent 42%),
+    conic-gradient(from 10deg,#dfefff,#758da3,#dfefff);
+  box-shadow:0 0 9px rgba(206,235,248,.45);
+}
+.hush-sign span{
+  font-size:.39rem;
+  font-weight:900;
+  letter-spacing:.08em;
+}
+.story-stage.story-step-1 .hush-sign,
+.story-stage.story-step-2 .hush-sign{
+  opacity:1;
+  transform:translateY(0);
+}
+.story-stage.story-step-1 .camp-fire{
+  animation-play-state:paused!important;
+  filter:saturate(.55) brightness(.92);
+}
+.story-stage.story-step-1 .camp-bg{
+  filter:brightness(.91) saturate(.86) contrast(1.04)!important;
+}
+.story-stage.story-step-2 .camp-bg{
+  filter:brightness(.86) saturate(.92) contrast(1.08)!important;
+}
+
+.battle-bark{
+  position:absolute;
+  z-index:50;
+  left:50%;
+  top:-31px;
+  transform:translate(-50%,6px) scale(.94);
+  min-width:max-content;
+  max-width:150px;
+  padding:5px 8px;
+  border:1px solid rgba(255,255,255,.17);
+  border-radius:8px;
+  background:rgba(22,25,31,.86);
+  color:#f6eadc;
+  font-size:.44rem;
+  font-weight:900;
+  line-height:1.25;
+  text-shadow:0 1px 3px rgba(0,0,0,.6);
+  box-shadow:0 5px 14px rgba(0,0,0,.25);
+  opacity:0;
+  pointer-events:none;
+}
+.battle-bark:after{
+  content:"";
+  position:absolute;
+  left:50%;
+  bottom:-5px;
+  width:8px;
+  height:8px;
+  background:rgba(22,25,31,.86);
+  transform:translateX(-50%) rotate(45deg);
+}
+.battle-bark.show{
+  animation:battleBarkIn .7s ease both;
+}
+.hero.vael .battle-bark{border-color:rgba(126,191,255,.32)}
+.hero.seris .battle-bark{border-color:rgba(165,157,255,.36)}
+.hero.mirel .battle-bark{border-color:rgba(140,219,154,.36)}
+
+@keyframes battleBarkIn{
+  0%{opacity:0;transform:translate(-50%,6px) scale(.92)}
+  22%{opacity:1;transform:translate(-50%,0) scale(1.02)}
+  78%{opacity:1;transform:translate(-50%,0) scale(1)}
+  100%{opacity:0;transform:translate(-50%,-5px) scale(.98)}
+}
+
+@media (orientation:landscape) and (max-height:650px){
+  .story-lines{
+    gap:4px;
+    margin:5px 0 4px;
+  }
+  .story-line{
+    grid-template-columns:44px 1fr;
+    gap:5px;
+    padding:4px 5px;
+  }
+  .story-line b{font-size:.39rem}
+  .story-line span{font-size:.4rem;line-height:1.28}
+  .story-note{
+    padding:5px 6px;
+    font-size:.36rem!important;
+  }
+  .commit-sub{font-size:.34rem;margin-top:3px}
+  .sealed-door-hook{
+    margin:6px 0;
+    padding:7px 8px;
+    gap:5px;
+  }
+  .sealed-door-hook span{font-size:.32rem}
+  .sealed-door-hook b{font-size:.56rem}
+  .sealed-door-hook em{font-size:.36rem}
+  .hush-sign{
+    top:17%;
+    right:49%;
+    padding:3px 6px;
+  }
+  .hush-sign span{font-size:.3rem}
+  .battle-bark{
+    top:-25px;
+    padding:4px 6px;
+    max-width:115px;
+    font-size:.34rem;
+  }
+}
+
+
+/* =========================================================
+   MOCKUP LOCK MODE V1
+   Golden-frame geometry. Do not casually redesign these ratios.
+   ========================================================= */
+
+.mockup-lock{
+  --gf-top:54%;
+  --gf-bottom:46%;
+  --gf-camp:52.2%;
+  --gf-paper-left:52.4%;
+  --gf-paper-w:30.4%;
+  --gf-route-left:83.2%;
+  --gf-route-w:16%;
+  background:#0d1016;
+}
+.mockup-lock .top-half{height:var(--gf-top)!important}
+.mockup-lock .battle-zone{height:var(--gf-bottom)!important}
+
+@media (orientation:landscape) and (min-height:651px){
+  .mockup-lock .camp-bg{
+    inset:0!important;
+    background-size:52.2% 100%!important;
+    background-position:left center!important;
+    filter:brightness(1.03) saturate(1.05) contrast(1.02)!important;
+    transform:none!important;
+  }
+  .mockup-lock .camp-overlay{
+    background:
+      linear-gradient(90deg,
+        rgba(5,6,9,0) 0%,
+        rgba(5,6,9,.01) 48.5%,
+        rgba(7,8,12,.10) 51.5%,
+        rgba(7,8,12,.52) 61%,
+        rgba(7,8,12,.9) 78%,
+        rgba(7,8,12,.95) 100%)!important;
+  }
+
+  .mockup-lock .tutorial-paper{
+    left:var(--gf-paper-left)!important;
+    right:auto!important;
+    top:4.4%!important;
+    width:var(--gf-paper-w)!important;
+    min-width:0!important;
+    min-height:87%!important;
+    max-height:90%!important;
+    padding:18px 20px 16px!important;
+    border-radius:10px!important;
+  }
+  .mockup-lock .tutorial-paper h2{
+    font-size:1.18rem!important;
+    margin:5px 0 8px!important;
+  }
+  .mockup-lock .tutorial-paper>p{
+    font-size:.64rem!important;
+    line-height:1.46!important;
+  }
+  .mockup-lock .paper-ribbon{
+    left:14px!important;
+    top:-13px!important;
+    padding:6px 12px!important;
+  }
+  .mockup-lock .formation-preview{
+    gap:10px!important;
+    margin-top:9px!important;
+  }
+  .mockup-lock .formation-card{
+    padding:8px 6px 9px!important;
+  }
+  .mockup-lock .formation-portrait{
+    height:84px!important;
+  }
+  .mockup-lock .formation-portrait .hero-art-wrap.small{
+    transform:scale(1.13)!important;
+  }
+  .mockup-lock .paper-cta{
+    padding:11px 12px!important;
+    margin-top:12px!important;
+    font-size:.67rem!important;
+  }
+
+  .mockup-lock .route-map{
+    left:var(--gf-route-left)!important;
+    right:auto!important;
+    top:4.4%!important;
+    width:var(--gf-route-w)!important;
+    height:90.5%!important;
+    min-width:0!important;
+  }
+  .mockup-lock .route-title{
+    font-size:.72rem!important;
+  }
+  .mockup-lock .route-node{
+    width:38px!important;
+    height:38px!important;
+  }
+
+  .mockup-lock .battle-bg{
+    inset:-1%!important;
+    background-size:cover!important;
+    background-position:center 56%!important;
+    filter:brightness(.98) saturate(1.04) contrast(1.02)!important;
+    transform:scale(1.01)!important;
+  }
+  .mockup-lock .battle-texture{
+    opacity:.28!important;
+  }
+  .mockup-lock .battle-grade{
+    background:
+      linear-gradient(180deg,rgba(5,7,11,.01),rgba(5,6,9,.025) 62%,rgba(5,6,9,.42) 96%),
+      radial-gradient(circle at 50% 46%,rgba(120,135,170,.05),transparent 38%)!important;
+  }
+
+  .mockup-lock .battle-unit{
+    transform:translate(-50%,-77%) scale(1.12)!important;
+  }
+  .mockup-lock .battle-unit.world-unit.hero.vael .hero-art-wrap{
+    width:156px!important;
+    height:165px!important;
+  }
+  .mockup-lock .battle-unit.world-unit.hero.seris .hero-art-wrap,
+  .mockup-lock .battle-unit.world-unit.hero.mirel .hero-art-wrap{
+    width:126px!important;
+    height:139px!important;
+  }
+  .mockup-lock .enemy-art-wrap.breaker{
+    width:146px!important;
+    height:126px!important;
+  }
+  .mockup-lock .enemy-art-wrap.hound{
+    width:142px!important;
+    height:120px!important;
+  }
+  .mockup-lock .enemy-art-wrap.hunter{
+    width:114px!important;
+    height:132px!important;
+  }
+  .mockup-lock .world-hp{
+    width:82px!important;
+    height:7px!important;
+  }
+
+  .mockup-lock .battle-dialogue{
+    left:.35%!important;
+    bottom:.8%!important;
+    width:27.2%!important;
+    min-height:72%!important;
+  }
+  .mockup-lock .battle-dialogue .dialogue-portrait{
+    width:45%!important;
+  }
+  .mockup-lock .camp-seris-portrait{
+    background-size:auto 230%!important;
+    background-position:17% 100%!important;
+  }
+  .mockup-lock .battle-dialogue>div:last-child{
+    left:36%!important;
+    right:0!important;
+    bottom:5%!important;
+    min-height:39%!important;
+    padding:13px 14px!important;
+  }
+  .mockup-lock .battle-dialogue b{font-size:.83rem!important}
+  .mockup-lock .battle-dialogue span{font-size:.62rem!important;line-height:1.44!important}
+
+  .mockup-lock .combat-log{
+    right:.55%!important;
+    top:9%!important;
+    width:19.3%!important;
+    min-height:59%!important;
+    padding:11px 12px!important;
+  }
+  .mockup-lock .log-title{font-size:.64rem!important}
+  .mockup-lock .log-line{
+    font-size:.49rem!important;
+    padding:5px 0!important;
+  }
+
+  .mockup-lock .tip-card{
+    right:.55%!important;
+    bottom:1.6%!important;
+    width:19.5%!important;
+    min-height:22%!important;
+    padding:10px 65px 9px 12px!important;
+    font-size:.51rem!important;
+  }
+  .mockup-lock .progress-track{
+    left:28.2%!important;
+    right:25.8%!important;
+    bottom:1.2%!important;
+  }
+  .mockup-lock .progress-node i{
+    width:35px!important;
+    height:35px!important;
+  }
+  .mockup-lock .progress-node b{font-size:.61rem!important}
+  .mockup-lock .progress-node span{font-size:.42rem!important}
+
+  .mockup-lock .battle-controls{
+    right:.65%!important;
+    top:2%!important;
+  }
+}
+
+@media (orientation:landscape) and (max-height:650px){
+  .mockup-lock{
+    --gf-top:54%;
+    --gf-bottom:46%;
+    --gf-paper-left:51.8%;
+    --gf-paper-w:34%;
+    --gf-route-left:86%;
+    --gf-route-w:13.4%;
+  }
+
+  .mockup-lock .camp-bg{
+    inset:0!important;
+    background-size:52% 100%!important;
+    background-position:left center!important;
+    filter:brightness(1.02) saturate(1.04) contrast(1.02)!important;
+    transform:none!important;
+  }
+  .mockup-lock .camp-overlay{
+    background:
+      linear-gradient(90deg,
+        rgba(5,6,9,0) 0%,
+        rgba(5,6,9,.01) 47%,
+        rgba(7,8,12,.12) 52%,
+        rgba(7,8,12,.55) 67%,
+        rgba(7,8,12,.93) 100%)!important;
+  }
+  .mockup-lock .tutorial-paper{
+    left:var(--gf-paper-left)!important;
+    right:auto!important;
+    top:3.4%!important;
+    width:var(--gf-paper-w)!important;
+    min-height:90%!important;
+    max-height:94%!important;
+    padding:10px 11px 8px!important;
+  }
+  .mockup-lock .route-map{
+    left:var(--gf-route-left)!important;
+    right:auto!important;
+    top:4%!important;
+    width:var(--gf-route-w)!important;
+    height:91%!important;
+  }
+
+  .mockup-lock .battle-bg{
+    filter:brightness(.98) saturate(1.04) contrast(1.02)!important;
+  }
+  .mockup-lock .battle-unit{
+    transform:translate(-50%,-75%) scale(.98)!important;
+  }
+  .mockup-lock .combat-log{
+    right:.55%!important;
+    width:20.8%!important;
+  }
+  .mockup-lock .tip-card{
+    right:.55%!important;
+    width:20.5%!important;
+  }
+  .mockup-lock .progress-track{
+    left:30.5%!important;
+    right:22.5%!important;
+  }
+}
+
+
+
+
+
+
+/* =========================================================
+   MOCKUP ART MATCH V1
+   Promote the approved painterly battle plate; keep authored arena as subtle detail only.
+   ========================================================= */
+.mockup-lock .battle-bg.mockup-battle-plate{
+  inset:-2%!important;
+  background-size:cover!important;
+  background-position:center 58%!important;
+  filter:brightness(.92) saturate(1.08) contrast(1.05)!important;
+  transform:scale(1.015)!important;
+}
+.mockup-lock .battle-texture.arena-detail-layer{
+  opacity:.12!important;
+  mix-blend-mode:overlay!important;
+  filter:saturate(.95) contrast(1.03) brightness(.92)!important;
+}
+@media (orientation:landscape) and (max-height:650px){
+  .mockup-lock .battle-bg.mockup-battle-plate{
+    background-position:center 60%!important;
+    filter:brightness(.96) saturate(1.1) contrast(1.04)!important;
+  }
+  .mockup-lock .battle-texture.arena-detail-layer{
+    opacity:.1!important;
+  }
+}
