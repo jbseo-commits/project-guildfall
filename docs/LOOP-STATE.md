@@ -12,9 +12,11 @@
 
 ## Current main baseline
 
-- Main commit: `3c3795146be349184a3a61a0dbd1fd5dd119c6fd`
-- Latest merged milestone: **Chapter 01 Runtime — Leaving Night**
-- Latest merged PR: **#23 — Chapter 01 runtime: integrate Leaving Night into playable tutorial**
+- Main commit: `b56cbd51ca6ca08af95e209cf35b2dd965b9e8c5`
+- Latest merged milestone: **Mockup Lock V1 + Painterly Battle Plate**
+- Latest merged PRs:
+  - **#26 — Mockup Lock v1: freeze Golden Frame before more systems**
+  - **#27 — Mockup art match v1: promote painterly battle plate**
 - World foundation: **#18 — merged**
 - Chapter 01 content pack: **#20 — merged**
 - Visual QA: **PASS**
@@ -208,40 +210,45 @@ Repository work may continue.
 # NEXT LOOP — HIGHEST PRIORITY
 
 ## Target
-**Golden Frame static match V1**
+**Mockup Art Fidelity V2**
 
 ### Why this is next
-The approved mockup already communicates the desired product better than the current live browser render.
+Golden Frame geometry is now substantially locked.
 
-The fastest route is not to add more systems. It is to lock:
-- major panel geometry;
-- actor scale;
-- battle stage weight;
-- dialogue/log/progress proportions;
-- mobile/desktop consistency.
+The remaining mismatch is primarily **art fidelity**, not layout:
+- camp art is too soft / low-resolution;
+- battle environment is painterly but still blurred;
+- hero battle sprites are low-resolution crops;
+- dialogue portrait quality is below the approved mockup;
+- enemies are readable but not yet at the approved illustration quality.
+
+Do not redesign the frame. Replace weak art inside it.
 
 ### Pass condition
 The loop is GREEN only if:
-- the 1648×928 live capture reads immediately as the approved mockup;
-- top/bottom and left/center/right visual weights are close;
-- hero/enemy apparent scale is close;
+- the 1648×928 live capture keeps the locked geometry;
+- camp and battle art no longer look obviously low-resolution / placeholder;
+- hero sprites and dialogue portrait preserve the approved character identity;
+- enemies no longer read as temporary vector stand-ins;
 - no new system is introduced;
-- mobile landscape does not collapse the composition.
+- mobile landscape retains the same hierarchy.
 
 ### Suggested branch
-`mockup-lock-v1`
+`mockup-art-fidelity-v2`
 
 ### Likely files
+- `src/assets/scenes/`
+- `src/assets/heroes/`
+- `src/assets/enemies/`
 - `src/style.css`
 - `src/main.js`
-- `.github/workflows/visual-qa.yml`
-- `docs/MOCKUP-LOCK.md`
+- `.github/workflows/visual-qa.yml` only if evidence capture needs refinement
 
 # Queue after Golden Frame
 
 Proceed in this order unless evidence reveals a higher-priority regression:
 
-1. Golden Frame static match
+1. Mockup art fidelity
 2. minimal live motion inside the locked frame
 3. Vael authored combat poses
 4. Seris authored concentration / cast / burst poses
