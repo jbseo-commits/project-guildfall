@@ -16,9 +16,9 @@ const ENEMY_ART={breaker:breakerArt,hound:houndArt,hunter:hunterArt};
 const app = document.querySelector('#app');
 
 const HEROES = {
-  vael:{id:'vael',name:'베일',role:'수호',lane:0,hp:100,camp:'이번에는 내가 앞을 맡을게. 너희는 뒤에서 준비해.'},
-  seris:{id:'seris',name:'세리스',role:'월광',lane:2,hp:100,camp:'좋아. 이번엔 월광을 끝까지 완성해 볼게.'},
-  mirel:{id:'mirel',name:'미렐',role:'치유',lane:1,hp:100,camp:'…이 꽃, 다시 피울 수 있을까?'}
+  vael:{id:'vael',name:'베일',role:'수호',lane:0,hp:100,camp:'추적 흔적이 가까워졌어. 이번엔 내가 먼저 보여 줄게. 너희는 끝까지 준비해.'},
+  seris:{id:'seris',name:'세리스',role:'월광',lane:2,hp:100,camp:'달우물까지는 멀지 않아. 내 의식이 끊기지만 않으면 길을 열 수 있어.'},
+  mirel:{id:'mirel',name:'미렐',role:'치유',lane:1,hp:100,camp:'심장씨앗이 또 떨고 있어… 밖에서 누가 우리의 맥동을 건드리는 것 같아.'}
 };
 const ENEMIES = {
   breaker:{id:'breaker',name:'수정 파쇄자',hp:100,intent:'전열 강공격'},
@@ -86,8 +86,9 @@ function renderProgress(){
 function tutorialPanel(){
   if(state.phase==='read'){
     return '<aside class="tutorial-paper">'
-      +'<div class="paper-ribbon">튜토리얼 1/4</div><h2>적의 의도 읽기</h2>'
-      +'<p>자동 전투라도 적의 행동은 숨겨져 있지 않습니다. 먼저 누가 누구를 노리는지 확인하세요.</p>'
+      +'<div class="paper-ribbon">튜토리얼 1/4 · 첫 맥동</div><h2>그들이 우리의 맥동을 들었다</h2>'
+      +'<p><b>유리관리국 봉쇄 7반</b>이 달우물로 가는 길을 막았습니다. 적은 무작정 공격하지 않습니다. 먼저 누구를 노리는지 읽으세요.</p>'
+      +'<div class="story-kicker"><span>목표</span><b>달우물까지 돌파해 심장씨앗을 안정시킨다</b></div>'
       +'<div class="intent-list">'
       +'<div><span class="arrow red">➜</span><b>수정 파쇄자</b><em>전열 강공격</em></div>'
       +'<div><span class="arrow blue">➜</span><b>맹안 추적자</b><em>후열 저격</em></div>'
@@ -126,8 +127,8 @@ function tutorialPanel(){
     const items=causeChain().map(function(x){
       return '<div class="'+(x.good?'good':'bad')+'"><i>'+(x.good?'✓':'!')+'</i><span><b>'+x.title+'</b><em>'+x.text+'</em></span></div>';
     }).join('');
-    return '<aside class="tutorial-paper result-paper"><div class="paper-ribbon">튜토리얼 4/4</div><h2>전투 복기</h2>'
-      +'<p>승패보다 중요한 것은 <b>왜</b> 그렇게 싸웠는지 이해하는 것입니다.</p><div class="cause-list">'+items+'</div>'
+    return '<aside class="tutorial-paper result-paper"><div class="paper-ribbon">튜토리얼 4/4</div><h2>카라반이 패턴을 배웠습니다</h2>'
+      +'<p>심장씨앗은 방금 벌어진 일을 기억합니다. <b>누가 누구를 지켰고, 무엇이 시간을 벌었는지</b>가 다음 자동 반응의 씨앗이 됩니다.</p><div class="cause-list">'+items+'</div>'
       +'<button class="paper-cta primary" id="nextRoute">첫 번째 여정으로 →</button></aside>';
   }
   if(state.phase==='next'){
@@ -136,8 +137,8 @@ function tutorialPanel(){
       return '<button class="resonance-hero '+(on?'selected':'')+'" data-reshero="'+id+'"><span>'+heroSprite(id,true)+'</span><b>'+h.name+'</b><em>'+h.role+'</em></button>';
     }).join('');
     const pair=resonancePairInfo();
-    return '<aside class="tutorial-paper next-paper resonance-paper"><div class="paper-ribbon">튜토리얼 2 · 공명</div><h2>두 동료를 연결하세요</h2>'
-      +'<p>공명은 능력치 보너스가 아니라 <b>조건 → 자동 반응</b>을 추가합니다. 두 명을 선택해 하나의 행동 사슬을 만드세요.</p>'
+    return '<aside class="tutorial-paper next-paper resonance-paper"><div class="paper-ribbon">튜토리얼 2 · 공명</div><h2>심장씨앗이 관계를 기억합니다</h2>'
+      +'<p>같은 신뢰가 반복되면 카라반은 명령보다 먼저 반응하기 시작합니다. 두 동료를 연결해 <b>조건 → 자동 반응</b>을 하나 만드세요.</p>'
       +'<div class="resonance-picker">'+heroButtons+'</div>'
       +(pair?'<div class="resonance-preview"><span>TRIGGER → REACTION</span><strong>'+pair.name+'</strong><em>'+pair.desc+'</em></div>':'<div class="resonance-empty">동료 2명을 선택하면 공명 규칙이 나타납니다.</div>')
       +'<button class="paper-cta primary" id="startResonance" '+(state.resonance.length===2?'':'disabled')+'>공명 전투 시작 →</button></aside>';
@@ -157,10 +158,11 @@ function tutorialPanel(){
       +'<button class="paper-cta primary" id="finishResonance">다음 시스템으로 →</button></aside>';
   }
   if(state.phase==='complete'){
-    return '<aside class="tutorial-paper next-paper"><div class="paper-ribbon">공명 학습 완료</div><h2>이제 ‘명령’을 배웁니다</h2>'
-      +'<p>배치는 <b>어디서</b> 싸울지 정했고, 공명은 <b>서로 어떻게 반응할지</b> 정했습니다. 다음은 전투 전에 한 가지 우선 명령을 심는 단계입니다.</p>'
-      +'<div class="unlock-card"><span>NEXT</span><strong>전술 명령</strong><em>조건 하나를 골라 카라반 전체의 첫 반응을 바꿉니다.</em></div>'
-      +'<button class="paper-cta" id="replay">처음부터 다시 보기</button></aside>';
+    return '<aside class="tutorial-paper next-paper story-complete"><div class="paper-ribbon">첫 맥동 · 끝</div><h2>달우물이 먼저 우리를 알아봤다</h2>'
+      +'<p>봉쇄선을 넘은 순간, 월흔숲의 뿌리들이 동시에 떨립니다. 심장씨앗이 대답하기도 전에 <b>뿌리합창단</b>의 기억이 카라반을 향합니다.</p>'
+      +'<div class="story-quote">“다른 이름을 입고… 돌아왔구나.”</div>'
+      +'<div class="unlock-card"><span>NEXT</span><strong>달우물</strong><em>누가 카라반을 기억하는지 확인하고, 다음 전투 전에 첫 우선 명령을 심습니다.</em></div>'
+      +'<button class="paper-cta" id="replay">첫 밤 다시 보기</button></aside>';
   }
   return '';
 }
@@ -194,7 +196,7 @@ function routeMap(){
     const icon=n===0?'⚔':n===1?'✦':n===2?'⚔':n===3?'☠':'⚔';
     return '<div class="route-node n'+n+' '+(n<state.routeIndex?'cleared ':'')+(n===state.routeIndex?'current':'')+'"><i>'+icon+'</i></div>';
   }).join('');
-  return '<aside class="route-map"><div class="route-title">첫 번째 여정</div><div class="route-paper" style="background-image:url(\''+journeyMapArt+'\')">'
+  return '<aside class="route-map"><div class="route-title">첫 맥동 · 달우물로</div><div class="route-destination">월흔숲 / NIGHT 1</div><div class="route-paper" style="background-image:url(\''+journeyMapArt+'\')">'
     +'<svg viewBox="0 0 180 360" aria-hidden="true"><path d="M70 40 C120 70 55 110 102 145 C146 177 74 214 108 248 C140 278 90 310 112 336" class="route-line"/></svg>'
     +nodes+'</div></aside>';
 }
@@ -205,6 +207,7 @@ function campScene(){
       +heroSprite(id,false)+'</div>';
   }).join('');
   return '<section class="camp-zone"><div class="camp-bg" style="background-image:url(\''+campCleanArt+'\')"></div><div class="camp-overlay"></div>'
+    +'<div class="chapter-stamp"><span>THE FIRST PULSE</span><b>심장씨앗이 깨어난 뒤 처음 맞는 밤</b><em>누군가 우리의 맥동을 들었다.</em></div>'
     +'<div class="camp-fire"><i></i><i></i><i></i></div><div class="camp-party">'+party+'</div><div class="camp-pet">◕ᴥ◕</div></section>';
 }
 
@@ -252,14 +255,14 @@ function battleScene(){
     +'<svg class="battle-arrows" viewBox="0 0 1000 420" preserveAspectRatio="none"><defs><marker id="redEnd" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0 0 L0 6 L8 3z" fill="#ee6a5f"/></marker><marker id="blueEnd" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0 0 L0 6 L8 3z" fill="#6db5ff"/></marker></defs><path class="arr red" d="M795 185 Q690 190 380 245" marker-end="url(#redEnd)"/><path class="arr blue" d="M840 255 Q700 245 560 235" marker-end="url(#blueEnd)"/></svg>'
     +enemies+allies+'<div class="shield-fx"></div><div class="heal-fx">✦ ✦ ✦</div><div class="moon-fx"></div><div class="hit-fx"></div><div class="combat-impact-flash"></div><div class="combat-callout"></div>'
     +'<div class="battle-dialogue"><div class="dialogue-portrait camp-seris-portrait" style="background-image:url(\''+CAMP_PLATE+'\')"></div><div><b>세리스</b><span>'
-    +(battle?'적의 후열에 저격수가 있어. 내가 집중하고 있는 동안 부탁할게…!':'후열에 저격수가 있어. 누가 내 앞을 막을지 정해줘.')+'</span></div></div>'
+    +(battle?'집중은 유지할게. 나머지는 너희를 믿을게.':'저 추적자는 눈으로 보는 게 아니야. 맥동을 읽고 있어. 내가 노려지면… 부탁할게.')+'</span></div></div>'
     +'<div class="combat-log"><div class="log-title">전투 기록</div>'+logs+'</div>'
     +'<div class="tip-card"><b>TIP</b><span>전열에 튼튼한 동료를 배치해 후열의 약한 동료를 지키세요.</span><div class="tip-pet">◕ᴥ◕</div></div>'
     +renderProgress()+'</section>';
 }
 
 function render(){
-  app.innerHTML='<main class="tutorial-game phase-'+state.phase+'"><header class="global-top"><div class="day-mark"><span>☾</span><div><b>1일차</b><small>떠나는 밤</small></div></div>'
+  app.innerHTML='<main class="tutorial-game phase-'+state.phase+'"><header class="global-top"><div class="day-mark"><span>☾</span><div><b>1일차</b><small>첫 맥동 · 월흔숲</small></div></div>'
     +'<div class="resources"><span>◉ 320</span><span>◆ 3</span><span>▤ 2</span><button>⚙</button></div></header>'
     +'<nav class="side-nav"><button class="active">♜<span>카라반</span></button><button>♙<span>동료</span></button><button>⚔<span>장비</span></button><button>▣<span>기록</span></button></nav>'
     +'<section class="top-half">'+campScene()+tutorialPanel()+routeMap()+'</section>'+battleScene()
@@ -612,9 +615,9 @@ function startResonanceBattle(){
 function causeChain(){
   const front=heroAtLane(0),mid=heroAtLane(1),rear=heroAtLane(2);
   return [
-    front==='vael'?{good:true,title:'전열',text:'베일이 첫 강공격을 안정적으로 받아냄'}:{good:false,title:'전열',text:state.heroes[front].name+'이(가) 첫 타격에서 큰 피해를 받음'},
-    rear==='seris'&&front==='vael'?{good:true,title:'수호',text:'후열 저격 → 베일 INTERCEPT → 세리스 의식 유지'}:{good:false,title:'후열',text:state.heroes[rear].name+'이(가) 저격에 직접 노출됨'},
-    mid==='mirel'?{good:true,title:'치유',text:'미렐이 중열에서 가장 위험한 동료를 즉시 회복'}:{good:true,title:'치유',text:'미렐이 자동으로 최저 HP 동료를 탐색해 회복'}
+    front==='vael'?{good:true,title:'베일이 먼저 자신을 보였다',text:'파쇄자가 전열에 고정되어 카라반의 약점을 바로 읽지 못함'}:{good:false,title:'첫 방어선이 흔들렸다',text:state.heroes[front].name+'이(가) 첫 타격에서 큰 피해를 받음'},
+    rear==='seris'&&front==='vael'?{good:true,title:'세리스의 집중이 끊기지 않았다',text:'추적자 조준 → 베일 INTERCEPT → 월광 의식 유지'}:{good:false,title:'후열이 노출됐다',text:state.heroes[rear].name+'이(가) 저격에 직접 노출됨'},
+    mid==='mirel'?{good:true,title:'미렐이 손상 패턴을 읽었다',text:'가장 위험한 동료를 즉시 회복해 의식 완성 시간을 벌음'}:{good:true,title:'미렐이 약한 맥동을 찾았다',text:'자동으로 최저 HP 동료를 찾아 회복'}
   ];
 }
 
