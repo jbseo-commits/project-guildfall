@@ -10,6 +10,7 @@ import breakerArt from './assets/enemies/breaker.svg';
 import houndArt from './assets/enemies/hound.svg';
 import hunterArt from './assets/enemies/hunter.svg';
 import { CHAPTER_01 } from './content/chapter01.js';
+import { APPROVED_CONCEPT_ART } from './approvedConceptArt.js';
 
 const HERO_ART={vael:vaelArt,seris:serisArt,mirel:mirelArt};
 const ENEMY_ART={breaker:breakerArt,hound:houndArt,hunter:hunterArt};
@@ -261,8 +262,8 @@ function campScene(){
 function battleScene(){
   const battle=state.phase==='battle'||state.phase==='battle2';
   const front=heroAtLane(0),mid=heroAtLane(1),rear=heroAtLane(2);
-  const pos=[{x:37,y:61},{x:45,y:67},{x:53,y:61}];
-  const enemies=[{id:'breaker',x:63,y:59},{id:'hound',x:69,y:66},{id:'hunter',x:74,y:55}].map(function(e){
+  const pos=[{x:37,y:56},{x:45,y:62},{x:53,y:56}];
+  const enemies=[{id:'breaker',x:63,y:55},{id:'hound',x:69,y:61},{id:'hunter',x:74,y:51}].map(function(e){
     const en=state.enemies[e.id];
     return '<div class="battle-unit enemy '+e.id+' '+(en.hp<=0?'dead':'')+'" data-enemy="'+e.id+'" style="--x:'+e.x+'%;--y:'+e.y+'%">'
       +'<div class="world-hp enemy-hp"><i style="width:'+en.hp+'%"></i></div>'+enemySprite(e.id,false)+'<strong>'+en.name+'</strong></div>';
@@ -301,7 +302,7 @@ function battleScene(){
     +'<div class="battle-controls"><b>'+(battle?'전투 중…':state.phase==='result'?'전투 종료':'배치 준비')+'</b><button>Ⅱ</button><button id="speedBtn">×'+state.speed+'</button></div>'
     +'<svg class="battle-arrows" viewBox="0 0 1000 420" preserveAspectRatio="none"><defs><marker id="redEnd" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0 0 L0 6 L8 3z" fill="#ee6a5f"/></marker><marker id="blueEnd" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0 0 L0 6 L8 3z" fill="#6db5ff"/></marker></defs><path class="arr red" d="M795 185 Q690 190 380 245" marker-end="url(#redEnd)"/><path class="arr blue" d="M840 255 Q700 245 560 235" marker-end="url(#blueEnd)"/></svg>'
     +enemies+allies+'<div class="shield-fx"></div><div class="heal-fx">✦ ✦ ✦</div><div class="moon-fx"></div><div class="hit-fx"></div><div class="combat-impact-flash"></div><div class="combat-callout"></div>'
-    +'<div class="battle-dialogue"><div class="dialogue-portrait camp-seris-portrait" style="background-image:url(\''+CAMP_PLATE+'\')"></div><div><b>세리스</b><span>'
+    +'<div class="battle-dialogue"><div class="dialogue-portrait golden-seris-portrait" style="background-image:url(\''+APPROVED_CONCEPT_ART+'\')"></div><div><b>세리스</b><span>'
     +(battle?'저 추적자는 나를 데려가려 해. 내가 집중하는 동안… 부탁할게.':'후드 쓴 추적자는 나를 노리고 있어. 누가 그 흐름을 끊을지 정해줘.')+'</span></div></div>'
     +'<div class="combat-log"><div class="log-title">전투 기록</div>'+logs+'</div>'
     +'<div class="tip-card"><b>TIP</b><span>전열에 튼튼한 동료를 배치해 후열의 약한 동료를 지키세요.</span><div class="tip-pet">◕ᴥ◕</div></div>'
