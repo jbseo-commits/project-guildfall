@@ -5219,3 +5219,91 @@ button{font:inherit;-webkit-tap-highlight-color:transparent}
     right:25.8%!important;
   }
 }
+
+
+/* MOCKUP MOBILE COMPOSITION V3
+   Fix actual phone-landscape regressions without touching the locked 1648x928 layout.
+   All positions are percentages of the same Golden Frame, not separate phone artwork. */
+@media (orientation:landscape) and (max-height:650px){
+  .mockup-lock .camp-zone{
+    width:52.2%;
+    right:auto;
+    isolation:isolate;
+  }
+  .mockup-lock .camp-bg{
+    inset:0!important;
+    background-size:cover!important;
+    background-position:center center!important;
+    transform:none!important;
+  }
+  .mockup-lock .camp-overlay{
+    background:linear-gradient(180deg,rgba(7,8,12,.02),rgba(7,8,12,.08))!important;
+  }
+  .mockup-lock .camp-party{
+    left:7%!important;
+    width:86%!important;
+    height:65%!important;
+    bottom:2%!important;
+  }
+  .mockup-lock .camp-hero{
+    width:31%!important;
+    min-width:0!important;
+  }
+  .mockup-lock .camp-hero .speech{
+    max-width:calc(100vw * .16);
+    box-sizing:border-box;
+  }
+  .mockup-lock .tutorial-paper{
+    height:90%!important;
+    min-height:0!important;
+    max-height:90%!important;
+    scrollbar-width:thin;
+  }
+  .mockup-lock .route-map{
+    box-sizing:border-box;
+    height:91%!important;
+  }
+  .mockup-lock .battle-dialogue{
+    background:transparent!important;
+    border:0!important;
+    box-shadow:none!important;
+    padding:0!important;
+    display:block!important;
+    height:74%!important;
+    min-height:0!important;
+    pointer-events:none;
+  }
+  .mockup-lock .battle-dialogue .independent-seris-portrait{
+    width:43%!important;
+    height:100%!important;
+  }
+  .mockup-lock .battle-dialogue>div:last-child{
+    position:absolute;
+    left:35%!important;
+    right:0!important;
+    bottom:6%!important;
+    box-sizing:border-box;
+    max-height:60%;
+    overflow:hidden;
+    border:1px solid #8e7152;
+    border-radius:8px;
+    background:#f4e7ce;
+    color:#3b2b21;
+  }
+  .mockup-lock .combat-log{
+    top:9%!important;
+    height:58%!important;
+    min-height:0!important;
+    overflow:hidden!important;
+  }
+  .mockup-lock .tip-card{
+    bottom:2%!important;
+    height:22%!important;
+    min-height:0!important;
+    overflow:hidden!important;
+  }
+  .mockup-lock .progress-track{
+    bottom:2%!important;
+    z-index:34;
+  }
+}
