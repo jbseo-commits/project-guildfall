@@ -3539,3 +3539,350 @@ button{font:inherit;-webkit-tap-highlight-color:transparent}
     animation-iteration-count:1!important;
   }
 }
+
+
+/* =========================================================
+   NARRATIVE RUNTIME V2 — CHAPTER 01
+   Canonical content from src/content/chapter01.js
+   ========================================================= */
+
+.story-paper{
+  overflow:visible;
+}
+.story-dialogue-list{
+  display:grid;
+  gap:7px;
+  margin-top:11px;
+  padding:11px 12px;
+  border:1px solid rgba(95,70,46,.24);
+  border-radius:12px;
+  background:rgba(255,248,230,.46);
+  box-shadow:inset 0 1px rgba(255,255,255,.38);
+}
+.story-line{
+  display:grid;
+  grid-template-columns:54px 1fr;
+  gap:8px;
+  align-items:start;
+}
+.story-line b{
+  color:#4b3425;
+  font-size:.55rem;
+}
+.story-line span{
+  color:#4f4034;
+  font-size:.57rem;
+  line-height:1.42;
+  font-weight:700;
+}
+.story-line+.story-line{
+  padding-top:6px;
+  border-top:1px solid rgba(99,74,49,.10);
+}
+.story-note{
+  margin-top:9px!important;
+  padding:7px 9px;
+  border-left:3px solid rgba(114,85,55,.35);
+  background:rgba(87,64,43,.06);
+  color:#6e5947!important;
+  font-size:.48rem!important;
+  line-height:1.4!important;
+}
+.tone-hush .story-dialogue-list{
+  border-color:rgba(110,136,153,.32);
+  background:linear-gradient(135deg,rgba(135,158,170,.13),rgba(238,234,217,.22));
+}
+.tone-danger .story-dialogue-list{
+  border-color:rgba(178,84,76,.34);
+  background:linear-gradient(135deg,rgba(191,82,74,.1),rgba(255,244,222,.34));
+}
+
+.commit-sub{
+  display:block;
+  margin-top:6px;
+  text-align:center;
+  color:#806a51;
+  font-size:.46rem;
+  font-weight:700;
+}
+.commit-story{letter-spacing:.02em}
+
+.hush-sign{
+  position:absolute;
+  z-index:9;
+  left:46%;
+  top:14%;
+  width:70px;
+  height:54px;
+  opacity:0;
+  pointer-events:none;
+  transition:.5s ease;
+}
+.hush-sign i{
+  position:absolute;
+  left:24px;
+  top:9px;
+  width:24px;
+  height:19px;
+  border-radius:60% 40% 55% 45%;
+  background:
+    linear-gradient(45deg,transparent 46%,rgba(212,235,241,.9) 47% 53%,transparent 54%),
+    linear-gradient(-45deg,transparent 46%,rgba(212,235,241,.8) 47% 53%,transparent 54%);
+  border:1px solid rgba(204,229,235,.7);
+  box-shadow:0 0 12px rgba(184,221,231,.24);
+}
+.hush-sign:before,
+.hush-sign:after{
+  content:"";
+  position:absolute;
+  top:20px;
+  width:23px;
+  height:1px;
+  background:rgba(207,232,238,.72);
+}
+.hush-sign:before{left:3px;transform:rotate(10deg)}
+.hush-sign:after{right:3px;transform:rotate(-10deg)}
+.hush-sign span{
+  position:absolute;
+  left:50%;
+  bottom:0;
+  transform:translateX(-50%);
+  padding:2px 5px;
+  border-radius:999px;
+  background:rgba(24,33,41,.72);
+  color:#d8e6e7;
+  font-size:.35rem;
+  letter-spacing:.12em;
+}
+.story-step-1 .hush-sign,
+.story-step-2 .hush-sign{
+  opacity:1;
+  animation:hushStillSign 2.8s ease-in-out infinite;
+}
+.hearth-pulse{
+  position:absolute;
+  z-index:8;
+  left:47%;
+  bottom:12%;
+  width:24px;
+  height:24px;
+  margin:-12px;
+  border-radius:50%;
+  opacity:0;
+  pointer-events:none;
+  border:2px solid rgba(241,188,102,.72);
+}
+.story-step-2 .hearth-pulse{
+  animation:hearthWarningPulse 1.45s ease-in-out infinite;
+}
+
+.phase-story .battle-zone{
+  filter:brightness(.55) saturate(.66);
+}
+.phase-story .battle-unit,
+.phase-story .battle-dialogue,
+.phase-story .combat-log,
+.phase-story .tip-card,
+.phase-story .progress-track,
+.phase-story .battle-controls,
+.phase-story .battle-arrows{
+  opacity:.12;
+  pointer-events:none;
+}
+.phase-story .top-half{
+  box-shadow:inset 0 -18px 32px rgba(0,0,0,.22);
+}
+.phase-aftermath .battle-zone{
+  filter:brightness(.68) saturate(.74);
+}
+.phase-aftermath .battle-unit,
+.phase-aftermath .battle-dialogue,
+.phase-aftermath .combat-log,
+.phase-aftermath .tip-card,
+.phase-aftermath .progress-track,
+.phase-aftermath .battle-controls,
+.phase-aftermath .battle-arrows{
+  opacity:.16;
+  pointer-events:none;
+}
+
+.route-choice-paper{
+  width:43%!important;
+  right:15.5%!important;
+  max-height:94%!important;
+  overflow:visible!important;
+}
+.route-choice-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;
+  margin-top:10px;
+}
+.route-choice{
+  min-width:0;
+  padding:9px 8px 10px;
+  border:1px solid #b29a76;
+  border-radius:10px;
+  background:linear-gradient(180deg,#e7d8bb,#d9c5a2);
+  color:#4b3928;
+  text-align:left;
+  box-shadow:0 4px 8px rgba(68,46,27,.08);
+  transition:.18s ease;
+}
+.route-choice:hover{transform:translateY(-2px)}
+.route-choice.selected{
+  border:2px solid #9b733e;
+  background:linear-gradient(180deg,#f0dfbd,#ddbf8c);
+  box-shadow:0 0 0 3px rgba(190,144,74,.16),0 7px 14px rgba(73,47,25,.13);
+}
+.route-choice span,
+.route-choice b,
+.route-choice em,
+.route-choice p,
+.route-choice small{display:block}
+.route-choice span{
+  color:#8b6946;
+  font-size:.42rem;
+  font-weight:900;
+}
+.route-choice b{
+  margin-top:3px;
+  font-size:.64rem;
+}
+.route-choice em{
+  margin-top:3px;
+  color:#9b6c32;
+  font-size:.43rem;
+  font-style:normal;
+  font-weight:900;
+}
+.route-choice p{
+  margin:6px 0 0;
+  color:#5f4b38;
+  font-size:.47rem;
+  line-height:1.35;
+}
+.route-choice small{
+  margin-top:6px;
+  color:#8a594d;
+  font-size:.41rem;
+  line-height:1.3;
+}
+.route-choice-confirm{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-top:8px;
+  padding:7px 9px;
+  border-radius:8px;
+  background:#3f342a;
+  color:#f3dfbc;
+}
+.route-choice-confirm b{font-size:.53rem}
+.route-choice-confirm span{font-size:.45rem;color:#d7c09d}
+.route-choice-paper .paper-cta:disabled{
+  opacity:.48;
+  filter:grayscale(.72);
+  box-shadow:none;
+  cursor:default;
+}
+.route-choice-paper .paper-cta:not(:disabled){
+  box-shadow:0 4px 0 #a56519,0 8px 18px rgba(139,86,24,.16);
+}
+
+.chosen-route-mini{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin:7px 0 8px;
+  padding:6px 8px;
+  border-radius:8px;
+  background:rgba(84,68,47,.09);
+}
+.chosen-route-mini span{
+  color:#8b6d45;
+  font-size:.42rem;
+  font-weight:900;
+}
+.chosen-route-mini b{
+  color:#4e3b2a;
+  font-size:.54rem;
+}
+
+.chapter-hook .sealed-door-hook{
+  margin-top:13px;
+  padding:12px;
+  border:1px solid rgba(96,82,75,.38);
+  border-radius:12px;
+  background:
+    radial-gradient(circle at 50% 100%,rgba(208,162,88,.16),transparent 48%),
+    linear-gradient(180deg,#4a4540,#282725);
+  color:#ede4d2;
+  text-align:center;
+  box-shadow:inset 0 0 28px rgba(0,0,0,.25);
+}
+.sealed-door-hook span,
+.sealed-door-hook b,
+.sealed-door-hook em{display:block}
+.sealed-door-hook span{
+  color:#bcaa8f;
+  font-size:.42rem;
+  letter-spacing:.15em;
+}
+.sealed-door-hook b{
+  margin-top:5px;
+  color:#eac887;
+  font-size:.82rem;
+}
+.sealed-door-hook em{
+  margin-top:7px;
+  color:#c8c0b3;
+  font-size:.5rem;
+  font-style:normal;
+}
+
+@keyframes hushStillSign{
+  0%,100%{filter:brightness(.9);transform:translateY(0)}
+  50%{filter:brightness(1.15);transform:translateY(-1px)}
+}
+@keyframes hearthWarningPulse{
+  0%{opacity:0;transform:scale(.5);box-shadow:0 0 0 0 rgba(233,177,89,.28)}
+  25%{opacity:.9}
+  70%{opacity:.15;transform:scale(4);box-shadow:0 0 0 18px rgba(233,177,89,0)}
+  100%{opacity:0;transform:scale(4.4)}
+}
+
+@media (orientation:landscape) and (max-height:650px){
+  .story-dialogue-list{
+    gap:3px;
+    margin-top:5px;
+    padding:6px 8px;
+  }
+  .story-line{
+    grid-template-columns:44px 1fr;
+    gap:5px;
+  }
+  .story-line b{font-size:.39rem}
+  .story-line span{font-size:.4rem;line-height:1.26}
+  .story-line+.story-line{padding-top:3px}
+  .story-note{
+    margin-top:4px!important;
+    padding:4px 6px;
+    font-size:.34rem!important;
+  }
+  .route-choice-paper{
+    width:44%!important;
+    right:14.5%!important;
+    padding:9px 10px 8px!important;
+  }
+  .route-choice-paper h2{font-size:.76rem!important}
+  .route-choice-paper>p{font-size:.39rem!important}
+  .route-choice-grid{gap:5px;margin-top:5px}
+  .route-choice{padding:5px 5px 6px}
+  .route-choice b{font-size:.49rem}
+  .route-choice p{font-size:.36rem;margin-top:3px}
+  .route-choice small{font-size:.33rem;margin-top:3px}
+  .route-choice-confirm{margin-top:4px;padding:4px 6px}
+  .hush-sign{left:45%;top:10%;transform:scale(.78)}
+}
