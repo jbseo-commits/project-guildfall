@@ -155,7 +155,7 @@ function tutorialPanel(){
         +'<span>'+choice.owner+'의 제안</span><b>'+choice.title+'</b><em>'+choice.tag+'</em><p>'+choice.text+'</p><small>'+choice.risk+'</small></button>';
     }).join('');
     return '<aside class="tutorial-paper route-choice-paper"><div class="paper-ribbon">첫 번째 이동</div><h2>허시가 굳기 전에 떠나야 합니다</h2>'
-      +'<p>정답은 없습니다. 누구의 판단을 믿을지 고르세요. 이 선택은 <b>PROVISIONAL run-structure evidence</b>입니다.</p>'
+      +'<p>정답은 없습니다. 누구의 판단을 믿을지 고르세요. 길마다 얻는 것과 감수해야 할 위험이 다릅니다.</p>'
       +'<div class="route-choice-grid">'+choices+'</div>'
       +(selected?'<div class="route-choice-confirm"><b>'+selected.title+'</b><span>'+selected.owner+'의 판단을 따른다.</span></div>':'')
       +'<button class="paper-cta primary" id="routeConfirm" '+(selected?'':'disabled')+'>카라반을 움직인다 →</button></aside>';
