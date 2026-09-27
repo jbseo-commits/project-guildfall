@@ -4034,3 +4034,30 @@ button{font:inherit;-webkit-tap-highlight-color:transparent}
 
 
 
+
+
+/* =========================================================
+   MOCKUP ART MATCH V1
+   Promote the approved painterly battle plate; keep authored arena as subtle detail only.
+   ========================================================= */
+.mockup-lock .battle-bg.mockup-battle-plate{
+  inset:-2%!important;
+  background-size:cover!important;
+  background-position:center 58%!important;
+  filter:brightness(.92) saturate(1.08) contrast(1.05)!important;
+  transform:scale(1.015)!important;
+}
+.mockup-lock .battle-texture.arena-detail-layer{
+  opacity:.12!important;
+  mix-blend-mode:overlay!important;
+  filter:saturate(.95) contrast(1.03) brightness(.92)!important;
+}
+@media (orientation:landscape) and (max-height:650px){
+  .mockup-lock .battle-bg.mockup-battle-plate{
+    background-position:center 60%!important;
+    filter:brightness(.96) saturate(1.1) contrast(1.04)!important;
+  }
+  .mockup-lock .battle-texture.arena-detail-layer{
+    opacity:.1!important;
+  }
+}
