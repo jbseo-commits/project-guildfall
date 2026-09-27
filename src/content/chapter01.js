@@ -190,6 +190,37 @@ export const CHAPTER_01 = {
     }
   ],
 
+  first_route_choices: {
+    status: 'PROVISIONAL — D004 EVIDENCE ONLY',
+    purpose: '첫 전투 이후 “누구의 판단을 믿고 어디로 움직일지”를 작은 선택으로 체험시킨다.',
+    choices: [
+      {
+        id: 'erased-road',
+        owner: 'seris',
+        title: '기억에서 지워진 길',
+        tag: '미지 / 단축',
+        text: '세리스가 달빛 아래에서만 보인다고 말한 오래된 이동로를 따른다.',
+        risk: '길의 끝을 아무도 기억하지 못한다.'
+      },
+      {
+        id: 'lantern-station',
+        owner: 'mirel',
+        title: '버려진 등불역',
+        tag: '회복 / 흔적',
+        text: '미렐의 제안대로 낡은 이동 거점에서 약재와 생체 재료를 찾는다.',
+        risk: '최근 누군가 급히 떠난 흔적이 있다.'
+      },
+      {
+        id: 'quarry-ridge',
+        owner: 'vael',
+        title: '옛 채석장 능선',
+        tag: '방어 / 추적',
+        text: '베일이 고른 시야가 트이고 방어하기 쉬운 높은 길을 택한다.',
+        risk: '추적자에게도 우리의 이동 흔적이 잘 보인다.'
+      }
+    ]
+  },
+
   optional_attachment_choice: {
     status: 'PROVISIONAL — DO NOT SHIP WITHOUT PLAYTEST',
     id: 'save-mirel-bloom',
