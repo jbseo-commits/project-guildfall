@@ -9,6 +9,7 @@ import mirelArt from './assets/heroes/mirel.webp';
 import breakerArt from './assets/enemies/breaker.svg';
 import houndArt from './assets/enemies/hound.svg';
 import hunterArt from './assets/enemies/hunter.svg';
+import CHAPTER_01, { CHARACTER_DISPLAY } from './content/chapter01.js';
 
 const HERO_ART={vael:vaelArt,seris:serisArt,mirel:mirelArt};
 const ENEMY_ART={breaker:breakerArt,hound:houndArt,hunter:hunterArt};
@@ -38,7 +39,7 @@ const PROGRESS=[
   {id:'next',label:'다음',sub:'선택지'}
 ];
 
-const state={phase:'read',selected:null,heroes:null,enemies:null,speed:1,timers:[],logs:[],routeIndex:0,result:null,resonance:[],resonanceTriggered:false};
+const state={phase:'story',storyStep:0,aftermathStep:0,routeChoice:null,selected:null,heroes:null,enemies:null,speed:1,timers:[],logs:[],routeIndex:0,result:null,resonance:[],resonanceTriggered:false};
 
 function clone(v){return JSON.parse(JSON.stringify(v));}
 function clearTimers(){state.timers.forEach(clearTimeout);state.timers=[];}
@@ -47,8 +48,38 @@ function heroAtLane(lane){const h=Object.values(state.heroes).find(function(x){r
 
 function reset(){
   clearTimers();
-  state.phase='read';state.selected=null;state.heroes=clone(HEROES);state.enemies=clone(ENEMIES);
+  state.phase='story';state.storyStep=0;state.aftermathStep=0;state.routeChoice=null;state.selected=null;state.heroes=clone(HEROES);state.enemies=clone(ENEMIES);
   state.speed=1;state.logs=[];state.routeIndex=0;state.result=null;state.resonance=[];state.resonanceTriggered=false;
+}
+
+function chapterBeat(id){
+  return CHAPTER_01.beats.find(function(beat){return beat.id===id;})||null;
+}
+function displayName(id){
+  return CHARACTER_DISPLAY[id]?.name||state.heroes?.[id]?.name||id;
+}
+function dialogueLines(lines){
+  return (lines||[]).map(function(line){
+    return '<div class="story-line"><b>'+displayName(line.speaker)+'</b><span>“'+line.text+'”</span></div>';
+  }).join('');
+}
+function routeChoiceById(id){
+  const pack=CHAPTER_01.first_route_choices;
+  return pack?.choices?.find(function(choice){return choice.id===id;})||null;
+}
+function routeOwnerName(owner){
+  return displayName(owner);
+}
+function openingBeat(){
+  const ids=['camp-warmth','hush-sign','threat-arrives'];
+  return chapterBeat(ids[Math.min(state.storyStep,ids.length-1)]);
+}
+function aftermathScene(){
+  const post=chapterBeat('postbattle');
+  const depart=chapterBeat('departure');
+  if(state.aftermathStep===0)return {kicker:'전투 직후',title:'상처부터',lines:(post?.lines||[]).slice(0,4),note:'승리보다 먼저 서로의 상태를 확인합니다.'};
+  if(state.aftermathStep===1)return {kicker:'관계가 남는다',title:'다음에는 신호를 믿는다',lines:(post?.lines||[]).slice(4),note:'같은 보호 행동도 관계가 쌓이면 일방적인 희생에서 협력으로 바뀝니다.'};
+  return {kicker:'떠날 시간',title:'이 숲은 오늘 밤을 넘기면 안 된다',lines:depart?.lines||[],note:'남아 있는 것보다 움직이는 것이 더 안전합니다. 카라반은 다시 길을 택해야 합니다.'};
 }
 
 function heroSprite(id,small){
@@ -65,7 +96,7 @@ function enemySprite(id,small){
   return '<div class="enemy-art-wrap '+id+(small?' mini':'')+'"><span class="enemy-art-shadow"></span>'
     +'<img class="enemy-art-sprite" src="'+ENEMY_ART[id]+'" alt="" draggable="false"></div>';
 }
-function progressIndex(){return {read:0,place:1,battle:2,result:3,next:1,battle2:2,result2:3,complete:4}[state.phase]||0;}
+function progressIndex(){return {story:0,read:0,place:1,battle:2,result:3,aftermath:3,route:4,next:1,battle2:2,result2:3,complete:4}[state.phase]||0;}
 
 function renderProgress(){
   const resonancePhase=['next','battle2','result2','complete'].includes(state.phase);
@@ -84,13 +115,26 @@ function renderProgress(){
 }
 
 function tutorialPanel(){
+  if(state.phase==='story'){
+    const beat=openingBeat();
+    const meta={
+      'camp-warmth':{kicker:'떠나는 밤 · 아직은 평온함',title:'카라반이 잠들기 전',tone:'warm',cta:'이상한 정적을 느낀다 →'},
+      'hush-sign':{kicker:'정적의 흔적',title:'불꽃이 멈췄다',tone:'hush',cta:'밖의 기척을 듣는다 →'},
+      'threat-arrives':{kicker:'HEARTHHEART WARNING',title:'누군가 우리를 읽고 있다',tone:'danger',cta:'적의 의도를 읽는다 →'}
+    }[beat?.id]||{kicker:'떠나는 밤',title:'카라반',tone:'warm',cta:'계속 →'};
+    return '<aside class="tutorial-paper story-paper tone-'+meta.tone+'">'
+      +'<div class="paper-ribbon">'+meta.kicker+'</div><h2>'+meta.title+'</h2>'
+      +'<div class="story-dialogue-list">'+dialogueLines(beat?.lines)+'</div>'
+      +'<p class="story-note">'+(beat?.purpose||beat?.note||'')+'</p>'
+      +'<button class="paper-cta primary" id="storyNext">'+meta.cta+'</button></aside>';
+  }
   if(state.phase==='read'){
     return '<aside class="tutorial-paper">'
-      +'<div class="paper-ribbon">튜토리얼 1/4</div><h2>적의 의도 읽기</h2>'
-      +'<p>자동 전투라도 적의 행동은 숨겨져 있지 않습니다. 먼저 누가 누구를 노리는지 확인하세요.</p>'
+      +'<div class="paper-ribbon">튜토리얼 1/4 · 습격</div><h2>그들은 세리스를 노린다</h2>'
+      +'<p>'+chapterBeat('tutorial-read').body+' <b>추적자의 목표는 세리스 생포</b>입니다.</p>'
       +'<div class="intent-list">'
       +'<div><span class="arrow red">➜</span><b>수정 파쇄자</b><em>전열 강공격</em></div>'
-      +'<div><span class="arrow blue">➜</span><b>맹안 추적자</b><em>후열 저격</em></div>'
+      +'<div><span class="arrow blue">➜</span><b>맹안 추적자</b><em>세리스 생포 · 후열 저격</em></div>'
       +'<div><span class="arrow amber">➜</span><b>성흔 사냥개</b><em>가장 약한 동료 추적</em></div>'
       +'</div><button class="paper-cta" id="readNext">의도 확인 완료 →</button></aside>';
   }
@@ -102,11 +146,13 @@ function tutorialPanel(){
         +'<div class="formation-portrait">'+heroSprite(heroId,true)+'</div><strong>'+lane.ko+'</strong><b>'+h.name+'</b><small>'+rule+'</small></button>';
     }).join('');
     const slots=LANES.map(function(lane,i){return '<button data-lane="'+i+'"><span>'+lane.label+'</span><b>'+lane.ko+'</b></button>';}).join('');
+    const placementBeat=chapterBeat('tutorial-placement');
     return '<aside class="tutorial-paper placement-paper"><div class="paper-ribbon">튜토리얼 2/4</div><h2>배치하기</h2>'
-      +'<p>동료를 선택한 뒤 원하는 위치를 눌러 배치하세요. 위치는 자동 행동의 우선순위를 바꿉니다.</p>'
+      +'<p>'+placementBeat.body+'</p>'
       +'<div class="intent-legend"><span>🔴 전열 강공격</span><span>🔵 후열 저격</span></div>'
       +'<div class="formation-preview">'+cards+'</div><div class="slot-buttons">'+slots+'</div>'
-      +'<button class="paper-cta primary" id="commit">배치 완료 →</button></aside>';
+      +'<button class="paper-cta primary commit-story" id="commit">'+chapterBeat('tutorial-placement').commit_copy_candidate.primary+' →</button>'
+      +'<small class="commit-sub">'+chapterBeat('tutorial-placement').commit_copy_candidate.secondary+'</small></aside>';
   }
   if(state.phase==='battle'){
     const cards=LANES.map(function(lane,i){
@@ -128,7 +174,27 @@ function tutorialPanel(){
     }).join('');
     return '<aside class="tutorial-paper result-paper"><div class="paper-ribbon">튜토리얼 4/4</div><h2>전투 복기</h2>'
       +'<p>승패보다 중요한 것은 <b>왜</b> 그렇게 싸웠는지 이해하는 것입니다.</p><div class="cause-list">'+items+'</div>'
-      +'<button class="paper-cta primary" id="nextRoute">첫 번째 여정으로 →</button></aside>';
+      +'<button class="paper-cta primary" id="postBattle">캠프로 돌아간다 →</button></aside>';
+  }
+  if(state.phase==='aftermath'){
+    const scene=aftermathScene();
+    return '<aside class="tutorial-paper story-paper aftermath-paper">'
+      +'<div class="paper-ribbon">'+scene.kicker+'</div><h2>'+scene.title+'</h2>'
+      +'<div class="story-dialogue-list">'+dialogueLines(scene.lines)+'</div>'
+      +'<p class="story-note">'+scene.note+'</p>'
+      +'<button class="paper-cta primary" id="aftermathNext">'+(state.aftermathStep<2?'계속 →':'어디로 떠날지 정한다 →')+'</button></aside>';
+  }
+  if(state.phase==='route'){
+    const selected=routeChoiceById(state.routeChoice);
+    const choices=(CHAPTER_01.first_route_choices?.choices||[]).map(function(choice){
+      return '<button class="route-choice '+(state.routeChoice===choice.id?'selected':'')+'" data-routechoice="'+choice.id+'">'
+        +'<span>'+routeOwnerName(choice.owner)+'의 제안</span><b>'+choice.title+'</b><em>'+choice.tag+'</em><p>'+choice.text+'</p><small>'+choice.risk+'</small></button>';
+    }).join('');
+    return '<aside class="tutorial-paper route-choice-paper"><div class="paper-ribbon">첫 번째 이동</div><h2>허시가 굳기 전에 떠나야 합니다</h2>'
+      +'<p>정답은 없습니다. 누구의 판단을 믿을지 고르세요. 길마다 얻는 것과 감수해야 할 위험이 다릅니다.</p>'
+      +'<div class="route-choice-grid">'+choices+'</div>'
+      +(selected?'<div class="route-choice-confirm"><b>'+selected.title+'</b><span>'+routeOwnerName(selected.owner)+'의 판단을 따른다.</span></div>':'')
+      +'<button class="paper-cta primary" id="routeConfirm" '+(selected?'':'disabled')+'>카라반을 움직인다 →</button></aside>';
   }
   if(state.phase==='next'){
     const heroButtons=['vael','seris','mirel'].map(function(id){
@@ -136,8 +202,10 @@ function tutorialPanel(){
       return '<button class="resonance-hero '+(on?'selected':'')+'" data-reshero="'+id+'"><span>'+heroSprite(id,true)+'</span><b>'+h.name+'</b><em>'+h.role+'</em></button>';
     }).join('');
     const pair=resonancePairInfo();
+    const chosenRoute=routeChoiceById(state.routeChoice);
     return '<aside class="tutorial-paper next-paper resonance-paper"><div class="paper-ribbon">튜토리얼 2 · 공명</div><h2>두 동료를 연결하세요</h2>'
-      +'<p>공명은 능력치 보너스가 아니라 <b>조건 → 자동 반응</b>을 추가합니다. 두 명을 선택해 하나의 행동 사슬을 만드세요.</p>'
+      +(chosenRoute?'<div class="chosen-route-mini"><span>이동 중</span><b>'+chosenRoute.title+'</b></div>':'')
+      +'<p>공명은 능력치 보너스가 아니라 <b>조건 → 자동 반응</b>을 추가합니다. 누구에게 누구를 의지하게 할지 선택하세요.</p>'
       +'<div class="resonance-picker">'+heroButtons+'</div>'
       +(pair?'<div class="resonance-preview"><span>TRIGGER → REACTION</span><strong>'+pair.name+'</strong><em>'+pair.desc+'</em></div>':'<div class="resonance-empty">동료 2명을 선택하면 공명 규칙이 나타납니다.</div>')
       +'<button class="paper-cta primary" id="startResonance" '+(state.resonance.length===2?'':'disabled')+'>공명 전투 시작 →</button></aside>';
@@ -157,10 +225,11 @@ function tutorialPanel(){
       +'<button class="paper-cta primary" id="finishResonance">다음 시스템으로 →</button></aside>';
   }
   if(state.phase==='complete'){
-    return '<aside class="tutorial-paper next-paper"><div class="paper-ribbon">공명 학습 완료</div><h2>이제 ‘명령’을 배웁니다</h2>'
-      +'<p>배치는 <b>어디서</b> 싸울지 정했고, 공명은 <b>서로 어떻게 반응할지</b> 정했습니다. 다음은 전투 전에 한 가지 우선 명령을 심는 단계입니다.</p>'
-      +'<div class="unlock-card"><span>NEXT</span><strong>전술 명령</strong><em>조건 하나를 골라 카라반 전체의 첫 반응을 바꿉니다.</em></div>'
-      +'<button class="paper-cta" id="replay">처음부터 다시 보기</button></aside>';
+    const hook=chapterBeat('first-journey')?.optional_hook;
+    return '<aside class="tutorial-paper next-paper chapter-hook"><div class="paper-ribbon">DAY 1 · END</div><h2>문 안쪽에서 다른 맥박이 들렸다</h2>'
+      +'<p>'+(hook?.setup||'습격자에게서 회수한 표식이 카라반 내부의 오래된 봉인과 닮아 있습니다.')+'</p>'
+      +'<div class="sealed-door-hook"><span>HEARTHHEART</span><b>쿵.</b><b>…쿵.</b><em>'+(hook?.payoff||'봉인 너머에서 다른 박동이 응답합니다.')+'</em></div>'
+      +'<button class="paper-cta primary" id="replay">1일차 다시 플레이</button></aside>';
   }
   return '';
 }
@@ -200,11 +269,12 @@ function routeMap(){
 }
 
 function campScene(){
+  const storyClass=state.phase==='story'?' story-stage story-step-'+state.storyStep:(state.phase==='aftermath'?' aftermath-stage':'');
   const party=['vael','seris','mirel'].map(function(id,idx){
     return '<div class="camp-hero camp-'+id+'" style="--ci:'+idx+'"><div class="speech"><b>'+state.heroes[id].name+'</b><span>'+state.heroes[id].camp+'</span></div>'
       +heroSprite(id,false)+'</div>';
   }).join('');
-  return '<section class="camp-zone"><div class="camp-bg" style="background-image:url(\''+campCleanArt+'\')"></div><div class="camp-overlay"></div>'
+  return '<section class="camp-zone'+storyClass+'"><div class="camp-bg" style="background-image:url(\''+campCleanArt+'\')"></div><div class="camp-overlay"></div><div class="hush-sign"><i></i><span>정적</span></div><div class="hearth-pulse"></div>'
     +'<div class="camp-fire"><i></i><i></i><i></i></div><div class="camp-party">'+party+'</div><div class="camp-pet">◕ᴥ◕</div></section>';
 }
 
@@ -268,6 +338,11 @@ function render(){
 }
 
 function bind(){
+  const storyNext=app.querySelector('#storyNext');
+  if(storyNext)storyNext.addEventListener('click',function(){
+    if(state.storyStep<2){state.storyStep+=1;render();}
+    else{state.phase='read';render();}
+  });
   const read=app.querySelector('#readNext');if(read)read.addEventListener('click',function(){state.phase='place';render();});
   app.querySelectorAll('[data-heroselect],[data-battlehero]').forEach(function(el){
     el.addEventListener('click',function(){if(state.phase!=='place')return;state.selected=el.dataset.heroselect||el.dataset.battlehero;render();});
@@ -276,7 +351,18 @@ function bind(){
     el.addEventListener('click',function(){if(state.phase!=='place'||!state.selected)return;moveSelected(Number(el.dataset.lane));});
   });
   app.querySelector('#commit')?.addEventListener('click',startBattle);
-  app.querySelector('#nextRoute')?.addEventListener('click',function(){state.phase='next';state.routeIndex=1;state.resonance=[];render();});
+  app.querySelector('#postBattle')?.addEventListener('click',function(){state.phase='aftermath';state.aftermathStep=0;render();});
+  app.querySelector('#aftermathNext')?.addEventListener('click',function(){
+    if(state.aftermathStep<2){state.aftermathStep+=1;render();}
+    else{state.phase='route';render();}
+  });
+  app.querySelectorAll('[data-routechoice]').forEach(function(el){
+    el.addEventListener('click',function(){state.routeChoice=el.dataset.routechoice;render();});
+  });
+  app.querySelector('#routeConfirm')?.addEventListener('click',function(){
+    if(!state.routeChoice)return;
+    state.phase='next';state.routeIndex=1;state.resonance=[];render();
+  });
   app.querySelectorAll('[data-reshero]').forEach(function(el){
     el.addEventListener('click',function(){
       const id=el.dataset.reshero;
@@ -612,9 +698,9 @@ function startResonanceBattle(){
 function causeChain(){
   const front=heroAtLane(0),mid=heroAtLane(1),rear=heroAtLane(2);
   return [
-    front==='vael'?{good:true,title:'전열',text:'베일이 첫 강공격을 안정적으로 받아냄'}:{good:false,title:'전열',text:state.heroes[front].name+'이(가) 첫 타격에서 큰 피해를 받음'},
-    rear==='seris'&&front==='vael'?{good:true,title:'수호',text:'후열 저격 → 베일 INTERCEPT → 세리스 의식 유지'}:{good:false,title:'후열',text:state.heroes[rear].name+'이(가) 저격에 직접 노출됨'},
-    mid==='mirel'?{good:true,title:'치유',text:'미렐이 중열에서 가장 위험한 동료를 즉시 회복'}:{good:true,title:'치유',text:'미렐이 자동으로 최저 HP 동료를 탐색해 회복'}
+    front==='vael'?{good:true,title:'베일이 경계를 맡음',text:'파쇄자의 첫 강공격을 받아내 후열이 준비할 시간을 만듦'}:{good:false,title:'경계가 흔들림',text:state.heroes[front].name+'이(가) 첫 충돌에서 큰 피해를 받음'},
+    rear==='seris'&&front==='vael'?{good:true,title:'베일이 세리스를 지킴',text:'추적자의 저격 → INTERCEPT → 세리스의 집중 유지'}:{good:false,title:'후열이 노출됨',text:state.heroes[rear].name+'이(가) 저격에 직접 노출됨'},
+    mid==='mirel'?{good:true,title:'미렐이 상처를 읽음',text:'가장 위험한 동료를 감지 → 회복 → 방어선이 다시 이어짐'}:{good:true,title:'미렐이 상처를 읽음',text:'최저 HP 동료를 찾아 자동으로 회복함'}
   ];
 }
 
