@@ -9,9 +9,11 @@
 
 ## Current main baseline
 
-- Main commit: `07a6bc98a80c943dce649ff173700ad9c74d2326`
-- Latest merged milestone: **Combat Motion V2**
-- Latest merged PR: **#16 — Combat motion v2: connected attacks, intercepts and ritual payoff**
+- Main commit: `3c3795146be349184a3a61a0dbd1fd5dd119c6fd`
+- Latest merged milestone: **Chapter 01 Runtime — Leaving Night**
+- Latest merged PR: **#23 — Chapter 01 runtime: integrate Leaving Night into playable tutorial**
+- World foundation: **#18 — merged**
+- Chapter 01 content pack: **#20 — merged**
 - Visual QA: **PASS**
 - Prototype CI: **PASS**
 - Vercel status at last check: **external build-rate-limit failure**, not an application build failure
@@ -22,11 +24,11 @@
 
 > **G1 → G2 transition**
 
-The game already has a recognizable visual identity and a functioning tutorial/autobattle slice.
+The game now has a recognizable visual identity, a functioning tutorial/autobattle slice, and a playable first narrative chapter.
 
-The current highest-value work is no longer “make the screen exist.”
+The world / narrative foundation is no longer the blocking layer.
 
-It is:
+The current highest-value work returns to:
 
 > **make the characters and enemies actually perform authored combat actions instead of moving static cutouts through effects.**
 
@@ -64,6 +66,17 @@ Current non-negotiables:
 - Vael
 - Seris
 - Mirel
+
+### Narrative now live
+- camp warmth before tutorial mechanics
+- visible Hush warning
+- targeted threat to Seris
+- in-world COMMIT language
+- character battle barks
+- relationship-focused debrief
+- post-battle care scene
+- departure scene
+- provisional sealed-caravan / fourth-heartbeat hook
 
 ### Current live combat chain
 - breaker telegraph
@@ -115,6 +128,10 @@ The current formation/resonance systems are useful prototypes and may become fin
 ## Current visual status
 
 ### GREEN
+- Living Caravan world foundation
+- initial Vael / Seris / Mirel characterization
+- Chapter 01 content separation
+- Chapter 01 runtime narrative flow
 - overall split-screen tutorial composition
 - camp / tutorial / route / battle hierarchy
 - independent live layers
