@@ -90,8 +90,9 @@ jobs:
           }
 
           (async () => {
-            await capture(1388, 550, 'mobile-landscape');
+            await capture(1648, 928, 'golden-1648x928');
             await capture(1536, 864, 'desktop-16x9');
+            await capture(1388, 550, 'mobile-landscape');
           })();
           NODE
           node capture.cjs

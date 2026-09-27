@@ -261,8 +261,8 @@ function campScene(){
 function battleScene(){
   const battle=state.phase==='battle'||state.phase==='battle2';
   const front=heroAtLane(0),mid=heroAtLane(1),rear=heroAtLane(2);
-  const pos=[{x:37,y:61},{x:45,y:67},{x:53,y:61}];
-  const enemies=[{id:'breaker',x:63,y:59},{id:'hound',x:69,y:66},{id:'hunter',x:74,y:55}].map(function(e){
+  const pos=[{x:37,y:56},{x:45,y:62},{x:53,y:56}];
+  const enemies=[{id:'breaker',x:63,y:55},{id:'hound',x:69,y:61},{id:'hunter',x:74,y:51}].map(function(e){
     const en=state.enemies[e.id];
     return '<div class="battle-unit enemy '+e.id+' '+(en.hp<=0?'dead':'')+'" data-enemy="'+e.id+'" style="--x:'+e.x+'%;--y:'+e.y+'%">'
       +'<div class="world-hp enemy-hp"><i style="width:'+en.hp+'%"></i></div>'+enemySprite(e.id,false)+'<strong>'+en.name+'</strong></div>';
@@ -309,7 +309,7 @@ function battleScene(){
 }
 
 function render(){
-  app.innerHTML='<main class="tutorial-game phase-'+state.phase+'"><header class="global-top"><div class="day-mark"><span>☾</span><div><b>1일차</b><small>떠나는 밤</small></div></div>'
+  app.innerHTML='<main class="tutorial-game mockup-lock phase-'+state.phase+'"><header class="global-top"><div class="day-mark"><span>☾</span><div><b>1일차</b><small>떠나는 밤</small></div></div>'
     +'<div class="resources"><span>◉ 320</span><span>◆ 3</span><span>▤ 2</span><button>⚙</button></div></header>'
     +'<nav class="side-nav"><button class="active">♜<span>카라반</span></button><button>♙<span>동료</span></button><button>⚔<span>장비</span></button><button>▣<span>기록</span></button></nav>'
     +'<section class="top-half">'+campScene()+tutorialPanel()+routeMap()+'</section>'+battleScene()

@@ -1,7 +1,10 @@
 # LOOP STATE — PROJECT GUILDFALL
 
-> **Last updated:** 2026-09-27
+> **MODE OVERRIDE: MOCKUP LOCK ACTIVE**
 >
+> Until the Golden Frame is GREEN, do not expand systems, world, run structure, or content breadth.
+> Read `docs/MOCKUP-LOCK.md` before choosing the next loop.
+
 > This file is the current execution checkpoint for `LOOP-ENGINEERING.md`.
 > It should be updated after every meaningful merged loop.
 
@@ -22,15 +25,17 @@
 
 ## Current product phase
 
-> **G1 → G2 transition**
+> **MOCKUP LOCK → G2**
 
-The game now has a recognizable visual identity, a functioning tutorial/autobattle slice, and a playable first narrative chapter.
+The game has enough systems and narrative to stop expanding.
 
-The world / narrative foundation is no longer the blocking layer.
+The current blocking problem is simpler:
 
-The current highest-value work returns to:
+> **the live browser screen still does not look close enough to the approved mockup.**
 
-> **make the characters and enemies actually perform authored combat actions instead of moving static cutouts through effects.**
+Therefore the project is temporarily in **MOCKUP LOCK MODE**.
+
+First make the approved screen composition visually match and move. Only after the Golden Frame is GREEN should broader production resume.
 
 ---
 
@@ -203,77 +208,49 @@ Repository work may continue.
 # NEXT LOOP — HIGHEST PRIORITY
 
 ## Target
-**Vael authored combat poses / frames V1**
+**Golden Frame static match V1**
 
 ### Why this is next
-Vael is the clearest proof character for the game's autobattle fantasy.
+The approved mockup already communicates the desired product better than the current live browser render.
 
-His defining behavior is:
-- read threat;
-- brace;
-- move to protect;
-- absorb contact;
-- recover / counter.
-
-Right now this logic reads, but most body motion is still the same static artwork being translated / rotated.
-
-That is the current largest gap between:
-- “functional prototype”
-and
-- “commercial-feeling character combat.”
-
-### Required pose set
-At minimum:
-
-1. idle / breath
-2. guard-ready
-3. brace
-4. intercept travel
-5. shield-impact
-6. hit reaction
-7. counter / finish
-8. recovery
-9. critical / downed candidate
+The fastest route is not to add more systems. It is to lock:
+- major panel geometry;
+- actor scale;
+- battle stage weight;
+- dialogue/log/progress proportions;
+- mobile/desktop consistency.
 
 ### Pass condition
 The loop is GREEN only if:
-
-- Vael visibly changes pose, not merely position;
-- the intercept chain is readable without the log;
-- the character still looks like the approved Vael;
-- no face / silhouette / costume style drift;
-- mobile landscape remains readable;
-- CHARGE / INTERCEPT / FINISH Visual QA frames all improve;
-- movement does not introduce obvious stutter.
+- the 1648×928 live capture reads immediately as the approved mockup;
+- top/bottom and left/center/right visual weights are close;
+- hero/enemy apparent scale is close;
+- no new system is introduced;
+- mobile landscape does not collapse the composition.
 
 ### Suggested branch
-`vael-authored-frames-v1`
+`mockup-lock-v1`
 
 ### Likely files
-- `src/assets/heroes/`
-- `src/main.js`
 - `src/style.css`
-- `.github/workflows/visual-qa.yml` only if new evidence timing is needed
+- `src/main.js`
+- `.github/workflows/visual-qa.yml`
+- `docs/MOCKUP-LOCK.md`
 
----
-
-# Queue after Vael
+# Queue after Golden Frame
 
 Proceed in this order unless evidence reveals a higher-priority regression:
 
-1. Vael authored combat poses
-2. Seris authored concentration / cast / burst poses
-3. Mirel authored sense / heal / recovery poses
-4. enemy authored attack / hit / defeat poses
-5. transition smoothing / performance pass
-6. stronger causal debrief
-7. two-build strategic divergence test
-8. D002 user lock if the prototype has enough evidence
-9. attachment / injury persistence prototype
-10. loss / restoration economy decision with user
-11. run-structure decision with user
-12. run-loop prototype
-13. content breadth only after core gates pass
+1. Golden Frame static match
+2. minimal live motion inside the locked frame
+3. Vael authored combat poses
+4. Seris authored concentration / cast / burst poses
+5. Mirel authored sense / heal / recovery poses
+6. enemy authored attack / hit / defeat poses
+7. transition smoothing / performance pass
+8. stronger causal debrief
+9. two-build strategic divergence test
+10. only then resume broader systems / run work
 
 ---
 
