@@ -489,6 +489,7 @@ function renderBattleScreen() {
     alliesHtml +
     '<div class="shield-fx"></div><div class="heal-fx">✦ ✦ ✦</div><div class="moon-fx"></div><div class="hit-fx"></div>' +
     '<div class="combat-impact-flash"></div><div class="combat-callout"></div>' +
+    '<div class="battle-dialogue"><div class="dialogue-portrait independent-seris-portrait"><img src="' + serisArt + '" alt="" draggable="false"></div><div><b>세리스</b><span>저 추적자는 나를 데려가려 해. 내가 집중하는 동안… 부탁할게.</span></div></div>' +
     '<div class="combat-log"><div class="log-title">전투 기록</div>' + logsHtml + '</div>' +
     (run.phase === 'debrief' ? renderDebriefOverlay() : '') +
     (run.phase === 'adapt' ? renderAdaptationOverlay() : '') +

@@ -5156,3 +5156,66 @@ button{font:inherit;-webkit-tap-highlight-color:transparent}
     opacity:.1!important;
   }
 }
+
+
+/* Mockup repair: portrait is an independent character layer, never a crop of the full camp screenshot. */
+.mockup-lock .independent-seris-portrait{
+  position:absolute;
+  left:0;
+  bottom:0;
+  width:45%;
+  height:100%;
+  overflow:hidden;
+  pointer-events:none;
+}
+.mockup-lock .independent-seris-portrait img{
+  display:block;
+  position:absolute;
+  bottom:0;
+  left:0;
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  object-position:left bottom;
+  filter:drop-shadow(0 4px 10px rgba(0,0,0,.25));
+}
+@media (orientation:landscape) and (max-height:650px){
+  /* Preserve the approved three-column Golden Frame in actual phone landscape. */
+  .mockup-lock{
+    --gf-paper-left:52.4%;
+    --gf-paper-w:30.4%;
+    --gf-route-left:83.2%;
+    --gf-route-w:16%;
+  }
+  .mockup-lock .tutorial-paper{
+    box-sizing:border-box;
+    min-width:0!important;
+    overflow:auto;
+  }
+  .mockup-lock .route-map{min-width:0!important;}
+  .mockup-lock .combat-log{
+    box-sizing:border-box;
+    min-width:0!important;
+    width:19.3%!important;
+    max-height:61%!important;
+    overflow:hidden;
+  }
+  .mockup-lock .tip-card{
+    box-sizing:border-box;
+    min-width:0!important;
+    width:19.5%!important;
+    max-height:24%!important;
+    overflow:hidden;
+  }
+  .mockup-lock .battle-dialogue{
+    box-sizing:border-box;
+    min-width:0!important;
+    width:27.2%!important;
+    left:.35%!important;
+    bottom:.8%!important;
+  }
+  .mockup-lock .progress-track{
+    left:28.2%!important;
+    right:25.8%!important;
+  }
+}
