@@ -16,8 +16,10 @@ The authoritative operating documents are now:
 
 - `LOOP-ENGINEERING.md`
 - `docs/LOOP-STATE.md`
+- `docs/WORLD-BIBLE.md`
+- `docs/NARRATIVE-VERTICAL-SLICE.md`
 
-Read both before changing code.
+Read these before changing code or narrative.
 
 ---
 
