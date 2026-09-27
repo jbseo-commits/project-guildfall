@@ -40,8 +40,16 @@ jobs:
             const page = await browser.newPage({ viewport: { width, height } });
             await page.goto('http://127.0.0.1:4173', { waitUntil: 'networkidle' });
             await page.waitForTimeout(600);
-            await page.screenshot({ path: 'visual-qa/' + prefix + '-read.png' });
+            await page.screenshot({ path: 'visual-qa/' + prefix + '-story.png' });
 
+            for (let i = 0; i < 8; i++) {
+              const storyNext = page.locator('#storyNext');
+              if (!(await storyNext.count())) break;
+              await storyNext.click();
+              await page.waitForTimeout(120);
+            }
+
+            await page.screenshot({ path: 'visual-qa/' + prefix + '-read.png' });
             await page.locator('#readNext').click();
             await page.waitForTimeout(350);
             await page.screenshot({ path: 'visual-qa/' + prefix + '-placement.png' });
@@ -61,6 +69,22 @@ jobs:
             await page.screenshot({ path: 'visual-qa/' + prefix + '-battle.png' });
             await shotAt(5650, 'battle-burst');
             await shotAt(7100, 'battle-finish');
+            await shotAt(8300, 'result');
+
+            if (await page.locator('#postBattle').count()) {
+              await page.locator('#postBattle').click();
+              await page.waitForTimeout(180);
+              await page.screenshot({ path: 'visual-qa/' + prefix + '-aftermath.png' });
+
+              for (let i = 0; i < 8; i++) {
+                const next = page.locator('#aftermathNext');
+                if (!(await next.count())) break;
+                await next.click();
+                await page.waitForTimeout(100);
+              }
+              await page.screenshot({ path: 'visual-qa/' + prefix + '-route-choice.png' });
+            }
+
             await browser.close();
           }
 
