@@ -4032,42 +4032,5 @@ button{font:inherit;-webkit-tap-highlight-color:transparent}
 }
 
 
-/* Golden Frame portrait crop: use the approved mockup itself as the portrait source,
-   but only for the dialogue portrait window. */
-.mockup-lock .golden-seris-portrait{
-  background-repeat:no-repeat!important;
-  background-size:auto 240%!important;
-  background-position:left bottom!important;
-  filter:drop-shadow(0 9px 12px rgba(0,0,0,.34));
-}
-@media (orientation:landscape) and (max-height:650px){
-  .mockup-lock .golden-seris-portrait{
-    background-size:auto 240%!important;
-    background-position:left bottom!important;
-  }
-}
 
 
-.mockup-lock .golden-seris-portrait{
-  overflow:hidden!important;
-  background:none!important;
-}
-.mockup-lock .golden-portrait-img{
-  position:absolute;
-  left:0;
-  bottom:0;
-  width:490%;
-  height:180%;
-  max-width:none;
-  object-fit:fill;
-  object-position:left bottom;
-  user-select:none;
-  pointer-events:none;
-  filter:drop-shadow(0 9px 12px rgba(0,0,0,.34));
-}
-@media (orientation:landscape) and (max-height:650px){
-  .mockup-lock .golden-portrait-img{
-    width:490%;
-    height:180%;
-  }
-}
