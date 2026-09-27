@@ -135,3 +135,71 @@ Keep narrative data separate from:
 - combat resolution.
 
 The presentation layer should consume content IDs and trigger barks at existing semantic battle events.
+
+
+---
+
+## Parallel-loop ideas retained after PR #19 closed itself as duplicate
+
+The autonomous local loop independently produced a first-act draft before noticing the newer canonical world foundation on `main`.
+
+The duplicate world bible was correctly **not** merged.
+
+A few narrative ideas were compatible enough to retain here:
+
+### 1. The attackers want a person, not generic victory
+The first encounter becomes emotionally clearer if the rear-targeting hunter is trying to **take Seris**.
+
+That turns tutorial targeting from:
+> “blue arrow means rear attack”
+
+into:
+> “someone is trying to take one of ours.”
+
+This reinforces the Living Caravan thesis immediately.
+
+### 2. COMMIT should have fictional language
+Working copy:
+
+> **문을 닫는다.**
+
+Secondary:
+
+> 이제 서로를 믿어야 합니다.
+
+The exact wording remains provisional, but the principle is useful:
+the commitment boundary should feel like an action inside the world, not a generic “START BATTLE” button.
+
+### 3. The debrief should show the relationship chain
+Preferred causal presentation:
+
+> 세리스가 표적이 됨  
+> → 베일이 가로막음  
+> → 베일이 가장 위험한 상태가 됨  
+> → 미렐이 베일을 회복  
+> → 세리스 집중 유지  
+> → 월광 의식 완성
+
+The player should be able to point backward to the placement decision and think:
+
+> “내가 저 관계가 작동하도록 만들었다.”
+
+### 4. Optional chapter-ending mystery
+A recovered attacker mark may match an old sealed structure inside the caravan.
+
+A pulse from behind the seal can imply:
+- the caravan has a history the current trio does not fully understand;
+- outside groups may know something about it;
+- the home itself can become a mystery.
+
+This is a **PROVISIONAL hook**, not locked lore.
+
+### 5. Physical home memory
+After meaningful battles, the caravan itself should eventually remember:
+- a new protective growth;
+- changed resting positions;
+- a repaired wall;
+- an empty place;
+- a new map or object.
+
+This idea belongs in future attachment loops because it makes “the caravan is the party” visible.
