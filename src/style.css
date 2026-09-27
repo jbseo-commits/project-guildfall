@@ -4030,3 +4030,19 @@ button{font:inherit;-webkit-tap-highlight-color:transparent}
     right:22.5%!important;
   }
 }
+
+
+/* Golden Frame portrait crop: use the approved mockup itself as the portrait source,
+   but only for the dialogue portrait window. */
+.mockup-lock .golden-seris-portrait{
+  background-repeat:no-repeat!important;
+  background-size:824% 302%!important;
+  background-position:left bottom!important;
+  filter:drop-shadow(0 9px 12px rgba(0,0,0,.34));
+}
+@media (orientation:landscape) and (max-height:650px){
+  .mockup-lock .golden-seris-portrait{
+    background-size:824% 302%!important;
+    background-position:left bottom!important;
+  }
+}
