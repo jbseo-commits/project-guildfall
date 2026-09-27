@@ -3,6 +3,7 @@ name: Prototype CI
 on:
   push:
     branches:
+      - main
       - prototype/living-caravan-slice-v1
   pull_request:
     branches:
@@ -20,6 +21,8 @@ jobs:
           node-version: 22
       - name: Install dependencies
         run: npm install
+      - name: Run deterministic engine tests
+        run: npm test
       - name: Build
         run: npm run build
       - name: Upload preview artifact

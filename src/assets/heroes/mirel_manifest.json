@@ -1,0 +1,31 @@
+{
+  "meta": {
+    "character": "mirel",
+    "title": "꽃뿌리 치유사 / 개화의 사제 (Blossom Root Healer)",
+    "generator": "sprite-gen",
+    "version": "2.11.0",
+    "sheet": "mirel_sprites.jpg",
+    "facing": "right",
+    "cols": 4,
+    "rows": 2
+  },
+  "poses": {
+    "0": { "name": "idle", "role": "지팡이 접지 및 생태 연결 대기" },
+    "1": { "name": "windup", "role": "정령 마력 모음" },
+    "2": { "name": "plant", "role": "지팡이 착지 및 덩굴 개화" },
+    "3": { "name": "prayer", "role": "싹 틔우기 기도" },
+    "4": { "name": "hit", "role": "피격 및 꽃잎 흩날림" },
+    "5": { "name": "step", "role": "치유의 발걸음" },
+    "6": { "name": "heal", "role": "꽃맥박 광역 개화 폭발" },
+    "7": { "name": "recovery", "role": "생태 복구" }
+  },
+  "animations": {
+    "idle": { "frames": [0], "fps": 3, "loop": true },
+    "windup": { "frames": [1], "fps": 8, "loop": false },
+    "plant": { "frames": [2], "fps": 6, "loop": false },
+    "hit": { "frames": [4], "fps": 8, "loop": false },
+    "heal": { "frames": [6], "fps": 8, "loop": false },
+    "recovery": { "frames": [7, 0], "fps": 7, "loop": false },
+    "down": { "frames": [7], "fps": 4, "loop": true }
+  }
+}

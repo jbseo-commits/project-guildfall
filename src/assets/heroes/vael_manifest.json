@@ -1,0 +1,33 @@
+{
+  "meta": {
+    "character": "vael",
+    "title": "흑요석 수호자 (Horned Obsidian Protector)",
+    "generator": "sprite-gen",
+    "version": "2.11.0",
+    "sheet": "vael_sprites.jpg",
+    "facing": "right",
+    "cols": 4,
+    "rows": 2
+  },
+  "poses": {
+    "0": { "name": "idle", "role": "기본 대기 및 호흡 자세" },
+    "1": { "name": "windup", "role": "방패/검 준비 자세" },
+    "2": { "name": "brace", "role": "방패 가드 방어 자세" },
+    "3": { "name": "crouch", "role": "낮은 수호 방어" },
+    "4": { "name": "hit", "role": "피격/경직 반응" },
+    "5": { "name": "lunge", "role": "전진 돌진" },
+    "6": { "name": "intercept", "role": "가로막기 도약 및 충돌 흡수" },
+    "7": { "name": "recovery", "role": "자세 복구" }
+  },
+  "animations": {
+    "idle": { "frames": [0], "fps": 3, "loop": true },
+    "windup": { "frames": [1], "fps": 8, "loop": false },
+    "brace": { "frames": [2], "fps": 8, "loop": false },
+    "crouch": { "frames": [3], "fps": 6, "loop": false },
+    "hit": { "frames": [4], "fps": 8, "loop": false },
+    "lunge": { "frames": [5], "fps": 10, "loop": false },
+    "intercept": { "frames": [6, 2], "fps": 9, "loop": false },
+    "recovery": { "frames": [7, 0], "fps": 7, "loop": false },
+    "down": { "frames": [7], "fps": 4, "loop": true }
+  }
+}

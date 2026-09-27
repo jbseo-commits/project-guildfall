@@ -1,0 +1,42 @@
+export const HEROES_DATA = {
+  vael: {
+    id: 'vael',
+    name: '베일',
+    epithet: '뿔의 수호자',
+    role: '수호 / 가로막기',
+    maxHp: 120,
+    speed: 1.0,
+    armor: 12,
+    attackPower: 18,
+    campQuote: '이번에는 내가 앞을 맡을게. 너희는 뒤에서 준비해.',
+    motifs: '검은 뿔 · 자색 망토 · 금빛 눈',
+  },
+  seris: {
+    id: 'seris',
+    name: '세리스',
+    epithet: '월광나방 예언자',
+    role: '집중 / 폭발',
+    maxHp: 75,
+    speed: 0.9,
+    armor: 4,
+    attackPower: 12,
+    campQuote: '좋아. 이번엔 월광을 끝까지 완성해 볼게.',
+    motifs: '나방 날개 · 은발 · 청백빛',
+    channelDuration: 3.6, // seconds required for ritual
+    burstDamage: 85,
+  },
+  mirel: {
+    id: 'mirel',
+    name: '미렐',
+    epithet: '꽃뿌리 치유사',
+    role: '치유 / 생태 연결',
+    maxHp: 85,
+    speed: 1.1,
+    armor: 6,
+    attackPower: 10,
+    campQuote: '…이 꽃, 다시 피울 수 있을까?',
+    motifs: '꽃뿔 · 장밋빛 머리 · 덩굴',
+    healPower: 26,
+    healInterval: 2.2, // seconds per heal attempt
+  },
+};

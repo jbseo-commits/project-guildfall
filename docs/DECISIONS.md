@@ -120,27 +120,21 @@ This principle will constrain the later loss / damage / recovery economy decisio
 ---
 
 ## D002 — What does the player control, and what do they surrender?
-**Status:** OPEN — NEXT DECISION
+**Status:** IMPLEMENTED AS WORKING ARCHITECTURE (Phase 2 Core Loop)
 
-D001 establishes constraints for D002:
+The core control triad implemented in the Loop Engineering phase:
+1. **Spatial Formation (FRONT / CORE / VEIL)**:
+   - Sets aggro priority and intrinsic role modifiers (FRONT: +15% innate damage mitigation; CORE: +25% heal & resonance efficacy; VEIL: +30% ritual/channel speed).
+2. **Resonance Pair (Bond)**:
+   - Defines autonomous trigger-reaction chains between two bonded inhabitants (e.g. `vael_seris` Intercept, `vael_mirel` Emergency Heal & Barrier, `seris_mirel` Channel acceleration).
+3. **Battle Directive (Edict)**:
+   - Inscribes one battle-wide strategic modifier with strength and tradeoff (`shell` defense, `moon` ritual rush, `roots` sustain).
 
-- controls should make the ecosystem feel authored without requiring constant micro;
-- the first-session interaction must remain simple and immediately rewarding;
-- player choices should create visible relationships/behaviors between characters;
-- the commitment boundary must remain clear: prepare/arrange first, then watch the living system respond;
-- deeper tactical authorship may emerge later as mastery, but must not burden onboarding.
+**Commitment Boundary**:
+After pressing COMMIT, all player micro-control is surrendered. The autonomous simulation executes deterministically, outputting an EventStream for the BattleDirector.
 
-Candidate axes to decide:
-- caravan order / formation / placement;
-- which inhabitants join an encounter;
-- relationship or bond assignments;
-- behavior priorities;
-- environmental/ecosystem nodes;
-- ability or instinct loadout;
-- conditional reactions;
-- between-wave adaptation.
-
-The battle must contain a real commitment boundary after which the player watches the consequences.
+**Debrief & Adaptation**:
+Post-combat CausalDebrief extracts the top 1–3 decisive causes of victory/defeat, feeding into a single post-battle adaptation decision before the caravan advances.
 
 ---
 
@@ -164,13 +158,27 @@ Do not automatically use a Slay-the-Spire map. Decide whether the fantasy calls 
 
 ---
 
-## D005 — Art identity
-**Status:** BLOCKED
+## D005 — Art identity & Sprite Pipeline
+**Status:** LOCKED FOR PROTOTYPE
 
 Do not default to generic high-fantasy anime, generic pixel RPG, or card-game UI.
 
-D001 now requires that the art direction preserve:
+D001 requires that the art direction preserve:
 - highly attractive and charismatic character designs;
 - beautiful-but-uncanny fantasy;
 - a visibly living caravan/ecosystem;
 - individual characters that feel worth protecting and remembering.
+
+### Production Sprite Pipeline (`sprite-gen` Standard)
+1. **SSOT Master Art**: High-resolution 1:1 bust portraits for Camp and HUD avatars; full-body 4x2 sprite sheets for battle.
+2. **8 Canonical Keyposes**:
+   - 0: Idle (Breathing / Float)
+   - 1: Windup (Preparation / Catalyst raise)
+   - 2: Brace / Channel (Shield guard / Moon ritual)
+   - 3: Crouch / Absorb (Low defense / Botanical prayer)
+   - 4: Hit / Recoil (Impact stagger)
+   - 5: Lunge / Dash (Forward charge / Graceful step)
+   - 6: Special (Vael Intercept / Seris Moon Burst / Mirel Blossom Pulse / Warden Roar)
+   - 7: Recovery / Down (Ground return / Collapse)
+3. **Chroma Cutout & Foot Grounding**: `#FF00FF` solid magenta chroma unmixed to transparent alpha with edge defringing. Foot-contact center (`footX`, `footY`) calculated dynamically to anchor actors naturally on the arena floor plane.
+4. **Team Silhouette Backlight**: Allies receive gold outline (`#ffe694`), Enemies receive crimson/void outline (`#ff708a`).

@@ -1,0 +1,31 @@
+{
+  "meta": {
+    "character": "seris",
+    "title": "월광나방 예언자 (Moon Moth Prophet)",
+    "generator": "sprite-gen",
+    "version": "2.11.0",
+    "sheet": "seris_sprites.jpg",
+    "facing": "right",
+    "cols": 4,
+    "rows": 2
+  },
+  "poses": {
+    "0": { "name": "idle", "role": "월광 부유 및 날개 호흡" },
+    "1": { "name": "windup", "role": "성물 촉매 거상" },
+    "2": { "name": "channel", "role": "월광 의식 날개 개방" },
+    "3": { "name": "crouch", "role": "달빛 흡수" },
+    "4": { "name": "hit", "role": "피격/의식 방해 반응" },
+    "5": { "name": "step", "role": "우아한 부유 전진" },
+    "6": { "name": "burst", "role": "월광 폭발 및 초승달 후광" },
+    "7": { "name": "recovery", "role": "의식 종료 복구" }
+  },
+  "animations": {
+    "idle": { "frames": [0], "fps": 3, "loop": true },
+    "windup": { "frames": [1], "fps": 8, "loop": false },
+    "channel": { "frames": [2, 3], "fps": 5, "loop": true },
+    "hit": { "frames": [4], "fps": 8, "loop": false },
+    "burst": { "frames": [6], "fps": 8, "loop": false },
+    "recovery": { "frames": [7, 0], "fps": 7, "loop": false },
+    "down": { "frames": [7], "fps": 4, "loop": true }
+  }
+}
