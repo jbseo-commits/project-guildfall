@@ -3539,3 +3539,227 @@ button{font:inherit;-webkit-tap-highlight-color:transparent}
     animation-iteration-count:1!important;
   }
 }
+
+
+/* =========================================================
+   CHAPTER 01 RUNTIME INTEGRATION
+   Warmth -> Hush sign -> threat -> battle -> care -> departure.
+   ========================================================= */
+
+.story-paper{
+  display:flex;
+  flex-direction:column;
+}
+.story-lines{
+  display:grid;
+  gap:7px;
+  margin:10px 0 8px;
+}
+.story-line{
+  display:grid;
+  grid-template-columns:58px 1fr;
+  gap:8px;
+  align-items:start;
+  padding:7px 8px;
+  border-radius:8px;
+  background:rgba(91,65,42,.07);
+  border:1px solid rgba(106,78,49,.09);
+}
+.story-line b{
+  color:#483323;
+  font-size:.52rem;
+}
+.story-line span{
+  color:#5f4b3b;
+  font-size:.53rem;
+  line-height:1.42;
+}
+.story-note{
+  margin-top:auto!important;
+  padding:8px 9px;
+  border-left:2px solid rgba(130,104,78,.46);
+  background:rgba(110,88,60,.05);
+  color:#715e4b!important;
+  font-size:.47rem!important;
+}
+.story-hush-sign .story-lines{
+  filter:saturate(.88);
+}
+.story-threat-arrives .story-lines{
+  border-radius:9px;
+  box-shadow:inset 0 0 0 1px rgba(159,67,62,.08);
+}
+.commit-sub{
+  display:block;
+  margin-top:5px;
+  color:#776450;
+  text-align:center;
+  font-size:.45rem;
+  font-weight:700;
+}
+.after­math-paper{
+  gap:0;
+}
+.sealed-door-hook{
+  margin:12px 0;
+  padding:12px 13px;
+  display:grid;
+  grid-template-columns:auto auto 1fr;
+  gap:8px;
+  align-items:center;
+  border:1px solid rgba(92,78,112,.28);
+  border-radius:9px;
+  background:
+    radial-gradient(circle at 28% 50%,rgba(148,120,188,.12),transparent 32%),
+    rgba(67,55,78,.08);
+}
+.sealed-door-hook span{
+  grid-column:1/-1;
+  color:#735b91;
+  font-size:.42rem;
+  font-weight:1000;
+  letter-spacing:.12em;
+}
+.sealed-door-hook b{
+  color:#44364f;
+  font-size:.78rem;
+}
+.sealed-door-hook em{
+  color:#65556f;
+  font-size:.47rem;
+  line-height:1.35;
+  font-style:normal;
+}
+
+.hush-sign{
+  position:absolute;
+  z-index:8;
+  right:49%;
+  top:21%;
+  display:flex;
+  gap:7px;
+  align-items:center;
+  padding:5px 8px;
+  border:1px solid rgba(214,227,240,.14);
+  border-radius:999px;
+  background:rgba(19,25,32,.68);
+  color:#dce8ef;
+  opacity:0;
+  pointer-events:none;
+  transform:translateY(5px);
+  transition:.25s ease;
+  box-shadow:0 0 20px rgba(190,224,240,.08);
+}
+.hush-sign i{
+  width:13px;
+  height:13px;
+  border-radius:50%;
+  background:
+    radial-gradient(circle at 50% 50%,#f1f7fb 0 18%,#a3bed0 20% 40%,transparent 42%),
+    conic-gradient(from 10deg,#dfefff,#758da3,#dfefff);
+  box-shadow:0 0 9px rgba(206,235,248,.45);
+}
+.hush-sign span{
+  font-size:.39rem;
+  font-weight:900;
+  letter-spacing:.08em;
+}
+.story-stage.story-step-1 .hush-sign,
+.story-stage.story-step-2 .hush-sign{
+  opacity:1;
+  transform:translateY(0);
+}
+.story-stage.story-step-1 .camp-fire{
+  animation-play-state:paused!important;
+  filter:saturate(.55) brightness(.92);
+}
+.story-stage.story-step-1 .camp-bg{
+  filter:brightness(.91) saturate(.86) contrast(1.04)!important;
+}
+.story-stage.story-step-2 .camp-bg{
+  filter:brightness(.86) saturate(.92) contrast(1.08)!important;
+}
+
+.battle-bark{
+  position:absolute;
+  z-index:50;
+  left:50%;
+  top:-31px;
+  transform:translate(-50%,6px) scale(.94);
+  min-width:max-content;
+  max-width:150px;
+  padding:5px 8px;
+  border:1px solid rgba(255,255,255,.17);
+  border-radius:8px;
+  background:rgba(22,25,31,.86);
+  color:#f6eadc;
+  font-size:.44rem;
+  font-weight:900;
+  line-height:1.25;
+  text-shadow:0 1px 3px rgba(0,0,0,.6);
+  box-shadow:0 5px 14px rgba(0,0,0,.25);
+  opacity:0;
+  pointer-events:none;
+}
+.battle-bark:after{
+  content:"";
+  position:absolute;
+  left:50%;
+  bottom:-5px;
+  width:8px;
+  height:8px;
+  background:rgba(22,25,31,.86);
+  transform:translateX(-50%) rotate(45deg);
+}
+.battle-bark.show{
+  animation:battleBarkIn .7s ease both;
+}
+.hero.vael .battle-bark{border-color:rgba(126,191,255,.32)}
+.hero.seris .battle-bark{border-color:rgba(165,157,255,.36)}
+.hero.mirel .battle-bark{border-color:rgba(140,219,154,.36)}
+
+@keyframes battleBarkIn{
+  0%{opacity:0;transform:translate(-50%,6px) scale(.92)}
+  22%{opacity:1;transform:translate(-50%,0) scale(1.02)}
+  78%{opacity:1;transform:translate(-50%,0) scale(1)}
+  100%{opacity:0;transform:translate(-50%,-5px) scale(.98)}
+}
+
+@media (orientation:landscape) and (max-height:650px){
+  .story-lines{
+    gap:4px;
+    margin:5px 0 4px;
+  }
+  .story-line{
+    grid-template-columns:44px 1fr;
+    gap:5px;
+    padding:4px 5px;
+  }
+  .story-line b{font-size:.39rem}
+  .story-line span{font-size:.4rem;line-height:1.28}
+  .story-note{
+    padding:5px 6px;
+    font-size:.36rem!important;
+  }
+  .commit-sub{font-size:.34rem;margin-top:3px}
+  .sealed-door-hook{
+    margin:6px 0;
+    padding:7px 8px;
+    gap:5px;
+  }
+  .sealed-door-hook span{font-size:.32rem}
+  .sealed-door-hook b{font-size:.56rem}
+  .sealed-door-hook em{font-size:.36rem}
+  .hush-sign{
+    top:17%;
+    right:49%;
+    padding:3px 6px;
+  }
+  .hush-sign span{font-size:.3rem}
+  .battle-bark{
+    top:-25px;
+    padding:4px 6px;
+    max-width:115px;
+    font-size:.34rem;
+  }
+}
