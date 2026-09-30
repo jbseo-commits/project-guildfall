@@ -4,7 +4,7 @@
 
 ---
 
-GitHub 저장소 `jjsjb88-alt/project-guildfall`의 현재 `main`을 확인하고, 다음 파일을 반드시 순서대로 읽어라.
+GitHub 저장소 `jbseo-commits/project-guildfall`의 현재 `main`을 확인하고, 다음 파일을 반드시 순서대로 읽어라.
 
 1. `START-HERE.md`
 2. `LOOP-ENGINEERING.md`
