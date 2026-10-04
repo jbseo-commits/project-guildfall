@@ -223,3 +223,11 @@ After each successful merge, replace / update:
 - suggested next branch
 
 Never leave this file saying “next = X” after X has already been merged.
+
+## Claude model routing checkpoint — 2026-10-04
+
+- Claude 실행 경로: `scripts/claude-loop.mjs`와 `docs/MODEL-ROUTING.md`.
+- 모델: 메인 Opus/high, 탐색·작업·조사·검수 Sonnet/medium, 중요 판단 Opus advisor.
+- 상태: 설정 PR 준비. 실제 Claude 모델·계정·advisor 접근은 실행 환경의 preflight와 `/tasks`에서 확인한다.
+- Suggested branch: `claude/<date>-<one-bottleneck>` — 설정 병합 후 최신 main에서 한 병목용 브랜치를 선택한다.
+- NEXT LOOP의 현재 게임 대상과 기획 게이트는 위 기록을 그대로 따른다.
