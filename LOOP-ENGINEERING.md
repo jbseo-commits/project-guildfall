@@ -9,6 +9,8 @@
 
 ---
 
+Claude Code의 모델별 역할과 advisor 상담은 [모델 분업](docs/MODEL-ROUTING.md)을 함께 따른다. 기존 개발 게이트와 미정 기획 결정권은 그대로 유지한다.
+
 ## 0. Mission
 
 Build PROJECT GUILDFALL into a polished, playable fantasy autobattler / strategy roguelite while preserving the user-approved identity:

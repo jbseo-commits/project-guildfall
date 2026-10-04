@@ -27,3 +27,7 @@
 ## Reference boundary
 
 Study genre patterns, never reproduce protected art/assets/text or a distinctive game wholesale.
+
+## Claude 모델 분업
+
+Claude Code에서 이 루프를 수행하면 [모델 분업](docs/MODEL-ROUTING.md)의 역할·advisor 상담·실행 확인을 함께 따른다. 이 지침은 기존 품질·권한·중단 조건을 대체하지 않는다.
