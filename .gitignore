@@ -3,3 +3,6 @@ dist/
 .vite/
 .DS_Store
 *.log
+
+# Local AI loop telemetry (never commit session data)
+loop/.runtime/
